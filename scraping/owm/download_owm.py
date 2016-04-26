@@ -27,11 +27,11 @@ cities = {'berlin': 2950159,
           'freiburg': 2925177,
           'erfurt': 2929670}
 
-
-for city in cities:
-    url = base_url.format(cities[city])
-    path = base_path.format(strftime('%d_%m_%Y'), city)
-    page = urllib.request.urlretrieve(url, filename=path)
+def main():
+    for city in cities:
+        url = base_url.format(cities[city])
+        path = base_path.format(strftime('%d_%m_%Y'), city)
+        urllib.request.urlretrieve(url, filename=path)
     
     
     
