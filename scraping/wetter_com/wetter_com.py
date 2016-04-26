@@ -9,7 +9,7 @@ def download(datafolder = "../data"):
     import os.path
 
     # flog for downloading the detailed 6 day forecast
-    do_6D_forecast = False
+    do_6D_forecast = True
 
     # list fo all cities we are scraping from
     cities = ["berlin", "hamburg", "muenchen",

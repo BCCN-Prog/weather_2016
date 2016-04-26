@@ -4,7 +4,7 @@ import urllib.request
 from time import strftime
 
 base_url = 'http://openweathermap.org/city/{}'
-base_path = '{}/owm_{}_{}.html'
+base_path = '{}owm_{}_{}.html'
 
 cities = {'berlin': 2950159,
           'munich': 6940463,

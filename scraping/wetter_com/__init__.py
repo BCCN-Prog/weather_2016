@@ -1,4 +1,4 @@
-from wetter_com import download
+from .wetter_com import download
 
 """
 Now if you do
