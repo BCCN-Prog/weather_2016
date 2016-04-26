@@ -1,9 +1,7 @@
 import time
 import urllib.request
-import pudb
 
 FILE_BASE = 'output/wetter_de_'
-
 
 DATE_TIME = time.strftime("%d_%m_%Y")
 
@@ -22,10 +20,9 @@ for city in CITIES:
     try:
         urllib.request.urlretrieve(HOURLY_URL, FILE_BASE + DATE_TIME + '_' + city.split('-')[0] + '_hourly.html')
     except:
-        print(city)
-        pu.db
+        continue
+
     try:
         urllib.request.urlretrieve(FIFTEEN_URL, FILE_BASE + DATE_TIME + '_' + city.split('-')[0] + '_daily.html')
     except:
-        print(city)
-        pu.db
+        continue
