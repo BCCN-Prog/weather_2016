@@ -1,4 +1,4 @@
-from python_file import download_function as download
+from wetter_com import download
 
 """
 Now if you do
