@@ -30,7 +30,7 @@ cities = {'berlin': 2950159,
 def download(data_path):
     for city in cities:
         url = base_url.format(cities[city])
-        path = base_path.format(data_path, strftime('%d_%m_%Y'), city)
+        path = base_path.format(data_path, strftime('%d_%m_%Y_%H_%M'), city)
         urllib.request.urlretrieve(url, filename=path)
     
     
