@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <!--<meta http-equiv="X-UA-Compatible" content="IE=edge">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="weather, world, Openstreetmap, forecast, Openweather, current" >
+    <meta name="description" content="Current weather conditions in cities for world wide" >
+    <meta name="author" content="OpenWeatherMap.org">
+    <meta name="domain" content="OpenWeatherMap.org" >
+    <meta http-equiv="pragma" content="no-cache" >
+    <meta http-equiv="Expires" content="-1" >
+    <title>City</title>
+
+
+    <!-- Bootstrap core CSS -->
+    <!--<link href="css/bootstrap.css" rel="stylesheet"> -->
+
+    <!-- Custom styles for this template -->
+    <link href="/combine/70a60c128cef9af892512b63a908cc49-1456039778" rel="stylesheet">
+    
+    <link href="/combine/64bcac555f440fc9d411629c99b809d5-1402933099" rel="stylesheet">
+
+    
+    <!-- Resources -->
+    <link href='http://fonts.googleapis.com/css?family=Oswald:400,700,300' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,500,400italic,500italic,700italic' rel='stylesheet' type='text/css'>
+
+    <script src="/combine/d101692439773a09e020146fe251340a-1400776594"></script>
+
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-31601618-1']);
+  _gaq.push(['_setDomainName', 'openweathermap.org']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+<script type="text/javascript">
+function ShowSuccessMess(mess)
+{
+	var html = '<div class="alert alert-success" ><a class="close" data-dismiss="alert" href="#">×</a>'+mess+'</div>';
+	document.getElementById("alert_body").innerHTML = html;
+}
+
+function ShowInfoMess(mess)
+{
+	var html = '<div class="container"><div class="row"><div class="col-md-12"><div class="panel-body">';
+	html = html + '<div class="alert alert-info" ><a class="close" data-dismiss="alert" href="#">×</a>'+mess+'</div>';
+	html = html + '</div></div></div></div>';
+	document.getElementById("notes_block").innerHTML = html;
+}
+
+function ShowAlertMess(mess)
+{
+	var html = '<div class="alert alert-error" ><a class="close" data-dismiss="alert" href="#">×</a>'+mess+'</div>';
+	document.getElementById("alert_body").innerHTML = html;
+}
+
+function  errorHandler(e)
+{
+    console.log(e);
+	ShowAlertMess(e.status +' '+e.statusText);
+}
+
+
+function ParseJson(JSONtext)
+{
+	try{
+		JSONobject = JSON.parse(JSONtext); 
+	}catch(e){
+		ShowAlertMess('Error JSON');
+		return;
+	}
+
+	if(JSONobject.cod != '200') {
+		ShowAlertMess('Error '+ JSONobject.cod + ' ('+ JSONobject.message +')');
+		return;
+	}
+	var mes = JSONobject.cod;
+	if(JSONobject.calctime)
+		mes = mes + ' ' + JSONobject.calctime;
+	if(JSONobject.message)
+		mes = mes + ' ' + JSONobject.message;
+	console.log( mes );
+	return JSONobject;
+}
+function set_cookie(name, value, expires)
+{
+if (!expires)
+{
+expires = new Date();
+}
+document.cookie = name + "=" + escape(value) + "; expires=" + expires.toGMTString() +  "; path=/";
+}
+
+function get_cookie(name) {
+    var matches = document.cookie.match(new RegExp(
+        "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+      ))
+  return matches ? decodeURIComponent(matches[1]) : undefined
+}
+function set_lang(lang)
+{
+	expires = new Date();
+	expires.setTime(expires.getTime() + (1000 * 60 * 60 * 24));	
+	set_cookie('lang', lang, expires);
+	window.location.reload();
+}
+
+function set_units()
+{
+  var units = 'metric';
+  if( document.getElementById("units_check").checked ) units = 'imperial';
+  expires = new Date();         
+  expires.setTime(expires.getTime() + (1000 * 60 * 60 * 24)); 
+  set_cookie('units', units, expires);
+  window.location.reload();
+}
+
+
+function pad(num, size) {
+    var s = num+"";
+    while (s.length < size) s = "0" + s;
+    return s;
+}
+
+</script>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body class="body-orange">
+
+    <!-- Extra Bar -->
+    <div class="mini-navbar mini-navbar-dark hidden-xs">
+      <div class="container">
+        <div class="col-sm-10">
+          <a href="https://openweathermap.desk.com/" class="first-child" target="_blank">
+          <i class="fa fa-envelope">  </i>  <span class="hidden-sm">Support Center</span></a>
+
+<!--
+          <a href="/register" class="pull-right" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'register']);"><i class="fa fa-arrow-circle-down"></i> Sign Up</a>
+          <a href="/signin" class="pull-right" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'signin']);"><i class="fa fa-sign-in"></i> Sign In</a>
+-->
+          <a href="https://home.openweathermap.org/users/sign_up" class="pull-right" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'register']);"><i class="fa fa-arrow-circle-down"></i> Sign Up</a>
+          <a href="https://home.openweathermap.org/users/sign_in" class="pull-right" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'signin']);"><i class="fa fa-sign-in"></i> Sign In</a>
+
+          
+          <a href="#" class="pull-right" id="nav-search"><i class="fa fa-search" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'search']);"></i> Weather in your city</a>
+          <a href="#" class="pull-right hidden" id="nav-search-close"><i class="fa fa-times"></i></a>
+          <!-- Search Form -->
+
+          <form class="pull-right hidden" role="search" id="nav-search-form" id="searchform" action="/find" method="get">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Search" id="q" name="q" >
+              <span class="input-group-btn">
+                <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+              </span>
+            </div>
+          </form>
+        </div>
+        <div class="col-sm-2">
+<label class="toggle candy blue" style="width:100px"  onclick="">
+    <input id="units_check" type="checkbox" />
+    <p onclick="set_units()">
+      <span>  °C  </span>
+      <span>  °F  </span>
+    </p>  
+    <a class="slide-button" ></a>
+  </label>  
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="navbar navbar-dark navbar-static-top" role="navigation">
+      <div class="container">
+        <!-- Navbar Header -->
+        <div class="navbar-header">
+
+          <a class="navbar-brand" href="/">
+          
+              <img src="/themes/demo/assets/vendor/owm/images/logo_OpenWeatherMap_orange_website.png" height="30">
+          <!-- <img src="/themes/demo/assets/vendor/owm/images/OWM_logo32_32.png" style="vertical-align:bottom">
+            OpenWeatherMap<span class="hidden-sm"></span> -->
+                
+                
+            </a>
+        </div> <!-- / Navbar Header -->
+
+        <!-- Navbar Links -->
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+           <!-- <li><a href="/" class="bg-hover-color" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'home']);">Home</a></li> -->
+            <li><a href="/city" class="bg-hover-color" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'weather']);">Weather</a></li>
+            <!--<li><a href="/maps" class="bg-hover-color" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'maps']);">Maps</a></li>-->
+
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle bg-hover-color" data-toggle="dropdown">Maps <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/weathermap" class="bg-hover-color">Weather maps</a></li>
+                <li><a href="http://owm.io/modis" class="bg-hover-color">Current satellite maps</a></li>
+                <!--<li><a href="/help/sat.html" class="bg-hover-color">Current satellite maps</a></li>
+                <li><a href="/beautifulmaps" class="bg-hover-color">Beautiful maps</a></li>-->
+                <li><a href="http://owm.io/beautiful_maps" target="_blank" class="bg-hover-color">Beautiful maps</a></li>
+                <li><a href="http://openweathermap.org/map_editor" class="bg-hover-color">Map Editor</a></li>
+              </ul>
+            </li>
+            
+            <li><a href="/api" class="bg-hover-color" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'api']);">API</a></li>
+            <li><a href="/price" class="bg-hover-color" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'price']);">Price</a></li>
+            <li><a href="/examples" class="bg-hover-color" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'examples']);">Partners</a></li>
+            
+             <!--<li><a href="/technology" class="bg-hover-color" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'technology']);">Platform</a></li>-->
+            <!--
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle bg-hover-color" data-toggle="dropdown">Platform <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/owm-platform" class="bg-hover-color">OWM Big Data Platform</a></li>
+                <li><a href="/technology" class="bg-hover-color">Weather technology</a></li>
+              </ul>
+            </li>
+            -->
+            
+            
+            <li><a href="/stations" class="bg-hover-color" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'station']);">Stations</a></li>
+            <li><a href="/news" class="bg-hover-color" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'news']);">News</a></li>
+           <li class="dropdown">
+              <a href="#" class="dropdown-toggle bg-hover-color" data-toggle="dropdown">About <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/about" class="bg-hover-color">About company</a></li>
+                <li><a href="/owm-platform" class="bg-hover-color">OWM Platform</a></li>
+                <li><a href="/technology" class="bg-hover-color">Big Data Technology</a></li>
+                <li><a href="/models" class="bg-hover-color">Meteorological models</a></li>
+                <li><a href="/datasource" class="bg-hover-color">Data sources</a></li>
+              </ul>
+            </li>
+
+            <!--
+            <li><a href="http://openweathermap.org/help/design/" class="bg-hover-color">Partners</a></li>
+            -->
+          </ul>
+
+          <!-- Search Form (xs) -->
+          <form class="navbar-form navbar-left visible-xs" role="search">
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="Search">
+            </div>
+            <button type="submit" class="btn btn-default">Go!</button>
+          </form> <!-- / Search Form (xs) -->
+
+        </div> <!-- / Navbar Links -->
+      </div> <!-- / container -->
+    </div> <!-- / navbar -->
+
+    <div id="notes_block"></div>
+    <!-- Wrapper -->
+    <div class="wrapper">
+      <!-- Topic Header -->
+
+          <div class="topic">
+        <div class="container">
+          <div class="row">
+            <div class="col-sm-4">
+              <h3 class="primary-font">Weather in your city</h3>
+            </div>
+            <div class="col-sm-8">
+              <ol class="breadcrumb pull-right hidden-xs">
+                              
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+    <script src="/combine/7397a120786f6cd2568f01d443b988e5-1455184460"></script>
+
+
+<script type="text/javascript">
+
+var time_zone = 1000 * (new Date().getTimezoneOffset())*(-60);
+
+var forecast = [];
+var daily = [];
+
+jQuery(document).ready(function() {
+
+	expires = new Date();
+	expires.setTime(expires.getTime() + (1000 * 3600 * 24 * 365));
+	set_cookie('cityid', 2944388, expires);
+
+
+
+	$.getJSON("/data/2.5/forecast?callback=?&id=2944388&units=metric&appid=b1b15e88fa797225412429c1c50c122a", showForecast).error(errorHandler);
+	$.getJSON("/data/2.5/forecast/daily?callback=?&id=2944388&units=metric&cnt=14&appid=b1b15e88fa797225412429c1c50c122a", showForecastDaily).error(errorHandler);
+
+	var t=document.location.href.split('#');
+	if(t[1])	$("#"+t[1]+'_a').click();
+    //$.getJSON("http://api.sat.owm.io/api/1.0/search?lat=53.08&lon=8.81&sensor=OLI_TIRS&mode=json&appid=b1b15e88fa797225412429c1c50c122a", showSatellite).error(errorHandler);
+
+// Tab dispacher
+
+$('a[data-toggle="tab"]').on('shown', function (e) {
+
+	if($(this).attr('href') == "#forecast") {
+	}
+
+	if($(this).attr('href') == "#forecast-chart") {
+		showForcastChartVal('temp');
+	}
+
+	if($(this).attr('href') == "#map") {
+	//	ShowMap();
+	}
+
+})
+
+	var map = new OpenLayers.Map("map_canvas",
+		{
+		        units: 'm',
+		        projection: new OpenLayers.Projection("EPSG:900913"),
+		        displayProjection: new OpenLayers.Projection("EPSG:4326")
+		}
+	);
+
+    var mapnik = 	new OpenLayers.Layer.OSM();
+
+	var precipitation = new OpenLayers.Layer.XYZ(
+		"precipitation",
+		[
+		"http://a.maps.owm.io/weather/precipitation/${z}/${x}/${y}.png?appid=b1b15e88fa797225412429c1c50c122a",
+		"http://b.maps.owm.io/weather/precipitation/${z}/${x}/${y}.png?appid=b1b15e88fa797225412429c1c50c122a",
+		"http://c.maps.owm.io/weather/precipitation/${z}/${x}/${y}.png?appid=b1b15e88fa797225412429c1c50c122a",
+		"http://d.maps.owm.io/weather/precipitation/${z}/${x}/${y}.png?appid=b1b15e88fa797225412429c1c50c122a"
+		],
+		{
+			numZoomLevels: 15,
+			isBaseLayer: false,
+			opacity: 0.7,
+			sphericalMercator: true
+		}
+	);
+	var PRMSL_MSL_CONTOUR = new OpenLayers.Layer.XYZ(
+		"pressure",
+		[
+		"http://a.maps.owm.io/weather/pressure_cntr/${z}/${x}/${y}.png?appid=b1b15e88fa797225412429c1c50c122a",
+		"http://b.maps.owm.io/weather/pressure_cntr/${z}/${x}/${y}.png?appid=b1b15e88fa797225412429c1c50c122a",
+		"http://c.maps.owm.io/weather/pressure_cntr/${z}/${x}/${y}.png?appid=b1b15e88fa797225412429c1c50c122a",
+		"http://d.maps.owm.io/weather/pressure_cntr/${z}/${x}/${y}.png?appid=b1b15e88fa797225412429c1c50c122a"
+		],
+		{
+			numZoomLevels: 15,
+			isBaseLayer: false,
+			opacity: 0.4,
+			sphericalMercator: true
+
+		}
+	);
+	var centre = new OpenLayers.LonLat( 8.81, 53.08).transform(
+		new OpenLayers.Projection("EPSG:4326"),
+		new OpenLayers.Projection("EPSG:900913"));
+	map.addLayers([mapnik, precipitation, PRMSL_MSL_CONTOUR]);
+    map.setCenter( centre, 4);
+    var ls = new OpenLayers.Control.LayerSwitcher({'ascending':false});
+	map.addControl(ls);
+
+
+
+});
+
+
+// **************************** forecast *******************************
+
+function showCurrentCity(d)
+{
+	current_city_id = d.id;
+	$('#city_name').html( d.name +', '+ d.sys.country);
+}
+
+function showForecast(d)
+{
+    if( ! d.list) {
+        console.log(d);
+    }
+	forecast = d.list;
+	showForecastSmall();
+	showHourlyForecastChart();
+	showForcastHourlyListLong();
+	showForcastChartVal('temp');
+}
+
+function showForecastDaily(d)
+{
+    console.log(d);
+	daily = d.list;
+	showDailyListVertical();
+	showDailyChart();
+}
+
+function showSatellite(list)
+{
+  scenes = list;
+  html = '';
+
+  var cnt=0;
+  for(var i = 0; i <  list.length; i ++){
+    if(! list[i].links.tile ) continue;
+    if( list[i].clouds > 20 ) continue;
+
+    var dt = new Date(list[i].dt * 1000);
+    var day = list[i].ind.year +'.'+ pad(dt.getMonth()+1,2) + '.'+ pad(dt.getDate(),2);
+
+    var addurl = '?';
+    if(53.08 != 0 ) addurl = addurl + "lat=53.08";
+    if(8.81 != 0 ) addurl = addurl + "&lon=8.81";
+    if(10 != 7 ) addurl = addurl + "&zoom=10";
+
+
+html += '<li class="col-sm-3"> \
+                <div class="portfolio-item">  \
+                  <div class="portfolio-thumbnail"> \
+                    <img class="img-responsive" src="http://' + list[i].links.tiny + '" alt="..."> \
+              <a href="http://owm.io/info/' + list[i].scene + addurl + '"><h6 class="primary-font">' + list[i].scene + '</h6></a> \
+              <p class="text-muted">    \
+               ' + day + '<br>  \
+                clouds ' + list[i].clouds + '%  \
+              </p>  \
+                  </div> \
+                </div> \
+              </li>';
+
+
+    cnt++;
+ }
+
+  html='<ul class="row list-inline glr-list-p">'+html+'</ul>';
+  $("#scenes_list").html(html);
+  $("#scenes_count").html( "Find: " + cnt + ' scenes');
+}
+
+
+var month = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Avg", "Sen", "Oct", "Nov", "Dec"];
+
+function showDailyListVertical()
+{
+
+	var html = ''
+
+	for(var i = 0; i <  daily.length-1; i ++){
+
+		var dt = new Date(daily[i].dt * 1000 + time_zone);
+		var day =dt.getDate() +' '+ month[dt.getMonth()];
+
+		var temp = Math.round(10*(daily[i].temp.day))/10 ;
+		var eve = Math.round(10*(daily[i].temp.eve))/10 ;
+		var morn = Math.round(10*(daily[i].temp.morn))/10 ;
+		var night = Math.round(10*(daily[i].temp.night))/10 ;
+		var icon = daily[i].weather[0].icon;
+		var text = daily[i].weather[0].description;
+
+		html += '<tr><td>' + day + ' <img src="/img/w/'+icon+'.png" ></td><td>';
+ 		if(temp > 0)
+ 		    html += '<span class="label label-warning">';
+ 		else
+ 		    html += '<span class="label label-primary">';
+		html += temp +'°C </span>&nbsp<span class="label label-default">' + night +
+		'°C </span> &nbsp&nbsp<i>' +text+'</i> <p> '+daily[i].speed+ 'm/s <br>clouds: '+daily[i].clouds + '%, ' +
+			daily[i].pressure+' hpa</p></td></tr>';
+	}
+
+	html='<table class="table">'+html+'</table>';
+
+	$("#daily_list").html(html);
+
+}
+
+function showDailyChart()
+{
+
+	var time = new Array();
+	var tmp = new Array();
+	var tmpr = new Array();
+	var rain = new Array();
+	var snow = new Array();
+	//var prcp = new Array();
+	//var wind = new Array();
+
+
+	for(var i = 0; i <  daily.length-1; i ++){
+
+		tmp.push( Math.round(10*(daily[i].temp.day))/10  );
+		var dt = new Date( daily[i].dt * 1000 + time_zone);
+		time.push( dt );
+
+		var tmpi =  Math.round(10*(daily[i].temp.min))/10 ;
+		var tmpa =  Math.round(10*(daily[i].temp.max))/10 ;
+		tmpr.push( [tmpi, tmpa ]  );
+
+
+		if(daily[i]['rain'])	{
+			rain.push( Math.round(daily[i]['rain']*100) / 100 );
+		}else{
+			rain.push( 0 );
+		}
+		if(daily[i]['snow'])	{
+			snow.push( Math.round(daily[i]['snow']*100) / 100 );
+		}else{
+			snow.push( 0 );
+		}
+	}
+
+
+	$('#chart').highcharts({
+            chart: {
+            //    zoomType: 'xy'
+           		type: 'column'
+            },
+            title: NaN,
+            xAxis: {
+                categories: time,
+				labels: {
+				    formatter: function() {
+						return Highcharts.dateFormat('%d %b', this.value);
+				    }
+            	}
+            },
+
+            yAxis: [
+            {
+                labels: {
+                    format: '{value}°C',
+                    style: {
+                        color: 'blue'
+                    }
+                },
+                title: {
+                    text: 'Temp',
+					style: {
+                        color: 'blue'
+                    }
+                }
+            },{
+                labels: {
+                    format: '{value} mm',
+                    style: {
+                        color: '#909090'
+                    }
+                },
+                opposite: true,
+                title: {
+                    text: 'Precipitation',
+                    style: {
+                        color: '#4572A7'
+                    }
+                }
+            }],
+            tooltip: {
+            	useHTML: true,
+                shared: true,
+                formatter: function() {
+ 					var s = '<small>'+ Highcharts.dateFormat('%d %b', this.x) +'</small><table>';
+                	$.each(this.points, function(i, point) {
+                		//console.log(point);
+                			if(point.y != 0)
+                    			s += '<tr><td style="color:'+point.series.color+'">'+ point.series.name +': </td>'+
+                        		'<td style="text-align: right"><b>'+point.y +'</b></td></tr>';
+                	}
+                	);
+                	return s+'</table>';
+				}
+            },
+			plotOptions: {
+                column: {
+                    stacking: 'normal'
+                }
+            },
+			legend: NaN,
+            series: [
+            {
+                name: 'Snow',
+				type: 'column',
+				color: '#909090',
+				yAxis: 1,
+                data: snow,
+                stack: 'precipitation'
+            },
+            {
+                name: 'Rain',
+				type: 'column',
+				color: '#B0B0B0',
+				yAxis: 1,
+                data: rain,
+                stack: 'precipitation'
+            },
+			{
+                name: 'Temperature',
+				type: 'spline',
+				color: 'blue',
+                data: tmp
+            },
+            {
+		        name: 'Temperature min',
+		        data: tmpr,
+		        type: 'arearange',
+		        lineWidth: 0,
+		    	linkedTo: ':previous',
+		    	color: Highcharts.getOptions().colors[0],
+		    	fillOpacity: 0.3,
+		    	zIndex: 0
+		    }
+            ]
+        });
+}
+
+function showHourlyForecastChart()
+{
+
+ 	var curdate = new Date( (new Date()).getTime()- 180 * 60 * 1000 );
+
+	var cnt=0;
+
+	var time = new Array();
+	var tmp = new Array();
+ 	var wind = new Array();
+	var prcp = new Array();
+
+	for(var i = 0; i <  forecast.length; i ++){
+
+		var dt = new Date(forecast[i].dt * 1000);
+		if( curdate  > dt )	continue;
+		if(cnt > 10)		break;
+		cnt++;
+
+		tmp.push( Math.round(10*(forecast[i].main.temp))/10  );
+		time.push( new Date( forecast[i].dt * 1000 + time_zone) );
+		wind.push(forecast[i].speed);
+
+		var p=0;
+		if(forecast[i]['rain'] && forecast[i]['rain']['3h'])	p += forecast[i]['rain']['3h'];
+		if(forecast[i]['snow'] && forecast[i]['snow']['3h'])	p += forecast[i]['snow']['3h'];
+		prcp.push( Math.round( p * 10 ) / 10 );
+	}
+
+	$('#chart_small').highcharts({
+            chart: {
+                zoomType: 'xy'
+            },
+            title: NaN,
+
+            xAxis: {
+                categories: time,
+                type: 'datetime',
+				labels: {
+				    formatter: function() {
+						return Highcharts.dateFormat('%H:%M', this.value);
+				    }
+            	}
+            },
+            yAxis: [
+            {
+                labels: {
+                    format: '{value}°C',
+                    style: {
+                        color: 'blue'
+                    }
+                },
+                opposite: true,
+                title:NaN
+            },{
+                labels: {
+                    format: '{value}mm',
+                    style: {
+                        color: '#4572A7'
+                    }
+                },
+                opposite: true,
+                title: NaN
+            }],
+            tooltip: {
+            	useHTML: true,
+                shared: true,
+                formatter: function() {
+ 					var s = '<small>'+ Highcharts.dateFormat('%d %b. %H:%M', this.x) +'</small><table>';
+                	$.each(this.points, function(i, point) {
+                    		s += '<tr><td style="color:'+point.series.color+'">'+ point.series.name +': </td>'+
+                        	'<td style="text-align: right"><b>'+point.y +'</b></td></tr>';
+                	});
+                	return s+'</table>';
+				}
+            },
+			legend: {
+                layout: 'vertical',
+                align: 'left',
+                x: 410,
+                verticalAlign: 'top',
+                y: 0,
+                floating: true,
+                backgroundColor: '#FFFFFF'
+            },
+            series: [
+            {
+                name: 'Precipitation',
+				type: 'column',
+				color: '#A0A0A0',
+				yAxis: 1,
+                data: prcp
+            },{
+                name: 'Temperature',
+				type: 'spline',
+				color: 'blue',
+                data: tmp
+            }]
+        });
+
+
+};
+
+
+function showForecastSmall()
+{
+
+ 	var curdate = new Date( (new Date()).getTime()- 180 * 60 * 1000 );
+
+	var html = ''
+
+	var cnt=0;
+	for(var i = 0; i <  forecast.length ; i ++){
+
+		var dt = new Date(forecast[i].dt * 1000);
+
+		if( curdate  > dt )	continue;
+		if(cnt > 10)		break;
+		cnt++;
+
+		var temp = Math.round(10*(forecast[i].main.temp))/10 ;
+		var tmin = Math.round(10*(forecast[i].main.temp_min)) / 10;
+		var tmax = Math.round(10*(forecast[i].main.temp_max)) / 10 ;
+
+		var text = forecast[i].weather[0].description;
+		var gust = forecast[i].wind.speed;
+		var pressure = forecast[i].main.pressure ;
+		var cloud=forecast[i].clouds.all ;
+		var icon = forecast[i].weather[0].icon;
+
+		if( forecast[i].sys.pod == 'd' )
+			html=html+ '<div style="float: left; text-align: center;" >';
+		else
+			html=html+ '<div style="float: left; text-align: center; background-color:#eeeeee" >';
+
+		html=html+ '<img alt="'+text+'" src="/img/w/'+icon+'.png"/>\
+		<div class="small_val" title="Temp">'+forecast[i].main.temp+'C</div>\
+		<div class="small_val" title="Wind">'+forecast[i].wind.speed+'m/s</div>\
+		<div class="small_val_grey" title="Pressure">'+forecast[i].main.pressure+'</div>\
+		</div>';
+	}
+
+	$("#forecast_small").html(html);
+
+};
+
+
+function showForcastHourlyListLong()
+{
+
+ 	var curdate = new Date( (new Date()).getTime()- 180 * 60 * 1000 );
+
+	var html = ''
+	var lastday=0;
+	var ar_tmin = new Array();
+	var ar_tmax = new Array();
+	min_cur = 500;
+	max_cur = 0;
+	lastday=0;
+
+	for(var i = 0; i <  forecast.length-2; i ++){
+		if(! forecast[i].main) continue;
+
+		var dt = new Date(forecast[i].dt * 1000);
+
+		if( curdate  > dt )	continue;
+
+		var day =dt.getDate();
+		var hr =dt.getHours();
+		if(hr < 10) hr = '0'+hr;
+
+		if(day!=lastday){
+			html=html+"<tr class='well'><td colspan='2'><b>"+dt.toDateString()+"</b> </td></tr>" ;
+			lastday = day;
+		}
+		//console.log(forecast[i].main);
+		var temp = Math.round(10*(forecast[i].main.temp))/10 ;
+		var tmin = Math.round(10*(forecast[i].main.temp_min)) / 10;
+		var tmax = Math.round(10*(forecast[i].main.temp_max)) / 10 ;
+
+		var text = forecast[i].weather[0].description;
+
+		var img =  forecast[i].weather[0].icon;
+		var gust = 0;
+		if( forecast[i].wind )
+		    gust = forecast[i].wind.speed;
+		var pressure = forecast[i].main.pressure ;
+		var cloud=forecast[i].clouds.all ;
+
+html=html+'<tr><td>' + hr + ':00 <img src="http://openweathermap.org/img/w/'+img+'.png" > </td><td><span class="badge badge-info">'+temp +'°C </span> <i>' +text+'</i> ' +
+'<p> '+tmin+'  '+tmax+'°C,  '+gust+ 'm/s.  '+cloud+'%, ' +pressure+' hpa</p></td></tr>';
+
+	}
+	html='<table class="table">'+html+'</table>';
+
+	$("#hourly_long_list").html(html);
+
+};
+
+//**************************** Chart *************************
+var chart;
+
+
+function showForcastChartVal(val)
+{
+	var tmp = new Array();
+	var tlbl = new Array();
+
+
+	for(var i = 0; i <  forecast.length; i ++){
+		if(val == 'temp')
+			tmp.push(  Math.round( (forecast[i]['main']['temp']) * 100) / 100  );
+		if(val == 'wind_ms')
+			tmp.push(  Math.round( forecast[i]['wind']['speed'] ) );
+		if(val == 'pressure')
+			tmp.push(  Math.round( forecast[i]['main']['pressure'] ) );
+		if(val == 'humidity')
+			tmp.push(  Math.round( forecast[i]['main']['humidity'] ) );
+		if(val == 'precipitation') {
+			if(forecast[i]['rain'] && forecast[i]['rain']['3h'])
+				tmp.push( Math.round( forecast[i]['rain']['3h'] ) );
+			if(forecast[i]['snow'] && forecast[i]['snow']['3h'])
+				tmp.push( Math.round( forecast[i]['snow']['3h'] ) );
+			else
+				tmp.push( 0 );
+		}
+
+		tlbl.push( new Date(forecast[i]['dt'] * 1000 + time_zone) );
+	}
+
+	if(val == 'temp')
+		label = 'temp';
+	if(val == 'wind_ms')
+		label = 'wind';
+	if(val == 'pressure')
+		label = 'pressure';
+	if(val == 'humidity')
+		label = 'humidity';
+	if(val == 'precipitation')
+		label = 'precipitation';
+
+	chart = new Highcharts.Chart({
+		chart: {
+			renderTo: 'chart-forecast',
+			type: 'spline'
+		},
+		title: {
+			text: NaN,
+		},
+
+		tooltip: {
+			formatter: function() {
+				return '<b>'+ this.series.name +" </b><p>"+ Highcharts.dateFormat('%Y-%m-%d %H:%M', this.x)+' '+this.y +'°C </p>';
+			}
+		},
+		xAxis: {
+			type: 'datetime',
+			categories: tlbl,
+			tickInterval: 7,
+
+			labels: {
+			    formatter: function() {
+				return Highcharts.dateFormat('%d', this.value);
+			    },
+				align: 'right',
+				style: {
+					font: 'normal 13px Verdana, sans-serif'
+				}
+
+			}
+		},
+
+		yAxis: {
+			title: {
+				text: NaN
+			},
+
+			plotLines: [{
+				value: 0,
+				width: 1,
+				color: '#808080'
+			}]
+		},
+
+		series: [{
+			name: label,
+			type: 'spline',
+			data: tmp
+		}
+		]
+
+	});
+
+
+}
+
+function vote(v)
+{
+    	ShowInfoMess("Please, <a href='/signin'>sign in</a> to vote for weather accuracy. Your voice is very important to us!");
+	}
+
+function voteOK(v)
+{
+	r=ParseJson(v);
+	ShowInfoMess(r.message);
+}
+
+</script>
+
+<div class="container">
+
+
+<div class="row">
+
+
+
+
+
+
+
+
+
+<div class="row">
+
+<!-- left column -->
+<div class="col-sm-4">
+
+
+<!-- weather  -->
+
+<div class="weather-widget">
+
+
+
+<h3>Bremen, DE</h3>
+
+
+<h2> <img src="http://openweathermap.org/img/w/03d.png"> 7.1 °C</h2>
+
+Clouds
+<p>
+  <span id="date_m"></span>
+  (<a type="button" data-toggle="modal" href="#wrong-data-modal">Wrong data?</a>)
+</p>
+<!-- Large modal -->
+
+<!-- Wrong data modal -->
+<div id="wrong-data-modal" class="modal fade" tabindex="-1" role="dialog" >
+  <div class="modal-dialog" style="margin-top: 70px">
+    <div class="modal-content" style="max-width: 500px; margin: 0 auto;">
+
+      <form id="wrong-data"  action="/">
+        <input type="hidden" name="type" value="weather_current">
+        <input type="hidden" name="posted_from" value="openweathermap.org">
+        <input type="hidden" name="location[lat]" value="53.08">
+        <input type="hidden" name="location[lng]" value="8.81">
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <h4 class="modal-title">Contact us</h4>
+        </div>
+
+        <div class="modal-body">
+          <div class="alert-block"></div>
+
+          <div class="form-group description-group">
+            <label class="control-label" for="wd-description">Description (required)</label>
+            <textarea id="wd-description" name="description" class="form-control" rows="4" placeholder="Describe your problem" style="resize:vertical"></textarea>
+          </div>
+
+          <div class="form-group"  style="margin-bottom: 0">
+            <label class="control-label" for="wd-email">Email</label>
+            <input  id="wd-email" name="email" type="email" class="form-control" placeholder="Your email">
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <input type="submit" class="btn btn-orange" value="Send">
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+<!-- Wrong data modal -->
+
+<table class="table table-striped table-bordered table-condensed">
+<tbody>
+
+<tr><td>Wind</td><td>Gentle Breeze 5.1 m/s <br>
+        Southwest (220  )
+</td></tr>
+
+<tr><td>Cloudiness</td><td>scattered clouds</td></tr>
+
+<tr><td>Pressure<br></td><td>995 hpa</td></tr>
+
+
+<tr><td>Humidity</td><td>80 %</td></tr>
+
+
+
+<tr><td>Sunrise</td><td id="sunrise"></td></tr>
+<tr><td>Sunset</td><td id="sunset"></td></tr>
+<tr><td>Geo coords</td><td id="coord"><a href="/Maps?zoom=12&lat=53.08&lon=8.81&layers=B0FTTFF">[ 8.81, 53.08 ]</a></td></tr>
+</tbody>
+</table>
+
+<script type="text/javascript">
+
+        var dt = new Date(1461682551 * 1000);
+        var hr =dt.getHours();
+        if(hr < 10) hr = '0'+hr;
+        var mn =dt.getMinutes();
+    if(mn < 10) mn = '0'+mn;
+        var mon =dt.getMonth()+1;
+        if(mon < 10) mon = '0'+mon;
+        var day =dt.getDate();
+        if(day < 10) day = '0'+day;
+        var year =dt.getFullYear();
+        $("#date_m").html('get at ' + year+'.'+mon+'.'+day+' '+hr+':'+mn );
+
+        var times = SunCalc.getTimes(new Date(), 53.08, 8.81);
+        $("#sunrise").html(times.sunrise.getHours() + ':' + times.sunrise.getMinutes());
+        $("#sunset").html(times.sunset.getHours() + ':' + times.sunset.getMinutes());
+
+</script>
+
+</div>
+
+
+
+
+
+
+
+
+
+<br>
+
+
+
+<!-- weather  -->
+
+<!--
+<table class="table table-striped table-bordered table-condensed">
+<tbody id="station_last">
+<tr><td>Votes pro</td><td> &nbsp&nbsp <a class="vote-plus"  href="javascript:vote(1);"></a></td></tr>
+<tr><td>Votes contra</td><td> &nbsp&nbsp<a class="vote-minus" href="javascript:vote(0);"></a></td></tr>
+</tbody></table>
+-->
+
+<!--AddvStation_300-250-->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- OWM Station -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:300px;height:250px"
+     data-ad-client="ca-pub-9649553505534207"
+     data-ad-slot="4023774774"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script><br>
+<!--AddvWideSkyscraper_300-600-->
+<script async src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- Wide Skyscraper -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:300px;height:600px"
+     data-ad-client="ca-pub-9649553505534207"
+     data-ad-slot="9791106779"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div>
+
+<!-- right body -->
+<div class="col-sm-8">
+
+    <ul class="nav nav-tabs">
+    <li class="active"><a href="#forecast-main" data-toggle="tab" id="forecast-main_a" >Main</a></li>
+    <li><a href="#daily_chart" data-toggle="tab" id="daily_chart_a">Daily</a></li>
+    <li><a href="#hourly_list" data-toggle="tab" id="hourly_list_a">Hourly</a></li>
+    <li><a href="#forecast-chart" data-toggle="tab" id="forecast-chart_a">Chart</a></li>
+    <li><a href="#map" data-toggle="tab" id="map_a">Map</a></li>
+    <li><a href="#satellite" data-toggle="tab" id="map_sat">Satellite</a></li>
+<!--    <li><a href="#stations" data-toggle="tab" id="stations_a">Stations</a></li> -->
+    </ul>
+
+<div class="tab-content">
+
+<!--Main-->
+<div class="tab-pane active" id="forecast-main">
+
+<h3>Next hours</h3>
+<div id="chart_small" style="width: 100%; height: 200px; " ></div>
+
+<div id="forecast_small" style="width: 100%;"></div>
+
+<div class="row">
+    <div class="col-sm-8">
+        <br/><br/>
+        <h3>Next days</h3>
+            <div id="daily_list"></div>
+    </div>
+</div>
+
+</div>
+
+<!--Daily-->
+<div class="tab-pane" id="daily_chart">
+<div id="chart" style="width: 650px; height: 400px; margin: 0 auto" ></div>
+</div>
+
+<!--Hourly-->
+<div class="tab-pane" id="hourly_list">
+<div id="hourly_long_list"></div>
+</div>
+
+
+<!--Charts-->
+<div class="tab-pane" id="forecast-chart">
+<ul class="nav nav-tabs">
+<li class=""><a href="javascript:showForcastChartVal('temp');" rel="tooltip" title="Temperature" >Temperature</a></li>
+<li class=""><a href="javascript:showForcastChartVal('wind_ms');" rel="tooltip" title="Wind" >Wind</a></li>
+<li class=""><a href="javascript:showForcastChartVal('pressure');" rel="tooltip" title="Pressure" >Pressure</a></li>
+<li class=""><a href="javascript:showForcastChartVal('precipitation');" rel="tooltip" title="Precipitation" >Precipitation</a></li>
+</ul>
+<div id="chart-forecast" style="width: 600px; height: 400px; margin: 0 auto" ></div>
+</div>
+
+<!--Map-->
+<div class="tab-pane" id="map">
+<h4>Precipitation</h4>
+<div id="map-container" >
+    <div id="map_canvas" style="width: 610px; height: 400px;"></div>
+</div>
+</div>
+
+<!--satellite-->
+<div class="tab-pane" id="satellite">
+<h4 id="stations_title">Satellite imagery</h4>
+<div id="scenes_list"></div>
+</div>
+
+
+</div>
+
+</div>
+
+</div>
+
+</div> <!-- / .container -->
+<br><br>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <script async src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- OWM long bottom -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-9649553505534207"
+     data-ad-slot="1070308379"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>        </div>
+    </div>
+</div>
+
+    </div> <!-- / .wrapper -->
+
+    <!-- Footer -->
+    <footer class="footer-dark">
+      <div class="container">
+        <div class="row">
+          <!-- API -->
+          <div class="col-sm-4">
+          
+            <h3 class="text-color">Weather in your city</h3>
+      <ul>
+        <li><a href="/find?q=">Find your city</a></li>
+        <li><a href="/weathermap">Weather maps</a></li>   
+      </ul>
+          
+            <h3 class="text-color">Weather APIs</h3>
+            <div class="content">
+     <ul>
+             <li><a href="/appid">How to start</a></li>
+        <li><a href="/API">Weather APIs for developers</a></li>
+        <li><a href="/current">Current weather</a></li>  
+        <li><a href="/forecast5">5 day / 3 hour weather forecast</a></li>   
+        <li><a href="/forecast16">16 day / daily weather forecast</a></li>
+        <li><a href="/current">Hourly historical data</a></li>
+        <li><a href="/api_station">Data from weather stations</a></li>
+        <li><a href="/examples">Examples of API use</a></li>
+
+      </ul>
+
+
+
+            </div>
+          </div>
+          <!-- Map layers -->
+          <div class="col-sm-4">
+            <h3 class="text-color">Map layers</h3>
+            <div class="content">
+        <ul>
+        <li><a href=/hugemaps>Examples of weather map layers</a>
+        <li><a href="map_array"> Embed weather maps with array of data</a></li>
+        <li><a href="tile_map"> Embed weather maps with tile server</a></li>
+       </ul>
+    
+    <h3 class="text-color">How to subscribe</h3>
+      <ul>
+          <li><a href="/price">Price-list</a></li>
+        <li><a href="//price_subscribe">Subscribe to APIs</a></li>
+
+      </ul>
+            
+            <div class="alert alert-info">
+Found a bug? Have a question or idea? Welcome to
+  <a href="https://openweathermap.desk.com/customer/portal/emails/new" class="alert-link" target="_blank">Support center
+  </a>
+</div>
+
+
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          
+          
+          <!-- Column 3 -->
+          
+
+          
+          
+          
+          <div class="col-sm-4">
+          
+          
+          <h3 class="text-color">Weather station network</h3>
+<ul>
+        <li><a href="/stations">How to connect your weather station</a></li>
+        <li><a href="/stationmap">Network of weather stations in real time</a></li>
+        <li><a href="/stations#DIY">DIY weather station projects</a></li>
+    </ul>
+    
+          <h3 class="text-color">About</h3>
+      <ul>
+        <li><a href="/technology">OpenWeatherMap technology</a></li>
+        <li><a href="/models">Meteorological models</a></li>
+        <li><a href="/datasource">Data sources</a></li>
+      </ul>
+          
+          
+          <h3 class="text-color">Go Social</h3>
+            <div class="content social">
+              <p>Follow OpenWeatherMap on <a href="https://twitter.com/OpenWeatherMap" target=_blank>Twitter</a>, <a href="https://www.facebook.com/groups/270748973021342" target=_blank>Facebook</a>, <a href="https://plus.google.com/u/0/communities/101265402580965077532" target=_blank>Google+</a> and <a href="https://github.com/search?q=openweathermap&ref=cmdform" target=_blank>GitHub.</a></p>
+              
+            </div>
+            
+ 
+    
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <hr>
+          </div>
+        </div>
+        <!-- Copyrights -->
+        <div class="row">
+          <div class="col-sm-12">
+            <p>© 2012-2016 OpenWeatherMap, Inc.  <a href="/about">About company</a> | <a href="/privacy-policy">Privacy Policy</a> | <a href="/terms">Terms of Service</a></p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+<script src="/combine/cd70f72c4911208557ac5aa4ffda7623-1393649958"></script>
+
+<script src="/combine/1f267b7d68c9a2b5e545f6efaa3d1821-1391751372"></script>
+
+</body>
+    
+<script type="text/javascript">
+document.addEventListener("DOMContentLoader", function() {
+
+  var units = 'metric';
+  if( get_cookie('units') ) units = get_cookie('units');
+  if( units == 'metric') {
+      document.getElementById("units_check").checked = true;
+  } else {
+      document.getElementById("units_check").checked = false;
+  }
+});
+</script>
+    
+    
+</html>
