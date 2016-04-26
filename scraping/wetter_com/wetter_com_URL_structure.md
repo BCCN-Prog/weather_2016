@@ -30,8 +30,11 @@ http://www.wetter.com/deutschland/flensburg/DE0002929.html
 ### detailed: temperature, chance of rain, wind, humidity, pressure, hourly for 24h
 http://www.wetter.com/wetter_aktuell/wettervorhersage/heute/deutschland/flensburg/DE0002929.html?showDiagram=true#detailsDiagram
 
-## forecast 7 days
+## forecast 6 days, detailed
 http://www.wetter.com/wetter_aktuell/wettervorhersage/morgen/deutschland/flensburg/DE0002929.html
 http://www.wetter.com/wetter_aktuell/wettervorhersage/in-2-tagen/deutschland/flensburg/DE0002929.html
 ...
 http://www.wetter.com/wetter_aktuell/wettervorhersage/in-6-tagen/deutschland/flensburg/DE0002929.html
+
+## forecast 16 days, basic
+http://www.wetter.com/wetter_aktuell/wettervorhersage/16_tagesvorhersage/deutschland/flensburg/DE0002929.html
