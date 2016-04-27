@@ -34,7 +34,7 @@ def download_html(datafolder):
     timestr = time.strftime("%d-%m-%Y_%H:%M")
     hourstr = time.strftime("%H")
 
-    days = [i for i in range(1,18)] + [20,30,40,50,60,70,80,90]
+    days = [i for i in range(1,18)] + [30,50,70,90]
     downloads_per_city = len(days)+4
     total_downloads = downloads_per_city * len(STATION)
 
