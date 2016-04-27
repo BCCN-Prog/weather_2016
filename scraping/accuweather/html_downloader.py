@@ -70,7 +70,7 @@ def download_html(datafolder):
         print('Downloading {}, starting at: {}.'.format(url, time.strftime('%H:%M:%S')))
         t1 = time.time()
         urllib.request.urlretrieve(url, savepath)
-        print('Finished download after {:.2f}s\n\n'.format((time.time() - t1)/10))
+        print('Finished download after {:.2f}s\n\n'.format((time.time() - t1)))
         counter += 1
 
 if __name__=='__main__':
