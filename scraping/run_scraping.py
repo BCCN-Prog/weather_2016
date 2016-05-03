@@ -7,12 +7,14 @@ If you want to add a new provider, import it AND add it to provider_list.
 import os
 import sys
 
+import timeanddate_com
 import accuweather
 import wetter_com
 import owm
 import wetter_de
 
-provider_list = [wetter_com, 
+provider_list = [timeanddate_com,
+                 wetter_com, 
                  owm, 
                  wetter_de,
                  accuweather]
