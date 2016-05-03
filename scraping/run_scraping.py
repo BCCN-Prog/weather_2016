@@ -5,6 +5,7 @@ If you want to add a new provider, import it AND add it to provider_list.
 """
 
 import os
+import sys
 
 import accuweather
 import wetter_com
