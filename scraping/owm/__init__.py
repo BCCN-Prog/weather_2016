@@ -1,1 +1,1 @@
-from download_owm import main
+from .download_owm import download

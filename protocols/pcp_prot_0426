@@ -1,0 +1,38 @@
+PCP Protocol 26.04.2016
+
+
+
+Group progress reports:
+
+Server:
+- Setup complete
+- Basic tools installed
+- Frist script running, more scripts planned to go this week for trouble-shooting next time
+- Problem: Internal BCCN Network --> Access limited
+- Ressources: 500 GB space, 5 GB Memory
+- No demon used, chrome job
+- Other groups: Output paths should be absolute, not relative/ --> Masterscript gives paths as argument to subscripts
+
+Historical data:
+- Merge different datasets (ongoing)
+- dealing with data that is not available (ongoing)
+- current format = csv
+
+Data Representation:
+- current attempt: h5py (needs to be evaluated with people from other groups next time)
+	- 2 classes: daily, hourly
+- suggested alternative/additional json+sql
+
+Scraping:
+- Scripts for wetter.de, wetter.com, openweathermap and list of 20 most important cities running on server --> downloading (no data extraction yet)
+- problem: javascript (wunderground, wetter.info) --> data hard to extract (not achieved yet)
+
+
+Goals for next time 
+- speaker of each group for working on data structure issue with Georg
+- Trouble-shooting downloading
+- solve javascript issue or if not possible, decide to not care
+- start data extraction 
+- historic data group continue
+
+

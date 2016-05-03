@@ -4,7 +4,7 @@ import urllib.request
 from time import strftime
 
 base_url = 'http://openweathermap.org/city/{}'
-base_path = 'output/owm_{}_{}.html'
+base_path = '{}owm_{}_{}.html'
 
 cities = {'berlin': 2950159,
           'munich': 6940463,
@@ -27,10 +27,10 @@ cities = {'berlin': 2950159,
           'freiburg': 2925177,
           'erfurt': 2929670}
 
-def main():
+def download(data_path):
     for city in cities:
         url = base_url.format(cities[city])
-        path = base_path.format(strftime('%d_%m_%Y'), city)
+        path = base_path.format(data_path, strftime('%d_%m_%Y_%H_%M'), city)
         urllib.request.urlretrieve(url, filename=path)
     
     
