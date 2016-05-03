@@ -10,7 +10,7 @@ class DailyData:
     YEARMONTHDAY.
 
     """
-    def get_cur_date_int(self):
+    def get_cur_datetime_int(self):
         now = datetime.datetime.now()
         year = str(now.year)
         month = now.month
@@ -23,14 +23,29 @@ class DailyData:
             day = str(0)+str(day)
         else:
             day = str(day)
-        return int(year+month+day)
+        hour = now.hour
+        if len(str(hour)) < 2:
+            hour = str(0)+str(hour)
+        else:
+            hour = str(hour)
+        minute = now.minute
+        if len(str(minute)) < 2:
+            minute = str(0)+str(minute)
+        else:
+            minute = str(minute)
+        second = now.second
+        if len(str(second)) < 2:
+            second = str(0)+str(second)
+        else:
+            second = str(second)
+        return int(year+month+day+hour+minute+second)
 
     def __init__(self):
         self.f = h5py.File("dailydata.hdf5", "w")
         self.dset = self.f.create_dataset("weather_data", (400,9), maxshape=(1000000, 15))
         self.metadata = self.f.create_dataset("metadata",(2,), dtype='uint64') 
         self.metadata[0] = 0
-        self.metadata[1] = self.get_cur_date_int()    
+        self.metadata[1] = self.get_cur_datetime_int()    
 
     def add_data_point(self, date, site, geolocation, high, low, midday, rain_chance, rain_amt, cloud_cover):
         self.dset[self.metadata[0],0] = date
@@ -43,7 +58,7 @@ class DailyData:
         self.dset[self.metadata[0],7] = rain_amt
         self.dset[self.metadata[0],8] = cloud_cover
         
-        self.metadata[1] = self.get_cur_date_int()
+        self.metadata[1] = self.get_cur_datetime_int()
 
 
 
