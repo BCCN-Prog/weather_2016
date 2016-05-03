@@ -3,6 +3,7 @@ import datetime
 
 class DailyData:
     """"
+    get_cur_datetime_int gets the current date and time as an int in the format yearmonthdayhourminutesecond
     dset is a twodimensional arraylike object. It contains (unsortedly) all datapoints with attributes: date (integer
     YEARMONTHDAY), site (indexed), geolocation (encoded in one integer), high, low, midday, rain_chance, rain_amt,
     cloud_cover).
@@ -42,6 +43,8 @@ print(x.dset[:])
 
 
 
-
+#before creating database: unique timestamp for files already down and new files
+#convert cities to PLZ
 #to do: scrpt that converts PLZ to geolocation
 #site indexing
+#load function
