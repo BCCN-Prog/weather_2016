@@ -59,6 +59,7 @@ class DailyData:
         self.dset[self.metadata[0],8] = cloud_cover
         
         self.metadata[1] = self.get_cur_datetime_int()
+        self.metadata[0] += 1
 
 
 
