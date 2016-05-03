@@ -12,33 +12,7 @@ class DailyData:
     """
     def get_cur_datetime_int(self):
         now = datetime.datetime.now()
-        year = str(now.year)
-        month = now.month
-        if len(str(month)) < 2:
-            month = str(0)+str(month)
-        else:
-            month = str(month)
-        day = now.day
-        if len(str(day)) < 2:
-            day = str(0)+str(day)
-        else:
-            day = str(day)
-        hour = now.hour
-        if len(str(hour)) < 2:
-            hour = str(0)+str(hour)
-        else:
-            hour = str(hour)
-        minute = now.minute
-        if len(str(minute)) < 2:
-            minute = str(0)+str(minute)
-        else:
-            minute = str(minute)
-        second = now.second
-        if len(str(second)) < 2:
-            second = str(0)+str(second)
-        else:
-            second = str(second)
-        return int(year+month+day+hour+minute+second)
+        return int(now.strftime('%Y%m%d%H%M%S'))
 
     def __init__(self):
         self.f = h5py.File("dailydata.hdf5", "w")
