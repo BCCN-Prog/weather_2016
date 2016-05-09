@@ -1,8 +1,6 @@
 # weather_2016
 
-Hello world
-
-Check the wiki for a link: https://github.com/BCCN-Prog/weather_2016/wiki
+Check the wiki for important documentation: https://github.com/BCCN-Prog/weather_2016/wiki
 
 Possible locations to cover Germany geographically:
 berlin : 396-433
