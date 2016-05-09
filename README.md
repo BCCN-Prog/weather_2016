@@ -1,4 +1,4 @@
-# weather_2016
+# 2016 BCCN Advanced Scientific Programming course weather project
 
 Check the wiki for important documentation: https://github.com/BCCN-Prog/weather_2016/wiki
 
