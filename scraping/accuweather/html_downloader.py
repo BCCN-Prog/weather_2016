@@ -142,5 +142,5 @@ def scrape_html(html_file, data_dict):
 
 
 if __name__=='__main__':
-    #download_html('./data/')
-    scrape_html('../data/accuweather_03-05-2016_14:20_berlin_daily_d1_1462278002.html', {})
+    #download_html('../data/')
+    scrape_html('../data/accuweather_10-05-2016_15:33_dresden_daily_d1_1462887218.html', {})
