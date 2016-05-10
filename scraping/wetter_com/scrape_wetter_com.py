@@ -23,7 +23,7 @@ def scrape_hourly(date, city):
     path = "../data/wetter_com_" + date + "_" + city + '_hourly.html'
     try:
         print("Scraping "+ path)
-        soup = BeautifulSoup(open(path), "lxml")
+        soup = BeautifulSoup(open(path))
     except FileNotFoundError:
         print("Data file missing, PATH: " + path)
 
@@ -99,73 +99,94 @@ def scrape_daily(date, city):
     path = "../data/wetter_com_" + date + "_" + city + '_daily.html'
     try:
         print("Scraping "+ path)
-        soup = BeautifulSoup(open(path), "lxml")
+        soup = BeautifulSoup(open(path))
     except FileNotFoundError:
         print("Data file missing, PATH: " + path)
 
     # define daily scraping classes
     temp_low_class = 'inline text--white gamma'
     temp_high_class = 'text--white beta inline'
-    rain_class = 'flag__body'
 
-
-    windDir_class = '[ mb- ][ block ]'
-    windAmount_class = '[ js-detail-value-container ][ one-whole ][ mb- ][ text--small ]'
-    pressure_class = '[ mb- mt-- ][ block ][ text--small ]'
-    humidity_class = '[ mb-- ][ block ][ text--small ]'
-
+    days_strs = []
     # prelocate dict
-    for i in range(16):
-        s = "{}".format(i)
-        hour_strs.append("{}".format(i))
-        hourly_dic[s] = {}
+    for i in range(days):
+        s = "{}".format(i+1)
+        # make list of dict string keys encoding days: '0', '1',...,'15'
+        days_strs.append(s)
+        daily_dic[s] = {}
 
     # SCRAPE TEMPERATURE
     # get all the high temperature divs
     temps_high = soup.find_all('div', class_=temp_high_class)
     # for every div, get the string, take the temperature value and save it in the matrix
-    assert(len(temps)==days)
+    assert(len(temps_high)==days)
     for j, div in enumerate(temps_high):
-        daily_dic[hour_strs[j]]['High'] = float(div.string[0])
+        # get the length of the string in div to be sensitive to one/two digit numbers
+        # format is 4° vs. 14°
+        str_len = len(div.string)
+        daily_dic[days_strs[j]]['High'] = float(div.string[:(str_len-1)])
     # low
     temps_low = soup.find_all('div', class_=temp_low_class)
     # for every div, get the string, take the temperature value and save it
-    assert(len(temps)==days)
+    assert(len(temps_low)==days)
     for j, div in enumerate(temps_low):
-        daily_dic[hour_strs[j]]['Low'] = float(div.string[3])
+        str_len = len(div.string)
+        daily_dic[days_strs[j]]['Low'] = float(div.string[3:(str_len-1)])
 
-    # SCRAPE Rain probs
-    """
-    probs = soup.find_all('p', class_ = rainprob_class)[:24]
-    for j, p in enumerate(probs):
-        hourly_dic[hour_strs[j]]['rain_chance'] = int(p.string.split()[0])
+    # SCRAPE all other values: it is all hard coded in a big string, buggy
+    # get the sun hours idxs as starting point for every day
 
-    # SCRAPE Rain amounts
-    amounts = soup.find_all('span', class_ = rainAmount_class)
-    for j, span in enumerate(amounts):
-        hourly_dic[hour_strs[j]]['rain_amt'] = float(span.text.split()[0])
+    div_jungle = soup.findAll('div', {'class':'flag__body'})
+    # there are the position of the sun hours for day block in jungle
+    start_idxs_detailed = np.arange(12, 96, 12)
+    #print("detailed idx {}".format(start_idxs_detailed))
+    dayIDX = 0 # need external day idx to use two different for looops
+    for idx in start_idxs_detailed:
+        rain_offset = 3 # the rain data is 3 lines further down
+        measurements = 4 # measurements for the detailed daily data
+        rain_chance = rain_amt = 0 # prelocate
+        rain_str_threshold = 10
+        for k in range(measurements):
+            # rainchance, sum up for every measurement
+            rain_chance += float(div_jungle[idx+rain_offset+2*k].text[:3])
+            # rain amount is only displayed for high chance of rain
+            if len(div_jungle[idx+rain_offset+2*k].text)>rain_str_threshold:
+                rain_amt += float(div_jungle[idx+rain_offset+2*k].text[8:-5])
+            else:
+                rain_amt += 0
+        # log results, take mean over daily measurements
+        daily_dic[days_strs[dayIDX]]['rain_chance'] = rain_chance/measurements
+        daily_dic[days_strs[dayIDX]]['rain_amt'] = rain_amt/measurements
+        # pressure and cloud cover are in the data
+        daily_dic[days_strs[dayIDX]]['pressure'] = None
+        daily_dic[days_strs[dayIDX]]['cloud_cover'] = None
+        # save sun hours
+        daily_dic[days_strs[dayIDX]]['sun_hours'] = float(div_jungle[idx].text[:-3])
+        dayIDX += 1
 
-    # SCRAPE Wind directions
-    windDirs = soup.find_all('span', class_=windDir_class)
-    for j, span in enumerate(windDirs):
-        hourly_dic[hour_strs[j]]['wind_dir'] = span.text
+    # get data for less detailed daily data
+    start_idxs = np.arange(96, 132, 4)
+    #print("sun hour idx {}".format(start_idxs))
+    for idx in start_idxs:
+        # save sun hours
+        daily_dic[days_strs[dayIDX]]['sun_hours'] = float(div_jungle[idx].text[:-3])
+        # the length of the string determines whether we have a rain amt in the data
+        rain_str_threshold = 10
+        rain_chance = float(div_jungle[idx+1].text[:3])
+        if len(div_jungle[idx+1].text)>rain_str_threshold:
+            rain_amt = float(div_jungle[idx+1].text[5:-5])
+        else:
+            rain_amt = 0
+        # log results
+        daily_dic[days_strs[dayIDX]]['rain_chance'] = rain_chance
+        daily_dic[days_strs[dayIDX]]['rain_amt'] = rain_amt
+        # pressure and cloud cover are in the data
+        daily_dic[days_strs[dayIDX]]['pressure'] = None
+        daily_dic[days_strs[dayIDX]]['cloud_cover'] = None
 
-    # SCRAPE Wind speed
-    wstr = soup.find_all('div', class_=windAmount_class)
-    for j, div in enumerate(wstr):
-        # convert to m/s
-        hourly_dic[hour_strs[j]]['wind_speed'] = round(float(div.string.split()[0])/3.6, 2)
+        # increment days idx
+        dayIDX += 1
 
-    # SCRAPE pressure
-    airpress = soup.find_all('span', class_ = pressure_class)
-    for j, span in enumerate(airpress):
-        hourly_dic[hour_strs[j]]['pressure'] = float(span.text.split()[0])
-
-    # SCRAPE air humidity
-    airhum = soup.find_all('span', class_=humidity_class)
-    for j, span in enumerate(airhum):
-        hourly_dic[hour_strs[j]]['humidity'] = float(span.text.split()[0])
-    """
     return daily_dic
 
 # for every date:
@@ -175,7 +196,7 @@ for date in dates:
         data_dic = {'site': 'wetter.com',
                     'city': city,
                     'date': date,
-                    'hourly': scrape_hourly(date, city)}
-        daily_dic = scrape_daily(date, city)
-        pprint.pprint(daily_dic)
-        break
+                    'hourly': scrape_hourly(date, city),
+                    'daily': scrape_daily(date, city)}
+        pprint.pprint(data_dic)
+        #break
