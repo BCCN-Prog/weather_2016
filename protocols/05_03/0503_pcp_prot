@@ -1,0 +1,38 @@
+
+
+Historic Data:
+
+Group Wolfi/Rahul:
+- Downloading and Merging works
+- so far: csv files
+- Georg/Data representation group will work together on further data conversion
+
+Group Max/Filip:
+- able to deal with missing  data
+- geographical mappings
+
+Server/Eren: 
+- Things going on with owm seem weird
+- ongoing work on chrome jobs
+
+Georg: 
+- basic adding (manually works)
+- data format: json, h5py
+- pending: automation
+- needed conversion location <-> postal codes
+
+Scraping
+- Claus: owm, uses Selenium
+- Jan: hourly scraped to json format, daily ongoing
+- Greg: html to use Goergs class/unique identifiers needed
+--> ongoing work, mostly somewhere in data extraction
+
+Problems:
+- data has no check if duplicate --> timestamps
+- database needs to be local, no network access to server --> should get as much work done locally as possible -> better to debug.
+
+For next time:
+- Discuss Slack
+- Find a common ground on the 20 vs. 400 weather stations issue
+- Testing!
+
