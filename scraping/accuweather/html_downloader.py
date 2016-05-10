@@ -84,6 +84,20 @@ def convert_fahrenheit_to_celcius(fahrenheit):
     return celcius
 
 
+def find_unique(soup, **kwargs):
+    """ Use BeautifulSoup.find_all() but throw AssertionError if multiple instances are found. """
+    result = soup.find_all(**kwargs)
+    assert len(result) == 1, 'None or multiple instances of {} were found in {}, found instances: {}.'.format(kwargs, soup.attrs, result)
+    return result[0]
+
+
+def parse_unique(pattern, string, **kwargs):
+    """ Use re.findall() but throw AssersionError if multiple instances are found. """
+    result = re.findall(pattern, string, **kwargs)
+    assert len(result) == 1, 'None or multiple sets of {} found in {}, found instances: {}.'.format(pattern, string, result)
+    return result[0]
+
+
 def scrape_html(html_file, data_dict):
 
 #    site = os.path.splitext(os.path.basename(html_file))[0].split('_')[0]
@@ -97,50 +111,87 @@ def scrape_html(html_file, data_dict):
 
 
     ### dayly_save
-    # TODO: check for list length before [0]
     soup = BeautifulSoup(open(html_file))
 
-    daily = soup.find_all('div', id='detail-day-night')
-    assert len(daily) == 1
-    daily = daily[0]
+    daily = find_unique(soup, name='div', id='detail-day-night')
 
-    day = daily.find_all('div', class_='day')
-    assert len(day) == 1
-    day = day[0]
-
-
-
-
-    night = daily.find_all('div', class_='night')
-    assert len(night) == 1
-    night = night[0]
+    day = find_unique(daily, name='div', class_='day')
+    night = find_unique(daily, name='div', class_='night')
 
     for cl in [day, night]:
-        # TODO: check if there are multiple found
 
-        high_temp_F_str = cl.find('span', class_='large-temp').get_text()
-        high_temp_F = re.findall('\d+', high_temp_F_str)
-        assert len(high_temp_F) == 1
-        high_temp_C = convert_fahrenheit_to_celcius(high_temp_F[0])
+        large_temp_str = find_unique(cl, name='span', class_='large-temp').get_text()
+        large_temp = parse_unique('\d+', large_temp_str)
 
-        feel_temp_F_str = cl.find('span', class_='realfeel').get_text()
-        feel_temp_F = re.findall('\d+', feel_temp_F_str)
-        assert len(feel_temp_F) == 1
-        feel_temp = convert_fahrenheit_to_celcius(feel_temp_F[0])
+        realfeel_str = find_unique(cl, name='span', class_='realfeel').get_text()
+        realfeel = parse_unique('\d+', realfeel_str)
+        
+        precip_str = find_unique(cl, name='span', class_='precip').get_text()
+        precip_chance = parse_unique('\d+', precip_str)
 
-        precip_str = cl.find('span', class_='precip').get_text()
-        precip = re.findall('\d+', precip_str)
-        assert len(precip) == 1
-        precip = precip[0]
+        cond = find_unique(cl, name='div', class_='cond').get_text().strip()
 
-        condition = cl.find('div', class_='cond').get_text().strip()
+        wind_stats = find_unique(cl, name='ul', class_='wind-stats')
 
-        print('high_temp', high_temp_C)
-        print('feel_temp', feel_temp)
-        print('precip', precip)
-        print('condition', condition)
+        for strong in wind_stats.find_all('strong'):
+            strong_list = strong.get_text().split()
+            if len(strong_list) == 2:
+                gusts, unit = strong_list
+                assert unit == 'km/h', 'Unit of gusts is not km/h.'
+            elif len(strong_list) == 3:
+                wind_direction, wind_speed, unit = strong_list
+                assert unit == 'km/h', 'Unit of wind speed is not km/h.'
+            else:
+                assert False, 'There is "strong" section in "wind_stats" that cant be identified.'
 
+        stats = find_unique(cl, name='ul', class_='stats')
+
+        stats_dic = {}
+        for stat in stats.find_all('li'):
+            stat_list = stat.get_text().split()
+            if stat_list[0] == 'Thunderstorms:':
+                thunderstorm_chance = stat_list[1].rstrip('%')
+            elif stat_list[0] == 'Precipitation:':
+                precip_amount = stat_list[1]
+                assert stat_list[2] == 'mm', 'Unit of precipitation amount is not mm.'
+            elif stat_list[0] == 'Rain:':
+                rain_amount = stat_list[1]
+                assert stat_list[2] == 'mm', 'Unit of precipitation amount is not mm.'
+            elif stat_list[0] == 'Snow:':
+                snow_amount = stat_list[1]
+                assert stat_list[2] == 'CM', 'Unit of snow amount is not cm.'
+            elif stat_list[0] == 'Ice:':
+                ice_amount = stat_list[1]
+                assert stat_list[2] == 'mm', 'Unit of precipitation amount is not mm.'
+            elif stat_list[1] == 'UV': #dont save max UV index
+                pass
+            elif stat_list[2] == 'Precipitation:':
+                precipitation_hours = stat_list[3]
+                assert stat_list[4] == 'hrs', 'Unit of hours of precipitation is not hrs.'
+            elif stat_list[2] == 'Rain:':
+                rain_hours = stat_list[3]
+                assert stat_list[4] == 'hrs', 'Unit of hours of snow is not hrs.'
+            else:
+                assert False, 'Unkown variable found in stats of daily forecast.'
+        
+
+        print('large_temp', large_temp)
+        print('realfeel', realfeel)
+        print('precip', precip_chance)
+        print('cond', cond)
+        print('wind_direction', wind_direction)
+        print('wind_speed', wind_speed)
+        print('gutst', gusts)
+        print('thunderstorm_chance', thunderstorm_chance)
+        print('precip_amount', precip_amount)
+        print('rain_amount', rain_amount)
+        print('snow_amount', snow_amount)
+        print('ice_amount', ice_amount)
+        print('precipitation_hours', precipitation_hours)
+        print('rain_hours', rain_hours)
+
+        #TODO: turn into correct dictionary
 
 if __name__=='__main__':
     #download_html('../data/')
-    scrape_html('../data/accuweather_10-05-2016_15:33_dresden_daily_d1_1462887218.html', {})
+    scrape_html('/home/denis/Documents/Uni/project_software_carpentry/weather_2016/scraping/data/accuweather_10-05-2016_16:33_dortmund_daily_d15_1462890787.html', {})
