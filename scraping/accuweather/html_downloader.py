@@ -50,7 +50,7 @@ def download_html(datafolder):
         for n in range(4):
             
             HOUR = int(hourstr) + n*8
-            url = 'http://slate-dev.accuweather.com/en/de/' + CITY + '/' + PC + '/' + 'hourly-weather-forecast/' + ID + '_pc?hour=' + str(HOUR)
+            url = 'http://slate-dev.accuweather.com/en/de/' + CITY + '/' + PC + '/' + 'hourly-weather-forecast/' + ID + '?hour=' + str(HOUR)
             filename = 'accuweather_' + timestr + '_' + CITY + '_' + 'hourly_h' + str(HOUR) + '_' + str(int(time.time())) + ".html"
             savepath = os.path.join(datafolder, filename)
 
@@ -60,7 +60,7 @@ def download_html(datafolder):
         # Daylie forecast
         
         for DAY in days:
-            url = 'http://slate-dev.accuweather.com/en/de/' + CITY + '/' + PC + '/' + 'daily-weather-forecast/' + ID + '_pc?day=' + str(DAY)
+            url = 'http://slate-dev.accuweather.com/en/de/' + CITY + '/' + PC + '/' + 'daily-weather-forecast/' + ID + '?day=' + str(DAY)
             filename = 'accuweather_' + timestr + '_' + CITY + '_' + 'daily_d' + str(DAY) + '_' + str(int(time.time())) + ".html"
             savepath = os.path.join(datafolder, filename)
 
