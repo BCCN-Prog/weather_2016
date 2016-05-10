@@ -1,0 +1,25 @@
+Wunderground API key
+
+   
+handle: bccn16
+
+Project Name:  BCCN Weather Project
+Company website: https://www.bccn-berlin.de/Home/
+Contact email: ines.m.wichert@gmail.com
+Key ID: 944b3f3c879d2394 
+
+https://www.wunderground.com/weather/api/d/docs?d=data/index&MR=1
+
+important features: 
+    forecast10day (10 day forecast)
+    hourly (next 36 hours)
+    geolookup: coordinates
+    forecast: next 3 days
+    
+    
+    
+interesting: wunderground does have a weather summary for the last day and also gives back the actual measured conditions
+
+planner: "planner_MMDDMMDD returns a weather summary based on historical information between the specified dates (30 days max)."
+
+
