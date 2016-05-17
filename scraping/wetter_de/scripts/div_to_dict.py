@@ -1,7 +1,6 @@
 import os
 from bs4 import BeautifulSoup
-import pudb
-import json
+# import json
 
 def get_element_val(div_obj, el_type, class_string):
     return div_obj.findAll(el_type, {"class": class_string})[0].string
@@ -35,15 +34,14 @@ def hourly_sub_dict_from_div(div_obj):
 
     return sub_dict
 
-
 def build_hourly_dict(hourly_results):
-    # pu.db
     hourly_dict = {}
     hour_class = "forecast-date wt-font-semibold"
     for res_div in hourly_results:
         hourly_dict[get_element_val(res_div, "div", hour_class)] = hourly_sub_dict_from_div(res_div)
 
     return hourly_dict
+
 
 def daily_sub_dict_from_div(div_obj):
     sub_dict = {}
@@ -120,14 +118,15 @@ def build_daily_dict(daily_results):
 
     return daily_results
 
+
 def div_to_dict(base_dir):
-    IN_DIR = base_dir + '/output/new'
-    # OUT_DIR = base_dir + '/output/processed'
+    IN_DIR = base_dir + '/output/new/'
+    OUT_DIR = base_dir + '/output/processed/'
     SITE = 'wetter_de'
 
 
     for html_name in os.listdir(IN_DIR):
-        with open(IN_DIR + '/' + html_name) as html_fh:
+        with open(IN_DIR + html_name) as html_fh:
             CITY = html_name.split('_')[-2]
             DATE = ('_').join(html_name.split('_')[-5:-2])
             SAMPLE_TYPE = html_name.split('_')[-1].split('.')[0]
@@ -137,23 +136,26 @@ def div_to_dict(base_dir):
 
             data_dict = None
 
-            if SAMPLE_TYPE == 'hourly':
-                hour_forecast = soup.findAll("div", {"class": "column column-4 forecast-detail-column-1h"})
-                data_dict = build_hourly_dict(hour_forecast)
+            try:
+                if SAMPLE_TYPE == 'hourly':
+                    hour_forecast = soup.findAll("div", {"class": "column column-4 forecast-detail-column-1h"})
+                    data_dict = build_hourly_dict(hour_forecast)
 
-            elif SAMPLE_TYPE == 'daily':
-
-                days_forecast = soup.findAll("div", {"class": "location-forecast-item"})
-                data_dict = build_daily_dict(days_forecast)
+                elif SAMPLE_TYPE == 'daily':
+                    days_forecast = soup.findAll("div", {"class": "location-forecast-item"})
+                    data_dict = build_daily_dict(days_forecast)
+            except:
+                print(CITY + SAMPLE_TYPE + ' FAILED')
+                continue
 
             main_dict[SAMPLE_TYPE] = data_dict
-            print(json.dumps(main_dict))
+
+            # print(json.dumps(main_dict))
 
             # @TODO: call script to write to database
 
-        # @TODO: move html to processed folder
-
-
+        # move html to processed folder
+        os.rename(IN_DIR + html_name, OUT_DIR + html_name)
 
 if __name__ == '__main__':
     div_to_dict(os.getcwd())
