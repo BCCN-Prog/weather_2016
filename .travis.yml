@@ -37,3 +37,5 @@ install:
   #- python setup.py install
 # command to run tests
 script: nosetests
+notifications:
+  slack: bccn-prog:ziywKV4bRyqAVLVtGDx8RaYp
