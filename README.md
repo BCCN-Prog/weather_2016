@@ -1,5 +1,7 @@
 # 2016 BCCN Advanced Scientific Programming course weather project
 
+Travis CI: [![Build Status](https://travis-ci.org/BCCN-Prog/weather_2016.svg?branch=master)](https://travis-ci.org/BCCN-Prog/weather_2016)
+
 Check the wiki for important documentation: https://github.com/BCCN-Prog/weather_2016/wiki
 
 Possible locations to cover Germany geographically:
