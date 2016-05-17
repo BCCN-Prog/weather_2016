@@ -1,0 +1,7 @@
+Requirements so far:
+
+Anaconda
+
+conda install basemap
+conda install h5py
+
