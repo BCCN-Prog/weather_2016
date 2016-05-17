@@ -9,7 +9,7 @@ def download(datafolder = "../data"):
     import os.path
 
     # flog for downloading the detailed 6 day forecast
-    do_6D_forecast = True
+    do_6D_forecast = False
 
     # list fo all cities we are scraping from
     cities = ["berlin", "hamburg", "muenchen",
@@ -36,18 +36,19 @@ def download(datafolder = "../data"):
         # construct url from city name and city ID, build filenname
         # example url: http://www.wetter.com/deutschland/berlin/DE0001020.html
         cityUrl = "http://www.wetter.com/wetter_aktuell/wettervorhersage/heute/deutschland/" + city + IDs[i] + ".html?showDiagram=true#detailsDiagram"
-        filename = os.path.join(datafolder, "wetter_com_" + time.strftime("%d-%m-%Y_") + city + "_hourly.html")
+        filename = "wetter_com_" + time.strftime("%d-%m-%Y_") + city + "_hourly.html"
+        filename = file_existence_check(datafolder, filename)
         # download and save html file with given url and filename
-        urllib.request.urlretrieve(cityUrl, filename)
-
+        urllib.request.urlretrieve(cityUrl, os.path.join(datafolder, filename))
         ### 16 DAYS FORECAST
         # construct url from city name and city ID, build filenname
         # example url: http://www.wetter.com/wetter_aktuell/wettervorhersage/16_tagesvorhersage/deutschland/flensburg/DE0002929.html
         urlbase = "http://www.wetter.com/wetter_aktuell/wettervorhersage/16_tagesvorhersage/deutschland/"
         cityUrl = urlbase + city + IDs[i] + ".html"
-        filename = os.path.join(datafolder, "wetter_com_" + time.strftime("%d-%m-%Y_") + city + "_daily.html")
+        filename = "wetter_com_" + time.strftime("%d-%m-%Y_%H_%M_%S_") + city + "_daily.html"
+        filename = file_existence_check(datafolder, filename)
         # download and save html file with given url and filename
-        urllib.request.urlretrieve(cityUrl, filename)
+        urllib.request.urlretrieve(cityUrl, os.path.join(datafolder, filename))
 
     ######################### 6 DAYS FORECAST  #####################################
     # the 6 day forecast has more information than the 16 day one
@@ -67,6 +68,27 @@ def download(datafolder = "../data"):
                 # example url: http://www.wetter.com/wetter_aktuell/wettervorhersage/in-2-tagen/deutschland/flensburg/DE0002929.html ...
                 cityUrl = urlbase + daystring + "/deutschland/" + city + IDs[i]  + ".html"
                 # join filename and data folder path, add timestamp
-                filename = os.path.join(datafolder, "wetter_com_" + time.strftime("%d-%m-%Y_") + city + "_daily6.html")
+                filename = "wetter_com_" + time.strftime("%d-%m-%Y_%H_%M_%S_") + city + "_detailed_daily.html"
+                filename = file_existence_check(datafolder, filename)
                 # download and save html file with given url and filename
-                urllib.request.urlretrieve(cityUrl, filename)
+                urllib.request.urlretrieve(cityUrl, os.path.join(datafolder, filename))
+#
+def file_existence_check(path, filename):
+    """Checks for existence, appends counter to file if it already exists.
+        Watch out, it's recursive :)
+    """
+    import os.path
+    if  not(os.path.exists(os.path.join(path, filename))):
+        return filename
+    else:
+        # file exists, check for counter
+        if filename.split('_')[-1].split('.')[0]=='hourly' or filename.split('_')[-1].split('.')[0]=='daily':
+            # there is no counter, append counter
+            newfname = filename.split('.')[0] + '_1.html'
+        else:
+            # there is a counter, get it and increment
+            count = int(filename.split('_')[-1].split('.')[0]) + 1
+            counterstr = '_{}.html'.format(count)
+            newfname = '_'.join(filename.split('_')[:-1]) + counterstr
+        # return new filename
+        return file_existence_check(path, newfname)
