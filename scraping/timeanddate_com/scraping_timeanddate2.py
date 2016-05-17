@@ -18,12 +18,14 @@ def get_month(string):
 
 def scrape(file_hourly, file_daily):
     """scraping data from timeanddate.com/weather, returning one dictionary for both files
+    only for dates in April - July period
     first index in extended in date = 11.05 if downloaded 10.05
     first index in hourly when downloading at 17:24 is 18:00
     checks: if date in filename is date of hourly forecast,
+    if the forecast is for the city that is in the filename
     if day is between 1-31
     if rain encoding hasn't change
-    if the first file is hourly """
+    if the first file is hourly"""
 
     out_dict = {}
     site = 'timeanddate.com/weather'
@@ -32,9 +34,13 @@ def scrape(file_hourly, file_daily):
     soup2 = BeautifulSoup(open(file_hourly), "lxml")
 
     # log the location
-    city = soup1.title.string.split(',')[-2][1:]
+    city = soup1.title.string.split(',')[0]
     #print(city) #city name without space at the beginning
-    out_dict['city'] = city
+    print(soup1.title.string.split(',')[0], file2)
+    if city.lower() in file1 and city.lower() in file2:
+        out_dict['city'] = city
+    else:
+        raise Exception('forecast for city different than in the file name')
     out_dict['daily'] = {}
     out_dict['hourly'] = {}
 
@@ -54,8 +60,6 @@ def scrape(file_hourly, file_daily):
         out_dict['date'] = date
     else:
         raise Exception('wrong date')
-    dicts1 = []
-    dicts2 = []
     #scraping table: soup.find_all('tr')
 
     ## get the daily data
@@ -82,7 +86,6 @@ def scrape(file_hourly, file_daily):
                 raise Exception('scraping failed - change in a site structure')
             dict['rain_amt'] = rain
             out_dict['daily']["{}".format(str(i+1))] = dict
-            dicts1.append(dict)
 
     else:
         raise Exception('wrong input file')
@@ -105,12 +108,11 @@ def scrape(file_hourly, file_daily):
             dict['wind_speed'] = wind
             dict['humidity'] = float(c[9])# c[9] - humidity
             dict['rain_chance'] = float(c[10]) # c[10] - rain chance
-            dicts2.append(dict)
-            if j+1<10:
-                j= str(j+1).zfill(2)
+            if j<10:
+                j= str(j).zfill(2)
             else:
-                j = str(j+1)
-            out_dict['hourly']["{}".format(j)] = dict
+                j = str(j)
+            out_dict['hourly']["{}".format(j)] = dict #index: 00, 01, ..., 23
     else:
         raise Exception('wrong input file')
 
@@ -118,9 +120,9 @@ def scrape(file_hourly, file_daily):
     return out_dict
 
 if __name__ == '__main__':
-    file1 = "timeanddate_com_10-05-2016_berlin_daily.html"
-    file2 = "timeanddate_com_10-05-2016_bremen_hourly.html"
+    file1 = "timeanddate_com_10-05-2016_kiel_daily.html"
+    file2 = "timeanddate_com_10-05-2016_kiel_hourly.html"
     d = scrape(file2,file1)
-    print(d)
+    print(d['hourly'])
 
 
