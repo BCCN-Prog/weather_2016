@@ -48,7 +48,7 @@ add_data_matrix adds a matrix of data after checking if a resize is in order.
    
     def add_data_matrix(self, matrix):
         assert(matrix.shape[1] == self.f["weather_data"].shape[1])
-        if self.f["metadata"][0] >= self.f["weather_data"].shape[0]-matrix.shape[0]:
+        while self.f["metadata"][0] >= self.f["weather_data"].shape[0]-matrix.shape[0]:
             self.f["weather_data"].resize(self.f["weather_data"].shape[0]*2, 0 )
 
         self.f["weather_data"][self.f["metadata"][0]:int(self.f["metadata"][0]+matrix.shape[0]),:] = matrix
@@ -66,7 +66,7 @@ class HourlyData(DailyData):
             self.f = h5py.File("hourlydata.hdf5", "r+")
         except:
             self.f = h5py.File("hourlydata.hdf5", "w")
-            self.dset = self.f.create_dataset("weather_data", (400,10), maxshape=(300000000, 15))
+            self.dset = self.f.create_dataset("weather_data", (4000,10), maxshape=(300000000, 15))
             self.metadata = self.f.create_dataset("metadata",(2,), dtype='uint64') 
             self.metadata[0] = 0
             self.metadata[1] = self.get_cur_datetime_int()    
