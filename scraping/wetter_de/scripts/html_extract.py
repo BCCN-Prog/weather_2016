@@ -1,7 +1,8 @@
 import time
 import urllib.request
+import os
 
-FILE_BASE = 'wetter_de_'
+FILE_BASE = 'new/wetter_de_'
 
 DATE_TIME = time.strftime("%d_%m_%Y")
 
@@ -13,17 +14,20 @@ CITIES = ['berlin-18228265', 'muenchen-18225562', 'hamburg-18219464', 'cologne-1
           'rostock-18230410', 'magdeburg-18233836', 'freiburg-18224951', 'erfurt-18234542']
 
 def download(data_path):
-    
+
+    if not os.path.exists(data_path + 'new/'):
+        os.makedirs(data_path + 'new/')
+
     for city in CITIES:
-    
+
         HOURLY_URL = 'http://www.wetter.de/deutschland/wetter-' + city + '/wetterbericht-aktuell.html'
         FIFTEEN_URL = 'http://www.wetter.de/deutschland/wetter-' + city + '/wetterprognose.html'
-    
+
         try:
             urllib.request.urlretrieve(HOURLY_URL, data_path + FILE_BASE + DATE_TIME + '_' + city.split('-')[0] + '_hourly.html')
         except:
             continue
-    
+
         try:
             urllib.request.urlretrieve(FIFTEEN_URL, data_path + FILE_BASE + DATE_TIME + '_' + city.split('-')[0] + '_daily.html')
         except:
