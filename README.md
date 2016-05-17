@@ -1,6 +1,6 @@
 # 2016 BCCN Advanced Scientific Programming course weather project
 
-Travis CI: [![Build Status](https://travis-ci.org/BCCN-Prog/weather_2016.svg?branch=master)](https://travis-ci.org/BCCN-Prog/weather_2016) (tests currently failing due to lack of h5py support on travis CI)
+Travis CI: [![Build Status](https://travis-ci.org/BCCN-Prog/weather_2016.svg?branch=master)](https://travis-ci.org/BCCN-Prog/weather_2016)
 
 Check the wiki for important documentation: https://github.com/BCCN-Prog/weather_2016/wiki
 
