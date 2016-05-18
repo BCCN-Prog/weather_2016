@@ -47,10 +47,10 @@ class DataBase:
         self.f["metadata"][1] = self.get_cur_datetime_int()
 
 class Daily_DataBase(DataBase):
-    def __init__(self):
+    def __init__(self, db_name="daily_database.hdf5"):
         # daily_categories = ['date', 'site', 'geolocation', 'high', 'low',
                             # 'midday', 'rain_chance', 'rain_amt', 'cloud_cover']
-        DataBase.__init__(self, "daily_database.hdf5", 400, 2*1e6, 9, 15)
+        DataBase.__init__(self, db_name, 400, 2*1e6, 9, 15)
 
     def add_data_point(self, date, site, geolocation, high, low, midday, rain_chance, rain_amt, cloud_cover):
         '''
@@ -78,8 +78,8 @@ class Daily_DataBase(DataBase):
 
 class Hourly_DataBase(DataBase):
 
-    def __init__(self):
-        DataBase.__init__(self, "hourly_database.hdf5", 4000, 300000000, 10, 15)
+    def __init__(self, db_name="hourly_database.hdf5"):
+        DataBase.__init__(self, db_name, 4000, 300000000, 10, 15)
 
     def add_data_point(self, date, hour, site, geolocation, temperature, humidity, wind_speed, rain_chance, rain_amt, cloud_cover):
         if self.f["metadata"][0] == self.f["weather_data"].shape[0]:

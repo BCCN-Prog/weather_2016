@@ -1,17 +1,18 @@
+#This seeems (again 90% :)) to be:
+#A previous version of recent_hist_merge_daily, with absolute paths. 
+
 import numpy as np
 import pandas as pd
+import glob
 
-
-#hist = pd.read_table("/home/pythonproject/Schreibtisch/Weatherstuff/produkt_klima_Tageswerte_18631201_20151231_02928.txt" , sep=";", low_memory=False)
-#rec = pd.read_table("/home/pythonproject/Schreibtisch/Weatherstuff/produkt_klima_Tageswerte_20141016_20160417_02928.txt" , sep=";", low_memory=False)
-   
 def merge_hist_rec(hist,rec,interval_type,stationnumber):
     
-#rename columns
+
     
     if interval_type == 'daily':
         if len(hist) != 0:
-            hist.columns = ['Stations_id', 'Date', 'Quality', 'Air_temperature', 'Steam_pressure', 'Cloudiness', 'Airpressure_stationsheight', 'relative_moisture', 'Air_speed', 'Air_temperature_max', 'Air_temperature_min', 'Soil_tem_min', 'Wind_speed_max', 'Rain', 'Rain_ind', 'Sunny_hours', 'Snow_height', 'eor']
+            #rename columns
+            hist.columns = ['Stations_id', 'Date', 'Quality', 'Air_temperature', 'Steam_pressure', 'Cloudiness', 'Airpressure_stationsheight',      'relative_moisture', 'Air_speed', 'Air_temperature_max', 'Air_temperature_min', 'Soil_tem_min', 'Wind_speed_max', 'Rain', 'Rain_ind', 'Sunny_hours', 'Snow_height', 'eor']
             hist = hist.ix[:len(hist)-2] #cut last line - it's empty
             last_date = hist.Date[len(hist)-1] #extract last date of historical data
             if len(rec) == 0:
@@ -37,7 +38,7 @@ def merge_hist_rec(hist,rec,interval_type,stationnumber):
         
         
     #note: this replaces existing files.   
-    complete_data.to_csv('./clean_data/'+str(stationnumber)+'_'+interval_type+".csv")
+    complete_data.to_csv('/home/pythonproject/Schreibtisch/testfiles/'+str(stationnumber)+'_'+interval_type+".csv")
 
 #merge_hist_rec(hist,rec,'daily')
 #loop station number
@@ -45,17 +46,17 @@ def merge_hist_rec(hist,rec,interval_type,stationnumber):
     #if a,b =! []:
     #merge stuff   
     
-import glob
+
 #hist_paths = glob.glob("/home/pythonproject/Weather/ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/daily/kl/historical/*.txt")
 #rec_paths = glob.glob("/home/pythonproject/Weather/ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/daily/kl/rec/*.txt")
 #for station_number in range(2):
     
 def get_hist_and_rec(station_number):
     #create "artificial" wildcard path for historical data. For every station imaginable. 
-    histpath_temp = './ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/daily/kl/historical/produkt_klima_Tageswerte_*'
+    histpath_temp = '/home/pythonproject/Weather/ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/daily/kl/historical/produkt_klima_Tageswerte_*'
     histpath_temp += str(station_number).zfill(5)+'.txt'
     #create "artificial" wildcard path for recent data. For the station we're looking at right now.       
-    recpath_temp = './ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/daily/kl/recent/produkt_klima_Tageswerte_*'
+    recpath_temp = '/home/pythonproject/Weather/ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/daily/kl/recent/produkt_klima_Tageswerte_*'
     recpath_temp += str(station_number).zfill(5)+'.txt'   
 
     #check if that path actually exists. Globglob checks if the histpath file actually exists.
@@ -82,12 +83,11 @@ def get_hist_and_rec(station_number):
 
 
 
-import timeit
+#import timeit
+#start = timeit.default_timer()
 
-start = timeit.default_timer()
 
-
-for stationnumber in range(0,16):
+for stationnumber in range(0,160):
     #print(stationnumber)
     (hist_out, rec_out) = get_hist_and_rec(stationnumber)
     #print(stationnumber)
@@ -95,7 +95,7 @@ for stationnumber in range(0,16):
         merge_hist_rec(hist_out,rec_out, 'daily', stationnumber)
     
 
-stop = timeit.default_timer()
-
-print (stop - start) 
+#stop = timeit.default_timer()
+#print (stop - start)
+ 
 print("done")
