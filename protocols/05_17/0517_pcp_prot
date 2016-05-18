@@ -1,0 +1,40 @@
+PCP Protocol 17.05.16
+
+
+Outline of the Minimum viable product
+
+What do we want to show that we did?
+- Put large amounts of data into a database (e.g. daily data)
+- Being able to access data in database 
+- Being able to scrape data 
+- Being able to compare scraped and historical data
+- Being able to provide a simple visualization of the data (map)
+
+Restrictions:
+- Daily data
+- No or basic GUI
+
+Outline of the MVP:
+- Map of Germany, Color-Coded
+- Temperature on a certain date
+    - From historical data database
+    - From scraping (1 Provider, 3 days)
+
+Tasks
+- DB towards Scraping: Greg
+- DB towards Historical: Wolfi, Rahul
+- DB towards Query: Georg
+- Visualization (map): Max, Filip, later Denis
+- Testing (Scraping): Jan, Denis
+
+
+
+Things achieved during this session:
+- Historical Data group: Done with hourly --> folders with daily and hourly data in csv format are now available, currently ongoing = optimization (maybe better later?)
+- Georg: Daily works almost, should be similar for hourly, cooperation with Max for query engine is planned
+- Greg: Testing for Georg's class 
+- Alicja: Finished with downloading as well as scraping
+
+Issues to figure out:
+- indices for hourly data
+
