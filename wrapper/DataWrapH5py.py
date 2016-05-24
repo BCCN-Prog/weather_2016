@@ -29,6 +29,15 @@ class DataBase:
             self.f["metadata"][0] = 0
             self.f["metadata"][1] = self.get_cur_datetime_int()
 
+            self.cities = {'berlin': 1, 'hamburg': 2, 'munich': 3, 'muenchen': 3,
+                           'cologne': 4, 'koeln': 4, 'frankfurt': 5, 'stuttgart': 6,
+                           'bremen': 7, 'leipzig': 8, 'hannover': 9, 'nuremburg': 10,
+                           'nuernberg': 10, 'dortmund': 11, 'dresden': 12,
+                           'kassel': 13, 'kiel': 14, 'bielefeld': 15, 'saarbrucken': 1,
+                           'saarbruecken': 16, 'rostock': 17, 'freiburg': 18,
+                           'magdeburg': 19, 'erfurt': 20}
+
+
     def get_cur_datetime_int(self):
         '''
         returns an int of the form YearMonthDayHourMinuteSecond.
@@ -89,29 +98,72 @@ class Daily_DataBase(DataBase):
         Adds data from csv structure of historic group. So far, this is all specific to
         the fixed structures in this class.
         '''
-        df = pd.read_csv(file_name, usecols=[2,1,10,11,14,6])
-        
+        df = pd.read_csv(file_name, usecols=[2, 1, 10, 11, 14, 6])
+
         df = np.array(df.values)
         site = np.array([[np.nan] for i in range(df.shape[0])])
-        midday =  np.array([[np.nan] for i in range(df.shape[0])])
-        rain_chance =  np.array([[np.nan] for i in range(df.shape[0])])
+        midday = np.array([[np.nan] for i in range(df.shape[0])])
+        rain_chance = np.array([[np.nan] for i in range(df.shape[0])])
 
-        df = np.hstack((df, site, midday, rain_chance))[:,[1,6, 0, 3, 4, 7, 8, 5, 2]]
-        
+        df = np.hstack((df, site, midday, rain_chance))[:, [1, 6, 0, 3, 4, 7, 8, 5, 2]]
+
         self.add_data_matrix(df)
-        #should be more general.
+        # should be more general.
 
     def auto_csv(self):
         for f in glob.glob("./*_daily.csv"):
             self.import_from_csv(f)
 
+    def save_daily_dict(self, daily_dict):
+
+        params = ['geolocation', 'high', 'low', 'midday', 'rain_chance', 'rain_amt', 'cloud_cover']
+
+        try:
+            date = daily_dict['date']
+        except:
+            print('save_daily_dict: No date')
+            return 0
+
+        try:
+            website = daily_dict['site']
+        except:
+            print('save_daily_dict: No site')
+            return 0
+
+        data = daily_dict['daily']
+
+        for hour_key, _d in data.items():
+            arg_dict = {'date': date, 'site': website, 'day': int(hour_key)}
+
+            for param in params:
+                try:
+                    arg_dict[param] = _d[param]
+                except:
+                    arg_dict[param] = np.nan
+
+            self.add_data_point(**arg_dict)
+
     def extract_data_point(self,location_id, time, param):
         '''
         function just for mvp, not efficient and uses items not to be used later.
         '''
-        temp = self.f["weather_data"][self.f["weather_data"][:,2] == location_id]
-        ret = temp[temp[:,0] == time]
+        data = self.f["weather_data"]
 
+        n = data.shape[0]
+        idx = data[:,2] == location_id
+        idx = np.arange(n)[idx]        
+        
+        temp = data[idx, :]
+        
+        n = temp.shape[0]
+        idx = temp[:,0] == time
+        idx = np.arange(n)[idx]     
+        
+        ret = temp[idx, :]
+        #print(ret.shape)
+        
+        if(len(ret.shape) > 1):
+            return ret[0,param]
         return ret[param]
 
 
@@ -137,6 +189,38 @@ class Hourly_DataBase(DataBase):
 
         self.f["metadata"][1] = self.get_cur_datetime_int()
         self.f["metadata"][0] += 1
+
+    def save_hourly_dict(self, hourly_dict):
+        params = ['temperature', 'humidity', 'wind_speed', 'rain_chance', 'rain_amt', 'cloud_cover']
+
+        try:
+            date = hourly_dict['date']
+        except:
+            print('save_hourly_dict: No date')
+            return 0
+
+        try:
+            website = hourly_dict['site']
+        except:
+            print('save_hourly_dict: No site')
+            return 0
+
+        data = hourly_dict['hourly']
+
+        for hour_key, _d in data.items():
+            arg_dict = {'date': date, 'site': website, 'hour': int(hour_key),
+                        'geolocation': self.cities[_d['city']]}
+
+            for param in params:
+                try:
+                    arg_dict[param] = _d[param]
+                except:
+                    arg_dict[param] = np.nan
+
+            self.add_data_point(**arg_dict)
+
+
+
 
 
 
