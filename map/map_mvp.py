@@ -9,7 +9,7 @@ def map_mvp():
     
     coordinates = get_geo_locations()
     temperature = 20 * np.random.randn(coordinates.shape[0])
-    station_map(coordinates, temperature)
+    station_map(coordinates, temperature, hex_grid_size=(20,20))
 
 if __name__ == '__main__':
     map_mvp()
