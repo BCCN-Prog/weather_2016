@@ -6,7 +6,7 @@ import timeit
 start = timeit.default_timer()
 
 
-for stationid in range(0,18000):
+for stationid in range(0,500):
     try:
         air = pd.read_table("./hourly_data/air_temperature_"+str(stationid)+".csv", sep=",",index_col=0)
         air = air.set_index('Date')
@@ -52,10 +52,10 @@ for stationid in range(0,18000):
     try:
         wind = pd.read_table("./hourly_data/wind_"+str(stationid)+".csv", sep=",",index_col=0)
         wind = wind.set_index('Date')
-        wind = wind[['WINDGESCHWINDIGKEIT']]
+        wind = wind[['Windspeed']]
         #print("found wind")
     except OSError:
-        wind = pd.DataFrame(np.nan, index=[], columns=['WINDGESCHWINDIGKEIT'])
+        wind = pd.DataFrame(np.nan, index=[], columns=['Windspeed'])
     #cols_to_use = wind.columns - air.columns
 
 
