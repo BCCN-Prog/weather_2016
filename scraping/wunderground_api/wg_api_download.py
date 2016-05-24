@@ -7,8 +7,8 @@ import os.path
 
 
 
-#loc_list = ['Berlin', 'Munich', 'Hamburg', 'Cologne', 'Frankfurt', 'Stuttgart', 'Bremen', 'Leipzig', 'Hannover', 'Nuremberg', 'Dortmund', 'Dresden', 'Kassel', 'Kiel', 'Bielefeld', 'Saarbruecken', 'Rostock', 'Freiburg', 'Erfurt', 'Magdeburg']
-loc_list = ['Berlin', 'Munich'] #short list for testing
+loc_list = ['Berlin', 'Munich', 'Hamburg', 'Cologne', 'Frankfurt', 'Stuttgart', 'Bremen', 'Leipzig', 'Hannover', 'Nuremberg', 'Dortmund', 'Dresden', 'Kassel', 'Kiel', 'Bielefeld', 'Saarbruecken', 'Rostock', 'Freiburg', 'Erfurt', 'Magdeburg']
+#loc_list = ['Berlin', 'Munich'] #short list for testing
 
 def download(datafolder):
     #download daily 10 day forecast
