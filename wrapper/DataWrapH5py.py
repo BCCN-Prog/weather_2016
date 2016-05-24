@@ -2,6 +2,7 @@ import h5py
 import datetime
 import pandas as pd
 import numpy as np
+import glob
 
 class DataBase:
     """"
@@ -93,6 +94,9 @@ class Daily_DataBase(DataBase):
         
         self.add_data_matrix(df)
 
+    def auto_csv(self):
+        for f in glob.glob("./*_daily.csv"):
+            self.import_from_csv(f)
 
 
 class Hourly_DataBase(DataBase):
