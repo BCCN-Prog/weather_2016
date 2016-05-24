@@ -24,7 +24,7 @@ if __name__ == '__main__':
     #idx = 44
     #c = id_to_geo_location(idx)
     #print(c)
-    c = get_geo_locationas()
+    c = get_geo_locations()
     print(c)
 
 
