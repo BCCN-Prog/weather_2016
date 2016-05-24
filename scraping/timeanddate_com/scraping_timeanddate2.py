@@ -17,7 +17,8 @@ def get_month(string):
     return month
 
 def scrape(file_hourly, file_daily):
-    """scraping data from timeanddate.com/weather, returning one dictionary for both files
+    """files should be from the same city
+    scraping data from timeanddate.com/weather, returning one dictionary for both files
     only for dates in April - July period
     first index in extended in date = 11.05 if downloaded 10.05
     first index in hourly when downloading at 17:24 is 18:00
@@ -34,9 +35,10 @@ def scrape(file_hourly, file_daily):
     soup2 = BeautifulSoup(open(file_hourly), "lxml")
 
     # log the location
-    city = soup1.title.string.split(',')[0]
+    title = soup1.title.string.split(',')[0]
+    city = title.split(' ')[-1]
     #print(city) #city name without space at the beginning
-    print(soup1.title.string.split(',')[0], file2)
+    print('city:', soup1.title.string.split(',')[0], 'filename:', file2)
     if city.lower() in file1 and city.lower() in file2:
         out_dict['city'] = city
     else:
