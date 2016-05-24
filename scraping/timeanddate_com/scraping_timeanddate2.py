@@ -34,9 +34,10 @@ def scrape(file_hourly, file_daily):
     soup2 = BeautifulSoup(open(file_hourly), "lxml")
 
     # log the location
-    city = soup1.title.string.split(',')[0]
+    title = soup1.title.string.split(',')[0]
+    city = title.split(' ')[-1]
     #print(city) #city name without space at the beginning
-    print(soup1.title.string.split(',')[0], file2)
+    #print('city:', city, 'filename:', file2)
     if city.lower() in file1 and city.lower() in file2:
         out_dict['city'] = city
     else:
@@ -46,7 +47,8 @@ def scrape(file_hourly, file_daily):
 
     date1 = soup2.find_all('tr')[2:3]
     dates = date1[0].find_all('th')
-    date = '{}-{}-2016'
+    date_check = '{}-{}-2016'
+    date = '{}{}2016'
     a = dates[0].text[2:]  # gets dates in format i.e. 10. Mai
     month = get_month(a)
     b = re.findall(r'\d+', str(dates))
@@ -54,10 +56,11 @@ def scrape(file_hourly, file_daily):
         day = b[-1]
     else:
         raise Exception('wrong day')
-    date = date.format(day, month)
+    date_check = date_check.format(day, month)
+    date = date.format(day,month)
 
-    if date in file1:
-        out_dict['date'] = date
+    if date_check in file1:
+        out_dict['date'] = int(date)
     else:
         raise Exception('wrong date')
     #scraping table: soup.find_all('tr')
@@ -120,9 +123,9 @@ def scrape(file_hourly, file_daily):
     return out_dict
 
 if __name__ == '__main__':
-    file1 = "timeanddate_com_10-05-2016_kiel_daily.html"
-    file2 = "timeanddate_com_10-05-2016_kiel_hourly.html"
+    file1 = "timeanddate_com_10-05-2016_nuremberg_daily.html"
+    file2 = "timeanddate_com_10-05-2016_nuremberg_hourly.html"
     d = scrape(file2,file1)
-    print(d['hourly'])
+    print(d)
 
 

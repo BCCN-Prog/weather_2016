@@ -55,11 +55,16 @@ def station_map(coordinates, temperature):
 #    ny = temperature.shape[0]
 #    nx = temperature.shape[1]
 #    lons, lats = map.makegrid(nx, ny)
-    lats = coordinates[:,[0]]
-    lons = coordinates[:,[1]]
+    lats = coordinates[:,0]
+    lons = coordinates[:,1]
     x, y  = map(lons, lats)
-    print(x.shape, y.shape)
-    cs = map.contourf(x,y,temperature)
+    c = temperature
+#    map.hexbin(x,y)
+    map.hexbin(x, y, C = c, gridsize=(9,9), linewidth=0.5, edgecolor='k')
+    map.colorbar(location='bottom')
+#    map.plot(x,y,'bo',markersize=10)
+#    print(x.shape, y.shape)
+#    cs = map.contourf(x,y,temperature)
     plt.show()
 '''    
     x, y, z = np.random.rand(3, 1000000)
