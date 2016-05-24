@@ -6,6 +6,26 @@ import os, sys
 sys.path.append("../")
 import test_scraper_output as tester
 
+def check_header(soup, city, mode='hourly'):
+    result = True
+    if city=='muenchen' or city=='nuernberg' or city=='saarbruecken':
+        city = city.replace('ue', 'ü')
+    if city=='koeln':
+        city = city.replace('oe', 'ö')
+    if city=='frankfurt':
+        city = 'frankfurt am main'
+    header_class = "[ breadcrumb__item ]"
+    header = soup.find_all('span', class_ = header_class)
+    if not(header[3].text == 'Deutschland'): result = False
+    if not(header[5].text.lower() == city): result = False
+    if mode=='hourly':
+        mode_str = 'Heute'
+    elif mode=='daily':
+        mode_str = '16-Tage Trend'
+    if not(header[6].text==mode_str): result = False
+    return result
+
+
 def scrape_hourly(date, city):
     # define dict
     hourly_dic = {}
@@ -20,6 +40,11 @@ def scrape_hourly(date, city):
         print("Data file missing, PATH: " + path)
         raise FileNotFoundError()
 
+    # check for country, city and type
+    try:
+        assert(check_header(soup, city, mode='hourly'))
+    except:
+        print("Wrong header for city =" + city + " hourly")
     # define hourly scraping classes
     hour_class = '[ half-left ][ bg--white ][ cover-top ][ text--blue-dark ]'
     temp_class = '[ half-left ][ bg--white ][ js-detail-value-container ]'
@@ -34,7 +59,6 @@ def scrape_hourly(date, city):
         hours = soup.find_all('div', class_ = hour_class)
         # get the starting hour of the hour table
         starting_hour = int((hours[0].string.split()[0])[1])
-        print(starting_hour)
     except:
         print("Scraping failed: starting hour")
 
@@ -124,6 +148,12 @@ def scrape_daily(date, city):
         soup = BeautifulSoup(open(path))
     except FileNotFoundError:
         print("Data file missing, PATH: " + path)
+
+    # check for country, city and type
+    try:
+        assert(check_header(soup, city, mode='daily'))
+    except:
+        print("Wrong header for city =" + city + " daily")
 
     # define daily scraping classes
     temp_low_class = 'inline text--white gamma'
@@ -230,13 +260,13 @@ dates = ['26-04-2016']
 
 # list fo all cities we are scraping from
 cities = ["berlin"]
-# cities = ["berlin", "hamburg", "muenchen",
-#             "koeln", "frankfurt", "stuttgart",
-#             "bremen", "leipzig", "hannover",
-#             "nuernberg", "dortmund", "dresden",
-#             "kassel", "kiel", "bielefeld",
-#             "saarbruecken", "rostock", "freiburg",
-#             "magdeburg", "erfurt"]
+cities = ["berlin", "hamburg", "muenchen",
+            "koeln", "frankfurt", "stuttgart",
+            "bremen", "leipzig", "hannover",
+            "nuernberg", "dortmund", "dresden",
+            "kassel", "kiel", "bielefeld",
+            "saarbruecken", "rostock", "freiburg",
+            "magdeburg", "erfurt"]
 
 processed_dates = []
 processed_cities = []
@@ -251,7 +281,7 @@ for date in dates:
                     'date': dateInt,
                     'hourly': scrape_hourly(date, city),
                     'daily': scrape_daily(date, city)}
-        pprint.pprint(data_dic)
+        #pprint.pprint(data_dic)
         processed_dates.append(date)
         processed_cities.append(city)
 
