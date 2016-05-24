@@ -1,5 +1,7 @@
 import h5py
 import datetime
+import pandas as pd
+import numpy as np
 
 class DataBase:
     """"
@@ -74,6 +76,23 @@ class Daily_DataBase(DataBase):
 
         self.f["metadata"][1] = self.get_cur_datetime_int()
         self.f["metadata"][0] += 1
+
+    def import_from_csv(self, file_name):
+        '''
+        Adds data from csv structure of historic group. So far, this is all specific to
+        the fixed structures in this class.
+        '''
+        df = pd.read_csv(file_name, usecols=[2,1,10,11,14,6])
+        
+        df = np.array(df.values)
+        site = np.array([[np.nan] for i in range(df.shape[0])])
+        midday =  np.array([[np.nan] for i in range(df.shape[0])])
+        rain_chance =  np.array([[np.nan] for i in range(df.shape[0])])
+
+        df = np.hstack((df, site, midday, rain_chance))[:,[1,6, 0, 3, 4, 7, 8, 5, 2]]
+        
+        self.add_data_matrix(df)
+
 
 
 class Hourly_DataBase(DataBase):
