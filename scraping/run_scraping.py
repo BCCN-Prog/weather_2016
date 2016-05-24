@@ -12,8 +12,10 @@ import accuweather
 import wetter_com
 import owm
 import wetter_de
+import wunderground_api
 
-provider_list = [timeanddate_com,
+provider_list = [wunderground_api,
+                 timeanddate_com,
                  wetter_com, 
                  owm, 
                  wetter_de,

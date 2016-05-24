@@ -28,14 +28,11 @@ def download(datafolder):
         f = urllib.request.urlopen('http://api.wunderground.com/api/944b3f3c879d2394/geolookup/hourly/q/Germany/'+loc+'.json')
         reader = codecs.getreader('utf-8') #how is data encoded? 
         parsed_json = json.load(reader(f)) 
-        filename = './hourly/wunderground_hourly_{}_{}.pkl'.format(time.strftime('%d_%m_%Y_%H_%M'), loc)
         fn_10days = os.path.join(datafolder,"wunderground_" +    time.strftime("%d_%m_%Y_%H_%M_") + loc + "_10days.pkl")
         with open(fn_10days, 'wb') as p:
             pickle.dump(parsed_json, p, pickle.HIGHEST_PROTOCOL)
         print (parsed_json['location']['city'] + '  hourly downloaded')
         time.sleep(10)
-
-
     f.close()
     
 
