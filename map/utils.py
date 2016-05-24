@@ -8,14 +8,14 @@ def convert_stations_specs():
     chosen.to_csv('./dwd_station_specs.csv', index=False)
 
 def id_to_geo_location(id_):
-    specs = pd.read_csv('./dwd_station_specs.csv')
+    specs = pd.read_csv('./dwd_station_specs.csv', encoding = "ISO-8859-1")
     coordinates = np.empty((id_.size, 2))
     for i, j in enumerate(id_):
         coordinates[i,:] = specs[specs['id'] == j][['lat', 'lon']].values
     return coordinates
 
-def get_geo_locationas():
-    specs = pd.read_csv('./dwd_station_specs.csv')
+def get_geo_locations():
+    specs = pd.read_csv('./dwd_station_specs.csv', encoding = "ISO-8859-1")
     coordinates = id_to_geo_location(specs['id'].values)
     return coordinates
 
