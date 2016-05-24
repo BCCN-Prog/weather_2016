@@ -3,10 +3,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from map import station_map
-from utils import get_geo_locationas
+from utils import get_geo_locations
 
 def map_mvp():
     
-    coordinates = get_geo_locationas()
+    coordinates = get_geo_locations()
     temperature = 20 * np.random.randn(coordinates.shape[0])
     station_map(coordinates, temperature)
+
+if __name__ == '__main__':
+    map_mvp()
