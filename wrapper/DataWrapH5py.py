@@ -143,13 +143,27 @@ class Daily_DataBase(DataBase):
 
             self.add_data_point(**arg_dict)
 
-    def extract_data_point(self, location_id, time, param):
+    def extract_data_point(self,location_id, time, param):
         '''
         function just for mvp, not efficient and uses items not to be used later.
         '''
-        temp = self.f["weather_data"][self.f["weather_data"][:, 2] == location_id]
-        ret = temp[temp[:, 0] == time]
+        data = self.f["weather_data"]
 
+        n = data.shape[0]
+        idx = data[:,2] == location_id
+        idx = np.arange(n)[idx]        
+        
+        temp = data[idx, :]
+        
+        n = temp.shape[0]
+        idx = temp[:,0] == time
+        idx = np.arange(n)[idx]     
+        
+        ret = temp[idx, :]
+        #print(ret.shape)
+        
+        if(len(ret.shape) > 1):
+            return ret[0,param]
         return ret[param]
 
 
