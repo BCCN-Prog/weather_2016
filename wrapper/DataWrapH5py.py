@@ -49,6 +49,12 @@ class DataBase:
         self.f["metadata"][0] += matrix.shape[0]
         self.f["metadata"][1] = self.get_cur_datetime_int()
 
+    def get_capacity(self):
+        return self.f['weather_data'].shape
+
+    def number_entries(self):
+        return self.f['metadata'][0]
+
 class Daily_DataBase(DataBase):
     def __init__(self, db_name="daily_database.hdf5"):
         # daily_categories = ['date', 'site', 'geolocation', 'high', 'low',
