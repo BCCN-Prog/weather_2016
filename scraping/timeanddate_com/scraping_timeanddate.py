@@ -2,7 +2,6 @@
 from bs4 import BeautifulSoup
 import re
 
-##  NEED TO PUSH THE NEW VERSION ##
 def get_month(string):
     """ function extracting month from the string from the table, for date sanity check """
     if 'Apr' in string:
