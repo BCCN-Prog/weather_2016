@@ -105,6 +105,15 @@ class Daily_DataBase(DataBase):
         for f in glob.glob("./*_daily.csv"):
             self.import_from_csv(f)
 
+    def extract_data_point(self,location_id, time, param):
+        '''
+        function just for mvp, not efficient and uses items not to be used later.
+        '''
+        temp = self.f["weather_data"][self.f["weather_data"][:,2] == location_id]
+        ret = temp[temp[:,0] == time]
+
+        return ret[param]
+
 
 class Hourly_DataBase(DataBase):
 
