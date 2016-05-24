@@ -11,8 +11,8 @@ parameter_columnnames=[['Stations_id', 'Date', 'Quality', 'Structure_version', '
                       ['Stations_id', 'Date', 'Quality', 'Rain_fall_ind', 'Rain_height','Type_of_rain' ,'eor'],
                       ['Stations_id', 'Date', 'Quality', 'Airpressure_reduced', 'Airpressure_station', 'eor'],
                       ['Stations_id', 'Date', 'Quality', 'Sun_duration', 'DIFFUS_HIMMEL_KW_J', 'GLOBAL_KW_J','ATMOSPHAERE_LW_J','SONNENZENIT','MESS_DATUM_WOZ' ,'eor'],
-                      ['Stations_id', 'Date', 'Quality', 'Structure_version', 'STUNDENSUMME_SONNENSCHEIN', 'eor'],
-                      ['Stations_id', 'Date', 'Quality', 'Structure_version', 'WINDGESCHWINDIGKEIT','WINDRICHTUNG' ,'eor']]
+                      ['Stations_id', 'Date', 'Quality', 'Structure_version', 'Sunny_hours', 'eor'],
+                      ['Stations_id', 'Date', 'Quality', 'Structure_version', 'Windspeed','winddirection' ,'eor']]
 name_param_dict = {} #value must be missing or too much in the line of wind!
 for i in range(len(foldernames)):
     name_param_dict[foldernames[i]] = parameter_columnnames[i]
@@ -30,7 +30,7 @@ for i in range(len(foldernames)):
 #STATIONS_ID; MESS_DATUM; QUALITAETS_NIVEAU; ERDBODENTEMPERATUR;MESS_TIEFE; ERDBODENTEMPERATUR;MESS_TIEFE; ERDBODENTEMPERATUR;MESS_TIEFE; ERDBODENTEMPERATUR;MESS_TIEFE; ERDBODENTEMPERATUR;MESS_TIEFE;eor
 #STATIONS_ID; MESS_DATUM; QUALITAETS_NIVEAU; SONNENSCHEINDAUER;DIFFUS_HIMMEL_KW_J;GLOBAL_KW_J;ATMOSPHAERE_LW_J;SONNENZENIT;MESS_DATUM_WOZ;eor
 #STATIONS_ID; MESS_DATUM; QUALITAETS_NIVEAU; STRUKTUR_VERSION; STUNDENSUMME_SONNENSCHEIN;eor
-#STATIONS_ID; MESS_DATUM; QUALITAETS_NIVEAU; STRUKTUR_VERSION; WINDGESCHWINDIGKEIT;WINDRICHTUNG;eor
+#STATIONS_ID; MESS_DATUM; QUALITAETS_NIVEAU; STRUKTUR_VERSION; Windspeed;WINDRICHTUNG;eor
 
 def get_hist_and_rec_hourly(station_number, parametertype):
     if parametertype != "solar":
@@ -110,7 +110,7 @@ def merge_hist_rec_hourly(hist,rec,stationnumber, parametertype):
 start = timeit.default_timer()
 
 for params in foldernames:
-    for stationnumber in range(0,16000):
+    for stationnumber in range(500,2000):
         (hist_out, rec_out) = get_hist_and_rec_hourly(stationnumber,params)
         if (len(hist_out) != 0) or (len(rec_out) != 0):
             merge_hist_rec_hourly(hist_out,rec_out, stationnumber, params)

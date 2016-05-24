@@ -1,6 +1,7 @@
+
 #This seeems (again 90% :)) to be:
 #A previous version of recent_hist_merge_daily, with absolute paths. 
-
+#You should use recent_hist_merge_daily instead!
 import numpy as np
 import pandas as pd
 import glob

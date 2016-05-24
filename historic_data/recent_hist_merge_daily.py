@@ -1,4 +1,3 @@
-# we believe with 90% certainty:
 # This script takes in daily data (hist and rec) from the originally downloaded folder and outputs merged daily data.
 
 #This is a new version of merging_daily.py, with relative paths
@@ -39,8 +38,8 @@ def merge_hist_rec(hist,rec,interval_type,stationnumber):
             else:
                 complete_data = rec
         
-        
-        
+    complete_data = complete_data.set_index('Date')
+    complete_data = complete_data.replace(-999, np.nan, regex=True)
     #note: this replaces existing files.   
     complete_data.to_csv('./daily_data_clean/'+str(stationnumber)+'_'+interval_type+".csv")
 
