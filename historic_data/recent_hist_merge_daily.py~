@@ -38,7 +38,7 @@ def merge_hist_rec(hist,rec,interval_type,stationnumber):
             else:
                 complete_data = rec
         
-    #complete_data = complete_data.set_index('Date')
+    complete_data = complete_data.set_index('Date')
     complete_data = complete_data.replace(-999, np.nan, regex=True)
     #note: this replaces existing files.   
     complete_data.to_csv('./daily_data_clean/'+str(stationnumber)+'_'+interval_type+".csv")
