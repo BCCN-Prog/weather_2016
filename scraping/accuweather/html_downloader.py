@@ -463,11 +463,11 @@ def scrape_all(data_folder):
 
         
 if __name__=='__main__':
-    #download_html('./data/')
+    download_html('./data/')
     #scrape('17-05-2016', 'berlin', './data/')
-    import sys
-    sys.stdout = open('./data/test_scrape_all.txt', 'w+')
-    scrape_all('./data/')
+    #import sys
+    #sys.stdout = open('./data/test_scrape_all.txt', 'w+')
+    #scrape_all('./data/')
     #scrape_daily_html('/home/denis/Documents/Uni/project_software_carpentry/weather_2016/scraping/data/accuweather_10-05-2016_16:33_dortmund_daily_d15_1462890787.html')
     #scrape_hourly_html('./data/accuweather_17-05-2016_17:37_cologne_hourly_h25_1463499470.html')
     #test_html_title('./data/accuweather_17-05-2016_17:37_cologne_hourly_h25_1463499470.html', city='cologne', country='germany', request_type='hourly')

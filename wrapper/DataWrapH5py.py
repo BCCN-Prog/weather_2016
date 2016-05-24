@@ -108,6 +108,7 @@ class Daily_DataBase(DataBase):
         df = np.hstack((df, site, midday, rain_chance))[:, [1, 6, 0, 3, 4, 7, 8, 5, 2]]
 
         self.add_data_matrix(df)
+        # should be more general.
 
     def auto_csv(self):
         for f in glob.glob("./*_daily.csv"):
@@ -141,6 +142,16 @@ class Daily_DataBase(DataBase):
                     arg_dict[param] = np.nan
 
             self.add_data_point(**arg_dict)
+
+    def extract_data_point(self, location_id, time, param):
+        '''
+        function just for mvp, not efficient and uses items not to be used later.
+        '''
+        temp = self.f["weather_data"][self.f["weather_data"][:, 2] == location_id]
+        ret = temp[temp[:, 0] == time]
+
+        return ret[param]
+
 
 class Hourly_DataBase(DataBase):
 
