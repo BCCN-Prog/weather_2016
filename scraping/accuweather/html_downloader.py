@@ -143,8 +143,8 @@ def scrape_daily_html(html_file):
 
     site, date, time, city, request_type, request_index, timestemp = os.path.splitext(os.path.basename(html_file))[0].split('_') 
     request_index = request_index[1:]
-    print('EXTRACT FILENAME:')
-    print(site, date, time, city, request_type, request_index, timestemp)
+    #print('EXTRACT FILENAME:')
+    #print(site, date, time, city, request_type, request_index, timestemp)
     
     
     ### dayly_save
@@ -234,7 +234,7 @@ def scrape_daily_html(html_file):
     day_dict['rain_amt'] = (day_dict['rain_amount_day'] + day_dict['rain_amount_night']) / 2.
     day_dict['rain_chance'] = (day_dict['precipitation_chance_day'] + day_dict['precipitation_chance_night']) / 2.
 
-    pprint.pprint(day_dict)
+    #pprint.pprint(day_dict)
 
     return day_dict
 
@@ -440,29 +440,34 @@ def scrape(date, city, data_folder):
 
 def scrape_all(data_folder):
     """ Scrape all html file from accuweather in data_folder """
+    ### TODO: Can be done much faster probably... 
 
-    cities = []
-    dates = []
+    city_date = []
 
-    data_dicitonaries = []
+    data_dictionaries = []
 
     for html_file in glob.glob(data_folder + '/accuweather*.html'):
 
         site, date_, time, city_, request_type, request_index, timestemp = os.path.splitext(os.path.basename(html_file))[0].split('_') 
 
-        dates.append(date_)
-        cities.append(city_)
+        city_date.append((city_, date_))
 
-    for city in cities:
-        for date in dates:
-            scraped_dict = scrape(city, date)
-            data_dictionaries.append(scraped_dict)
+    city_date = set(city_date)
+
+    for (city, date) in city_date:
+        scraped_dict = scrape(date, city, data_folder)
+        data_dictionaries.append(scraped_dict)
+
+    for d in data_dictionaries:
+        pprint.pprint(d)
 
         
 if __name__=='__main__':
     #download_html('./data/')
-    scrape('17-05-2016', 'berlin', './data/')
-    #scrape_all('./data')
+    #scrape('17-05-2016', 'berlin', './data/')
+    import sys
+    sys.stdout = open('./data/test_scrape_all.txt', 'w+')
+    scrape_all('./data/')
     #scrape_daily_html('/home/denis/Documents/Uni/project_software_carpentry/weather_2016/scraping/data/accuweather_10-05-2016_16:33_dortmund_daily_d15_1462890787.html')
     #scrape_hourly_html('./data/accuweather_17-05-2016_17:37_cologne_hourly_h25_1463499470.html')
     #test_html_title('./data/accuweather_17-05-2016_17:37_cologne_hourly_h25_1463499470.html', city='cologne', country='germany', request_type='hourly')
