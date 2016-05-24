@@ -25,6 +25,7 @@ before_install:
   - conda update -q conda
   - conda install basemap
   - conda install h5py
+  - conda install pandas
   # Useful for debugging any issues with conda
   - conda info -a
 
@@ -37,7 +38,7 @@ before_install:
 
 # command to install dependencies
 install:
-  - conda install --yes python=3.5 pip numpy scipy nose basemap h5py
+  - conda install --yes python=3.5 pip numpy scipy nose basemap h5py pandas
 #  - "pip install basemap"
 #  - "pip install h5py"
 
