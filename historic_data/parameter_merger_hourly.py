@@ -1,5 +1,5 @@
 # This script is taking in all the parameter files of hourly data and outputing combined hourly data for every station.
-
+import numpy as np
 import pandas as pd
 import timeit
 
@@ -10,31 +10,31 @@ for stationid in range(0,18000):
     try:
         air = pd.read_table("./hourly_data/air_temperature_"+str(stationid)+".csv", sep=",",index_col=0)
         air = air.set_index('Date')
-        air = air[['Stations_id','Air_temperature','Moisture']]
+        air = air[['Air_temperature','Moisture']]
         #print("found air")
     except OSError:
-        air = pd.DataFrame(np.nan, index=[], columns=[])
+        air = pd.DataFrame(np.nan, index=[], columns=['Air_temperature','Moisture'])
     try:
         cloudiness = pd.read_table("./hourly_data/cloudiness_"+str(stationid)+".csv", sep=",",index_col=0)
         cloudiness = cloudiness.set_index('Date')
-        cloudiness = cloudiness[['Stations_id','Cloudiness']]
+        cloudiness = cloudiness[['Cloudiness']]
         #print("found clouds")
     except OSError:
-        cloudiness = pd.DataFrame(np.nan, index=[], columns=[])
+        cloudiness = pd.DataFrame(np.nan, index=[], columns=['Cloudiness'])
     try:
         precip = pd.read_table("./hourly_data/precipitation_"+str(stationid)+".csv", sep=",",index_col=0)
         precip = precip.set_index('Date')
-        precip = precip[['Stations_id','Rain_fall_ind','Rain_height']]
+        precip = precip[['Rain_fall_ind','Rain_height']]
         #print("found prep")
     except OSError:
-        precip = pd.DataFrame(np.nan, index=[], columns=[])
+        precip = pd.DataFrame(np.nan, index=[], columns=['Rain_fall_ind','Rain_height'])
     try:
         pressure = pd.read_table("./hourly_data/pressure_"+str(stationid)+".csv", sep=",",index_col=0)
         pressure = pressure.set_index('Date')
-        pressure = pressure[['Stations_id','Airpressure_reduced','Airpressure_station']]
+        pressure = pressure[['Airpressure_reduced','Airpressure_station']]
         #print("found pressure")
     except OSError:
-        pressure = pd.DataFrame(np.nan, index=[], columns=[])
+        pressure = pd.DataFrame(np.nan, index=[], columns=['Airpressure_reduced','Airpressure_station'])
     #try:
     #    solar = pd.read_table("./hourly_data/solar_"+str(i)+".csv", sep=",",index_col=0)
     #    solar = solar.set_index('Date')
@@ -52,10 +52,10 @@ for stationid in range(0,18000):
     try:
         wind = pd.read_table("./hourly_data/wind_"+str(stationid)+".csv", sep=",",index_col=0)
         wind = wind.set_index('Date')
-        wind = wind[['Stations_id','WINDGESCHWINDIGKEIT']]
+        wind = wind[['WINDGESCHWINDIGKEIT']]
         #print("found wind")
     except OSError:
-        wind = pd.DataFrame(np.nan, index=[], columns=[])
+        wind = pd.DataFrame(np.nan, index=[], columns=['WINDGESCHWINDIGKEIT'])
     #cols_to_use = wind.columns - air.columns
 
 

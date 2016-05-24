@@ -1,0 +1,38 @@
+This is a short description of what these files are and what they do.
+
+Since most of the single processes take a lot of time (some more than an hour), we decided to keep the different files separated.
+
+###Instructions###
+
+1) Use download_and_extract.sh to download all (daily and hourly) raw data
+   The script will create a large data folder and 3 empty ones that will  be filled later in your working directory.
+
+2) Daily data: run recent_hist_merge_daily.py . You will find processed clean data in the clean_data_daily folder.
+
+3) Hourly data:
+    3.1) Run recent_hist_merge_hourly.py to connect recent and hist data. 
+    3.2) Run parameter_merger_hourly.py to combine desired features of Data from 3.1) to Station files. They will appear in the clean_data_hourly  folder. 
+
+
+This process is done ONCE, to generate the files.
+
+
+###Refresh###
+
+If you want to take into account new data:
+
+1) delete your clean_data folders and run wiper.sh.
+2) Repeat steps 1-3 (1 is intelligent enough to only download new stuff. However, they all have to be processed from the start, so 2-3 take time again.) 
+
+
+###Order###
+We have inclued 2 sample files. 
+
+Daily data are shaped like:
+(index),Stations_id,Date,Quality,Air_temperature,Steam_pressure,Cloudiness,Airpressure_stationsheight,relative_moisture,Air_speed,Air_temperature_max,Air_temperature_min,Soil_tem_min,Wind_speed_max,Rain,Rain_ind,Sunny_hours,Snow_height,eor
+
+Hourly data are shaped like:
+Date,Air_temperature,Moisture,Cloudiness,Rain_fall_ind,Rain_height,Airpressure_reduced,Airpressure_station,WINDGESCHWINDIGKEIT
+
+
+

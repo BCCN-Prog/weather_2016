@@ -11,8 +11,8 @@ parameter_columnnames=[['Stations_id', 'Date', 'Quality', 'Structure_version', '
                       ['Stations_id', 'Date', 'Quality', 'Rain_fall_ind', 'Rain_height','Type_of_rain' ,'eor'],
                       ['Stations_id', 'Date', 'Quality', 'Airpressure_reduced', 'Airpressure_station', 'eor'],
                       ['Stations_id', 'Date', 'Quality', 'Sun_duration', 'DIFFUS_HIMMEL_KW_J', 'GLOBAL_KW_J','ATMOSPHAERE_LW_J','SONNENZENIT','MESS_DATUM_WOZ' ,'eor'],
-                      ['Stations_id', 'Date', 'Quality', 'Structure_version', 'STUNDENSUMME_SONNENSCHEIN', 'eor'],
-                      ['Stations_id', 'Date', 'Quality', 'Structure_version', 'WINDGESCHWINDIGKEIT','WINDRICHTUNG' ,'eor']]
+                      ['Stations_id', 'Date', 'Quality', 'Structure_version', 'Sunny_hours', 'eor'],
+                      ['Stations_id', 'Date', 'Quality', 'Structure_version', 'Windspeed','winddirection' ,'eor']]
 name_param_dict = {} #value must be missing or too much in the line of wind!
 for i in range(len(foldernames)):
     name_param_dict[foldernames[i]] = parameter_columnnames[i]
