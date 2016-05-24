@@ -1,8 +1,7 @@
 # Basic sanity checks, check that data is valid and within normal ranges
-
-def test_format(data_dic):
+def test_format(some_object):
     """Make sure the data is given as a dictionary"""
-    assert(isinstance(data_dic, dict))
+    assert(isinstance(some_object, dict))
 
 def test_top_level(data_dic):
     """Test the top level entries of the dictionary"""
@@ -65,7 +64,32 @@ def test_daily(data_dic):
         assert(rain_chance>=0 and rain_chance<=100)
 
 def test_hourly(data_dic):
-    pass
+    """Test the dictionary holding the hourly data"""
+    hourly_dic = data_dic['hourly']
+    hours_dics = hourly_dic.values()
+    keys_required = ['temp', 'wind_speed', 'rain_chance', 'rain_amt', 'humidity']
+    # for every hour
+    for hour_dic in hours_dics:
+        # day should be a dict again
+        test_format(hour_dic)
+        keys_present = hour_dic.keys()
+        # make sure all keys are present
+        for key in keys_required:
+            assert(key in keys_present)
+        # make sure all required values are floats
+        for key in keys_required:
+            assert(isinstance(hour_dic[key], float))
+        # make sure they are in a plausible range
+        temp = hour_dic['temp']
+        assert(temp >-60 and temp < 60)
+        rain_amt = hour_dic['rain_amt']
+        assert(rain_amt>=0 and rain_amt<1000)
+        rain_chance = hour_dic['rain_chance']
+        assert(rain_chance>=0 and rain_chance<=100)
+        wind_speed = hour_dic['wind_speed']
+        assert(wind_speed>=0 and wind_speed<500)
+        humidity = hour_dic['humidity']
+        assert(humidity>=0 and humidity<=100)
 
 def run_tests(data_dic):
     """Runs the above tests. Return true if all tests pass"""
@@ -73,3 +97,4 @@ def run_tests(data_dic):
     test_top_level(data_dic)
     test_daily(data_dic)
     test_hourly(data_dic)
+    return True
