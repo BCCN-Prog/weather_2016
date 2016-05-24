@@ -93,6 +93,7 @@ class Daily_DataBase(DataBase):
         df = np.hstack((df, site, midday, rain_chance))[:,[1,6, 0, 3, 4, 7, 8, 5, 2]]
         
         self.add_data_matrix(df)
+        #should be more general.
 
     def auto_csv(self):
         for f in glob.glob("./*_daily.csv"):
