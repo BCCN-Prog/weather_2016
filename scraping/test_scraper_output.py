@@ -8,12 +8,12 @@ def test_top_level(data_dic):
     # check for keys
     keys_present = data_dic.keys()
     keys_required = ['site', 'city', 'date', 'daily','hourly']
-    sites_possible = ["wetter.com"]
-    cities_possible = ["berlin", "hamburg", "muenchen",
-                "koeln", "frankfurt", "stuttgart",
-                "bremen", "leipzig", "hannover",
-                "nuernberg", "dortmund", "dresden",
-                "kassel", "kiel", "bielefeld",
+    sites_possible = ['0', '1', '2', '3', '4']
+    cities_possible = ["berlin", "hamburg", "munich",
+                "cologne", "frankfurt", "stuttgart",
+                "bremen", "leipzig", "hanover",
+                "nuremberg", "dortmund", "dresden",
+                "cassel", "kiel", "bielefeld",
                 "saarbruecken", "rostock", "freiburg",
                 "magdeburg", "erfurt"]
     for key in keys_required:
@@ -22,10 +22,10 @@ def test_top_level(data_dic):
     date = data_dic['date']
     assert(isinstance(date, int)) # date should be int
     assert(date>10000000 and date<32000000)    # date should be ddmmyyyy
-    # check for site
+    # check for site, this is in integer now
     site = data_dic['site']
-    assert(isinstance(site, str)) # site should be string
-    assert(site in sites_possible) # site should be one of the sites
+    assert(isinstance(site, int)) # site should be integer, as coded in the wiki
+    assert(str(site) in sites_possible) # site should be one of the sites
     # check for city
     city = data_dic['city']
     assert(isinstance(city, str)) # site should be string
