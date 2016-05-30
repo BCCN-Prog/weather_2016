@@ -7,6 +7,13 @@ sys.path.append("../")
 import test_scraper_output as tester
 
 def check_header(soup, city, mode='hourly'):
+    """Checks the header in the html file. Ensure that city and county are
+    plausible
+
+    :param soup: BeautifulSoup object holding the html file representation
+    :param mode: hourly or daily scraping mode
+    :return result: True, False if the header test passed, failed, respectively
+    """
     result = True
     if city=='muenchen' or city=='nuernberg' or city=='saarbruecken':
         city = city.replace('ue', 'ü')
@@ -25,26 +32,40 @@ def check_header(soup, city, mode='hourly'):
     if not(header[6].text==mode_str): result = False
     return result
 
-
 def scrape_hourly(date, city):
+    """Scrapes hourly data from html file containing the hourly data of the
+    given date and city
+
+    Assumes data to live in ../data
+    """
+
     # define dict
     hourly_dic = {}
 
     # try to open the file
     data_path = '../data'
-    path = data_path + '/' + get_filename('../data', date, city, mode='hourly')
+    try:
+        path = data_path + '/' + get_filename('../data', date, city, mode='hourly')
+    except TypeError:
+        print("Can't find PATH: " + data_path + ' ' + date + ' ' + city + ' hourly')
+        err = sys.exc_info()[0]
+        print(err)
+
     try:
         print("Scraping "+ path)
         soup = BeautifulSoup(open(path))
     except FileNotFoundError:
         print("Data file missing, PATH: " + path)
-        raise FileNotFoundError()
+        err = sys.exc_info()[0]
+        print(err)
 
     # check for country, city and type
     try:
         assert(check_header(soup, city, mode='hourly'))
     except:
         print("Wrong header for city =" + city + " hourly")
+        err = sys.exc_info()[0]
+        print(err)
     # define hourly scraping classes
     hour_class = '[ half-left ][ bg--white ][ cover-top ][ text--blue-dark ]'
     temp_class = '[ half-left ][ bg--white ][ js-detail-value-container ]'
@@ -61,6 +82,8 @@ def scrape_hourly(date, city):
         starting_hour = int((hours[0].string.split()[0])[1])
     except:
         print("Scraping failed: starting hour")
+        err = sys.exc_info()[0]
+        print(err)
 
     # define the hour string list for indexing the dictionary correctly
     hour_strs = []
@@ -81,6 +104,8 @@ def scrape_hourly(date, city):
             hourly_dic[hour_strs[j]]['temp'] = float(div.string.split()[0])
     except:
         print("Scraping failed: temperature")
+        err = sys.exc_info()[0]
+        print(err)
 
     try:
         # SCRAPE Rain probs
@@ -89,6 +114,8 @@ def scrape_hourly(date, city):
             hourly_dic[hour_strs[j]]['rain_chance'] = float(p.string.split()[0])
     except:
         print("Scraping failed: rain probs")
+        err = sys.exc_info()[0]
+        print(err)
 
     try:
         # SCRAPE Rain amounts
@@ -97,6 +124,8 @@ def scrape_hourly(date, city):
             hourly_dic[hour_strs[j]]['rain_amt'] = float(span.text.split()[0])
     except:
         print("Scraping failed: rain amounts")
+        err = sys.exc_info()[0]
+        print(err)
 
     try:
         # SCRAPE Wind directions
@@ -106,6 +135,8 @@ def scrape_hourly(date, city):
             pass
     except:
         print("Scraping failed: hourly wind directions")
+        err = sys.exc_info()[0]
+        print(err)
 
     try:
         # SCRAPE Wind speed
@@ -115,6 +146,8 @@ def scrape_hourly(date, city):
             hourly_dic[hour_strs[j]]['wind_speed'] = round(float(div.string.split()[0])/3.6, 2)
     except:
         print("Scraping failed: hourly wind speed")
+        err = sys.exc_info()[0]
+        print(err)
 
     try:
         # SCRAPE pressure
@@ -124,6 +157,8 @@ def scrape_hourly(date, city):
             pass
     except:
         print("Scraping failed: hourly pressure")
+        err = sys.exc_info()[0]
+        print(err)
 
     try:
         # SCRAPE air humidity
@@ -132,28 +167,46 @@ def scrape_hourly(date, city):
             hourly_dic[hour_strs[j]]['humidity'] = float(span.text.split()[0])
     except:
         print("Scraping failed: hourly humidity")
+        err = sys.exc_info()[0]
+        print(err)
 
     return hourly_dic
 
 def scrape_daily(date, city):
+    """Scrapes daily data from html file containing the daily data of the
+    given date and city
+
+    Assumes data to live in ../data
+    """
+
     # define dict
     daily_dic = {}
     days = 16
 
     # try to open the file
     data_path = '../data'
-    path = data_path + '/' + get_filename('../data', date, city, mode='daily')
+    try:
+        path = data_path + '/' + get_filename('../data', date, city, mode='daily')
+    except TypeError:
+        print("Can't find PATH: " + data_path + ' ' + date + ' ' + city + ' daily')
+        err = sys.exc_info()[0]
+        print(err)
+
     try:
         print("Scraping "+ path)
         soup = BeautifulSoup(open(path))
     except FileNotFoundError:
         print("Data file missing, PATH: " + path)
+        err = sys.exc_info()[0]
+        print(err)
 
     # check for country, city and type
     try:
         assert(check_header(soup, city, mode='daily'))
     except:
         print("Wrong header for city =" + city + " daily")
+        err = sys.exc_info()[0]
+        print(err)
 
     # define daily scraping classes
     temp_low_class = 'inline text--white gamma'
@@ -187,6 +240,8 @@ def scrape_daily(date, city):
             daily_dic[days_strs[j]]['low'] = float(div.string[3:(str_len-1)])
     except:
         print("Scraping failed: daily temperature")
+        err = sys.exc_info()[0]
+        print(err)
 
     # SCRAPE all other values: it is all hard coded in a big string, buggy
     # get the sun hours idxs as starting point for every day
@@ -252,52 +307,17 @@ def get_filename(dirpath, date, city, mode='hourly'):
             path = f
     return path
 
-data_path = '../data'
-processed_path = '../data/processed'
-
-# dates to process
-dates = ['26-04-2016']
-
-# list fo all cities we are scraping from
-cities = ["berlin"]
-cities = ["berlin", "hamburg", "muenchen",
-            "koeln", "frankfurt", "stuttgart",
-            "bremen", "leipzig", "hannover",
-            "nuernberg", "dortmund", "dresden",
-            "kassel", "kiel", "bielefeld",
-            "saarbruecken", "rostock", "freiburg",
-            "magdeburg", "erfurt"]
-
-processed_dates = []
-processed_cities = []
-
-# for every date:
-for date in dates:
+def scrape(date, city):
+    """Scrape data for given date and city.
+    :param data: should be in the format 30-05-2016
+    :param city: should be the english city name, i.e., cologne, cassel, munich
+    :return data_dic: dictionary holding the daily and hourly data
+    """
     dateInt = int(date.split('-')[0]+date.split('-')[1]+date.split('-')[2])
-    for city in cities:
-        # make dict
-        data_dic = {'site': 'wetter.com',
-                    'city': city,
-                    'date': dateInt,
-                    'hourly': scrape_hourly(date, city),
-                    'daily': scrape_daily(date, city)}
-        #pprint.pprint(data_dic)
-        processed_dates.append(date)
-        processed_cities.append(city)
-
-# run tests
-assert(tester.run_tests(data_dic))
-
-# move processed files to 'processed' folder
-testing = True
-if not(testing):
-    for date in processed_dates:
-        for city in processed_cities:
-            filename = get_filename('../data', date, city, mode='hourly')
-            oldpath = data_path + '/' + filename
-            newpath = processed_path + '/' + filename
-            os.rename(oldpath, newpath)
-            filename = get_filename('../data', date, city, mode='daily')
-            oldpath = data_path + '/' + filename
-            newpath = processed_path + '/' + filename
-            os.rename(oldpath, newpath)
+    data_dic = {'site': 1, # 'wetter.com' id = 1
+                'city': city,
+                'date': dateInt,
+                'hourly': scrape_hourly(date, city),
+                'daily': scrape_daily(date, city)}
+    assert(tester.run_tests(data_dic))
+    return data_dic
