@@ -320,4 +320,5 @@ def scrape(date, city):
                 'hourly': scrape_hourly(date, city),
                 'daily': scrape_daily(date, city)}
     assert(tester.run_tests(data_dic))
-    return data_dic
+    #TODO add data to data base
+    # return nothing
