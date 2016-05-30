@@ -28,7 +28,7 @@ def download(datafolder = "../data"):
                 "magdeburg", "erfurt"]
 
     # corresponding list of IDs used by wetter.com
-    IDs = ["/DE0001020", "/DE0001020", "/DE0006515",
+    IDs = ["/DE0001020", "/DE0004130", "/DE0006515",
             "/DE0005156", "/DE0002989", "/DE0010287",
             "/DE0001516", "/DE0006194", "/DE0004160",
             "/DE0007131", "/DE0002221", "/DE0002265",
