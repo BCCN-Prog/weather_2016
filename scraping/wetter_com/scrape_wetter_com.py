@@ -6,32 +6,22 @@ import os, sys
 sys.path.append("../")
 import test_scraper_output as tester
 
-def check_header(soup, city, mode='hourly'):
-    """Checks the header in the html file. Ensure that city and county are
-    plausible
-
-    :param soup: BeautifulSoup object holding the html file representation
-    :param mode: hourly or daily scraping mode
-    :return result: True, False if the header test passed, failed, respectively
+def scrape(date, city):
+    """Scrape data for given date and city.
+    :param data: should be in the format 30-05-2016
+    :param city: should be the english city name, i.e., cologne, cassel, munich
+    :return data_dic: dictionary holding the daily and hourly data
     """
-    result = True
-    if city=='muenchen' or city=='nuernberg' or city=='saarbruecken':
-        city = city.replace('ue', 'ü')
-    if city=='koeln':
-        city = city.replace('oe', 'ö')
-    if city=='frankfurt':
-        city = 'frankfurt am main'
-    header_class = "[ breadcrumb__item ]"
-    header = soup.find_all('span', class_ = header_class)
-    if not(header[3].text == 'Deutschland'): result = False
-    if not(header[5].text.lower() == city): result = False
-    if mode=='hourly':
-        mode_str = 'Heute'
-    elif mode=='daily':
-        mode_str = '16-Tage Trend'
-    if not(header[6].text==mode_str): result = False
-    return result
-
+    dateInt = int(date.split('-')[0]+date.split('-')[1]+date.split('-')[2])
+    data_dic = {'site': 1, # 'wetter.com' id = 1
+                'city': city,
+                'date': dateInt,
+                'hourly': scrape_hourly(date, city),
+                'daily': scrape_daily(date, city)}
+    assert(tester.run_tests(data_dic))
+    #TODO add data to data base
+    # return nothing
+    
 def scrape_hourly(date, city):
     """Scrapes hourly data from html file containing the hourly data of the
     given date and city
@@ -307,18 +297,37 @@ def get_filename(dirpath, date, city, mode='hourly'):
             path = f
     return path
 
-def scrape(date, city):
-    """Scrape data for given date and city.
-    :param data: should be in the format 30-05-2016
-    :param city: should be the english city name, i.e., cologne, cassel, munich
-    :return data_dic: dictionary holding the daily and hourly data
+def check_header(soup, city, mode='hourly'):
+    """Checks the header in the html file. Ensure that city and county are
+    plausible
+
+    :param soup: BeautifulSoup object holding the html file representation
+    :param mode: hourly or daily scraping mode
+    :return result: True, False if the header test passed, failed, respectively
     """
-    dateInt = int(date.split('-')[0]+date.split('-')[1]+date.split('-')[2])
-    data_dic = {'site': 1, # 'wetter.com' id = 1
-                'city': city,
-                'date': dateInt,
-                'hourly': scrape_hourly(date, city),
-                'daily': scrape_daily(date, city)}
-    assert(tester.run_tests(data_dic))
-    #TODO add data to data base
-    # return nothing
+    result = True
+    # map city name from english to german
+    if city=='munich':
+        city = 'münchen'
+    if city=='nuremberg':
+        city = 'nürnberg'
+    if city=='saarbruecken':
+        city = city.replace('ue', 'ü')
+    if city=='cologne':
+        city = 'köln'
+    if city=='frankfurt':
+        city = 'frankfurt am main'
+    if city=='hanover':
+        city = 'hannover'
+    if city=='cassel':
+        city = 'kassel'
+    header_class = "[ breadcrumb__item ]"
+    header = soup.find_all('span', class_ = header_class)
+    if not(header[3].text == 'Deutschland'): result = False
+    if not(header[5].text.lower() == city): result = False
+    if mode=='hourly':
+        mode_str = 'Heute'
+    elif mode=='daily':
+        mode_str = '16-Tage Trend'
+    if not(header[6].text==mode_str): result = False
+    return result
