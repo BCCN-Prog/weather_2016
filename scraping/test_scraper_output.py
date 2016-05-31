@@ -16,9 +16,9 @@ def test_top_level(data_dic):
                 "nuremberg", "dortmund", "dresden",
                 "kassel", "kiel", "bielefeld",
                 "saarbruecken", "rostock", "freiburg",
-                "magdeburg", "erfurt", "saarbrücken",
+                "magdeburg", "erfurt", "saarbrucken",
                 "münchen", "koeln", "nuernberg",
-                "köln", "saarbrücken"]
+                "köln", "saarbrücken", "freiburg-im-breisgau"]
     for key in keys_required:
         assert(key in keys_present)
     # check for date
@@ -51,10 +51,10 @@ def test_daily(data_dic):
         keys_present = day_dic.keys()
         # make sure all keys are present
         for key in keys_required:
-            assert(key in keys_present)
+            assert(key in keys_present) # check for required keys
         # make sure all values are floats
-        for val in day_dic.values():
-            assert(isinstance(val, float))
+        for key in keys_required:
+            assert(isinstance(day_dic[key], float))#all required values need to be floats
         # make sure they are in a plausible range
         high = day_dic['high']
         low = day_dic['low']
@@ -87,7 +87,9 @@ def test_hourly(data_dic):
             assert(key in keys_present)
         # make sure all required values are floats
         for key in keys_required:
-            assert(isinstance(hour_dic[key], float))
+            val = hour_dic[key]
+            if not(np.equal(val, None)):
+                assert(isinstance(val, float)) #all required values need to be floats
         # make sure they are in a plausible range, ignore None as missing data
         temp = hour_dic['temp']
         if not(np.equal(temp, None)):
