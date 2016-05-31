@@ -6,40 +6,42 @@ import os, sys
 sys.path.append("../")
 import test_scraper_output as tester
 
-def scrape(date, city):
+def scrape(date, city, data_path='../data'):
     """Scrape data for given date and city.
-    :param data: should be in the format 30-05-2016
-    :param city: should be the english city name, i.e., cologne, cassel, munich
-    :return data_dic: dictionary holding the daily and hourly data
+    :param date: should be in the format 30-05-2016
+    :param city: should be the english city name, i.e., cologne, kassel, munich
+    :param data_path: relative path to the directory where html files live
     """
     dateInt = int(date.split('-')[0]+date.split('-')[1]+date.split('-')[2])
     data_dic = {'site': 1, # 'wetter.com' id = 1
                 'city': city,
                 'date': dateInt,
-                'hourly': scrape_hourly(date, city),
-                'daily': scrape_daily(date, city)}
+                'hourly': scrape_hourly(date, city, data_path),
+                'daily': scrape_daily(date, city, data_path)}
     assert(tester.run_tests(data_dic))
     #TODO add data to data base
     # return nothing
-    
-def scrape_hourly(date, city):
+
+def scrape_hourly(date, city, data_path='../data'):
     """Scrapes hourly data from html file containing the hourly data of the
     given date and city
-
-    Assumes data to live in ../data
+    :param date: should be in the format 30-05-2016
+    :param city: should be the english city name, i.e., cologne, kassel, munich
+    :param data_path: relative path to the directory where html files live
+    :return hourly_dic: dictionary holding the hourly data
     """
 
     # define dict
     hourly_dic = {}
 
     # try to open the file
-    data_path = '../data'
     try:
-        path = data_path + '/' + get_filename('../data', date, city, mode='hourly')
+        path = data_path + '/' + get_filename(data_path, date, city, mode='hourly')
     except TypeError:
         print("Can't find PATH: " + data_path + ' ' + date + ' ' + city + ' hourly')
         err = sys.exc_info()[0]
         print(err)
+        raise FileNotFoundError
 
     try:
         print("Scraping "+ path)
@@ -162,11 +164,13 @@ def scrape_hourly(date, city):
 
     return hourly_dic
 
-def scrape_daily(date, city):
+def scrape_daily(date, city, data_path='../data'):
     """Scrapes daily data from html file containing the daily data of the
     given date and city
-
-    Assumes data to live in ../data
+    :param date: should be in the format 30-05-2016
+    :param city: should be the english city name, i.e., cologne, kassel, munich
+    :param data_path: relative path to the directory where html files live
+    :return daily_dic: dictionary holding the daily data
     """
 
     # define dict
@@ -174,13 +178,13 @@ def scrape_daily(date, city):
     days = 16
 
     # try to open the file
-    data_path = '../data'
     try:
-        path = data_path + '/' + get_filename('../data', date, city, mode='daily')
+        path = data_path + '/' + get_filename(data_path, date, city, mode='daily')
     except TypeError:
         print("Can't find PATH: " + data_path + ' ' + date + ' ' + city + ' daily')
         err = sys.exc_info()[0]
         print(err)
+        raise FileNotFoundError        
 
     try:
         print("Scraping "+ path)
@@ -288,6 +292,9 @@ def scrape_daily(date, city):
 
 def get_filename(dirpath, date, city, mode='hourly'):
     """Looks up filename of the html file in dirpath for given date and city
+    :param dirpath: relative path to the data directory
+    :param date: date in the format 31-05-2016
+    :param city: city as string
     :param mode: daily or hourly data
     """
     path = None
@@ -307,19 +314,19 @@ def check_header(soup, city, mode='hourly'):
     """
     result = True
     # map city name from english to german
-    if city=='munich':
+    if city in ['munich', 'muenchen']:
         city = 'münchen'
-    if city=='nuremberg':
+    if city in ['nuremberg', 'nuernberg']:
         city = 'nürnberg'
     if city=='saarbruecken':
         city = city.replace('ue', 'ü')
-    if city=='cologne':
+    if city in ['cologne', 'koeln']:
         city = 'köln'
     if city=='frankfurt':
         city = 'frankfurt am main'
     if city=='hanover':
         city = 'hannover'
-    if city=='cassel':
+    if city in ['cassel', 'kassel']:
         city = 'kassel'
     header_class = "[ breadcrumb__item ]"
     header = soup.find_all('span', class_ = header_class)
