@@ -86,7 +86,7 @@ ENV/
 
 # Rope project settings
 .ropeproject
-
+*~
 
 scraping/data/
 *~

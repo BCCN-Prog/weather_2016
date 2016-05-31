@@ -1,6 +1,22 @@
 # -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup
 import re
+import test_scraper_output
+
+# my city names are different (in English):
+# cities_table = {"berlin": 1, "hamburg": 2, "muenchen": 3,
+# "koeln": 4, "frankfurt": 5, "stuttgart": 6,
+# "bremen" :7, "leipzig": 8, "hannover": 9,
+# "nuernberg": 10, "dortmund": 11, "dresden": 12,
+# "kassel": 13, "kiel": 14, "bielefeld": 15,
+# "saarbruecken": 16, "rostock": 17, "freiburg": 18,
+# "magdeburg": 19, "erfurt": 20}
+#
+# provider_list = {'timeanddate_com': 0,
+# 'wetter_com': 1,
+# 'owm': 2,
+# 'wetter_de':3,
+# 'accuweather':4}
 
 def get_month(string):
     """ function extracting month from the string from the table, for date sanity check """
@@ -28,7 +44,7 @@ def scrape(file_hourly, file_daily):
     if the first file is hourly"""
 
     out_dict = {}
-    site = 'timeanddate.com/weather'
+    site = 0 #'timeanddate.com/weather'
     out_dict['site'] = site
     soup1 = BeautifulSoup(open(file_daily), "lxml")
     soup2 = BeautifulSoup(open(file_hourly), "lxml")
@@ -60,7 +76,7 @@ def scrape(file_hourly, file_daily):
     date = date.format(day,month)
 
     if date_check in file1:
-        out_dict['date'] = int(date)
+        out_dict['date'] = float(date)
     else:
         raise Exception('wrong date')
     #scraping table: soup.find_all('tr')
@@ -84,7 +100,7 @@ def scrape(file_hourly, file_daily):
             if len(c) ==19:
                 rain= int(c[-7]) + int(c[-6])/10
             elif len(c) == 17:
-                rain = 0
+                rain = 0.0
             else:
                 raise Exception('scraping failed - change in a site structure')
             dict['rain_amt'] = rain
@@ -103,7 +119,7 @@ def scrape(file_hourly, file_daily):
             if len(c) > 11:
                 rain = int(c[-2]) + int(c[-1])/10
             else:
-                rain = 0
+                rain = 0.0
             dict['rain_amt'] = rain
             # interesting values:
             dict['temp'] = float(c[4]) # c[4] - temp
@@ -128,4 +144,5 @@ if __name__ == '__main__':
     d = scrape(file2,file1)
     print(d)
 
+    test_scraper_output.run_tests(d)
 

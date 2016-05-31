@@ -1,7 +1,9 @@
 Requirements so far:
 
 Anaconda
+ (using verbose list here due to miniconda installation used in continuous integration testing)
 
 conda install basemap
 conda install h5py
+conda install pandas
 

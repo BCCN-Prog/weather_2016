@@ -1,4 +1,5 @@
 # Basic sanity checks, check that data is valid and within normal ranges
+import numpy as np
 def test_format(some_object):
     """Make sure the data is given as a dictionary"""
     assert(isinstance(some_object, dict))
@@ -8,24 +9,26 @@ def test_top_level(data_dic):
     # check for keys
     keys_present = data_dic.keys()
     keys_required = ['site', 'city', 'date', 'daily','hourly']
-    sites_possible = ["wetter.com"]
-    cities_possible = ["berlin", "hamburg", "muenchen",
-                "koeln", "frankfurt", "stuttgart",
-                "bremen", "leipzig", "hannover",
-                "nuernberg", "dortmund", "dresden",
+    sites_possible = ['0', '1', '2', '3', '4']
+    cities_possible = ["berlin", "hamburg", "munich",
+                "cologne", "frankfurt", "stuttgart",
+                "bremen", "leipzig", "hanover",
+                "nuremberg", "dortmund", "dresden",
                 "kassel", "kiel", "bielefeld",
                 "saarbruecken", "rostock", "freiburg",
-                "magdeburg", "erfurt"]
+                "magdeburg", "erfurt", "saarbrücken",
+                "münchen", "koeln", "nuernberg",
+                "köln", "saarbrücken"]
     for key in keys_required:
         assert(key in keys_present)
     # check for date
     date = data_dic['date']
     assert(isinstance(date, int)) # date should be int
     assert(date>10000000 and date<32000000)    # date should be ddmmyyyy
-    # check for site
+    # check for site, this is in integer now
     site = data_dic['site']
-    assert(isinstance(site, str)) # site should be string
-    assert(site in sites_possible) # site should be one of the sites
+    assert(isinstance(site, int)) # site should be integer, as coded in the wiki
+    assert(str(site) in sites_possible) # site should be one of the sites
     # check for city
     city = data_dic['city']
     assert(isinstance(city, str)) # site should be string
@@ -55,13 +58,19 @@ def test_daily(data_dic):
         # make sure they are in a plausible range
         high = day_dic['high']
         low = day_dic['low']
-        assert(high>=low)
-        assert(high >-60 and high < 60)
-        assert(low >-60 and low <60)
-        rain_amt = day_dic['rain_amt']
-        assert(rain_amt>=0 and rain_amt<1000)
         rain_chance = day_dic['rain_chance']
-        assert(rain_chance>=0 and rain_chance<=100)
+        rain_amt = day_dic['rain_amt']
+        # if data is missing (=None) then let the test pass
+        if not(np.equal(high, None) or np.equal(low, None)):
+            assert(high>=low)
+        if not(np.equal(low, None)):
+            assert(low >-60 and low <60)
+        if not(np.equal(high, None)):
+            assert(high >-60 and high < 60)
+        if not(np.equal(rain_chance, None)):
+            assert(rain_chance>=0 and rain_chance<=100)
+        if not(np.equal(rain_amt, None)):
+            assert(rain_amt>=0 and rain_amt<1000)
 
 def test_hourly(data_dic):
     """Test the dictionary holding the hourly data"""
@@ -79,17 +88,22 @@ def test_hourly(data_dic):
         # make sure all required values are floats
         for key in keys_required:
             assert(isinstance(hour_dic[key], float))
-        # make sure they are in a plausible range
+        # make sure they are in a plausible range, ignore None as missing data
         temp = hour_dic['temp']
-        assert(temp >-60 and temp < 60)
+        if not(np.equal(temp, None)):
+            assert(temp >-60 and temp < 60)
         rain_amt = hour_dic['rain_amt']
-        assert(rain_amt>=0 and rain_amt<1000)
+        if not(np.equal(rain_amt, None)):
+            assert(rain_amt>=0 and rain_amt<1000)
         rain_chance = hour_dic['rain_chance']
-        assert(rain_chance>=0 and rain_chance<=100)
+        if not(np.equal(rain_chance, None)):
+            assert(rain_chance>=0 and rain_chance<=100)
         wind_speed = hour_dic['wind_speed']
-        assert(wind_speed>=0 and wind_speed<500)
+        if not(np.equal(wind_speed, None)):
+            assert(wind_speed>=0 and wind_speed<500)
         humidity = hour_dic['humidity']
-        assert(humidity>=0 and humidity<=100)
+        if not(np.equal(humidity, None)):
+            assert(humidity>=0 and humidity<=100)
 
 def run_tests(data_dic):
     """Runs the above tests. Return true if all tests pass"""

@@ -1,6 +1,10 @@
 import unittest
 import os
 from wrapper.DataWrapH5py import Daily_DataBase, Hourly_DataBase
+# import pudb
+
+
+
 DAILY_TEST_FILE = 'test_daily.hdf5'
 HOURLY_TEST_FILE = 'test_hourly.hdf5'
 class Test_DataBase(unittest.TestCase):
@@ -17,6 +21,10 @@ class Test_DataBase(unittest.TestCase):
     daily_test_dict = {'date': test_num, 'site': test_num, 'geolocation': test_num,
                        'high': test_num, 'low': test_num, 'midday': test_num,
                        'rain_chance': test_num, 'rain_amt': test_num, 'cloud_cover': test_num}
+
+    full_hourly_dict = {'site': test_num, 'date': test_num,
+                        'hourly': {'00': hourly_test_dict, '01': hourly_test_dict,
+                                   '03': daily_test_dict}}
 
     def test_1_database_create(self):
 
@@ -107,6 +115,21 @@ class Test_DataBase(unittest.TestCase):
         self.assertEqual(_n2, _n1+1)
 
         print('------------------------\n\n')
+
+    def test_5_save_hourly_dict(self):
+        print('\n------------------------')
+        print('Test Scraping Interface')
+        print('------------------------')
+
+        _n1 = self.hourly_DB.number_entries()
+        print('Number of entries before insert:', _n1)
+
+        self.hourly_DB.save_hourly_dict(self.full_hourly_dict)
+
+        _n2 = self.hourly_DB.number_entries()
+        print('Number of entries before insert:', _n2)
+
+        self.assertEqual(_n2, _n1+3)
 
 if __name__ == '__main__':
     unittest.main()
