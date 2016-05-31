@@ -18,6 +18,13 @@ class DataBase:
                   was last changed.
     """
     def __init__(self, file_name, row_num_init, row_num_max, categ_num_init, categ_num_max):
+        self.cities = {'berlin': 1, 'hamburg': 2, 'munich': 3, 'muenchen': 3,
+                       'koeln': 4, 'cologne': 4, 'frankfurt': 5, 'stuttgart': 6,
+                       'bremen': 7, 'leipzig': 8, 'hannover': 9, 'nuernberg': 10,
+                       'nuremburg': 10, 'dortmund': 11, 'dresden': 12,
+                       'kassel': 13, 'kiel': 14, 'bielefeld': 15, 'saarbrucken': 16,
+                       'saarbruecken': 16, 'rostock': 17, 'freiburg': 18,
+                       'magdeburg': 19, 'erfurt': 20}
         try:
             self.f = h5py.File(file_name, "r+")
         except:
@@ -29,13 +36,6 @@ class DataBase:
             self.f["metadata"][0] = 0
             self.f["metadata"][1] = self.get_cur_datetime_int()
 
-            self.cities = {'berlin': 1, 'hamburg': 2, 'munich': 3, 'muenchen': 3,
-                           'cologne': 4, 'koeln': 4, 'frankfurt': 5, 'stuttgart': 6,
-                           'bremen': 7, 'leipzig': 8, 'hannover': 9, 'nuremburg': 10,
-                           'nuernberg': 10, 'dortmund': 11, 'dresden': 12,
-                           'kassel': 13, 'kiel': 14, 'bielefeld': 15, 'saarbrucken': 1,
-                           'saarbruecken': 16, 'rostock': 17, 'freiburg': 18,
-                           'magdeburg': 19, 'erfurt': 20}
 
 
     def get_cur_datetime_int(self):
@@ -64,13 +64,21 @@ class DataBase:
     def number_entries(self):
         return self.f['metadata'][0]
 
+
 class Daily_DataBase(DataBase):
     def __init__(self, db_name="daily_database.hdf5"):
-        # daily_categories = ['date', 'site', 'geolocation', 'high', 'low',
-                            # 'midday', 'rain_chance', 'rain_amt', 'cloud_cover']
-        DataBase.__init__(self, db_name, 400, 2*1e6, 9, 15)
+        daily_categories = ['date', 'site', 'geolocation', 'high', 'low', 'midday',
+                            'rain_chance', 'rain_amt', 'cloud_cover', 'city_ID']
 
-    def add_data_point(self, date, site, geolocation, high, low, midday, rain_chance, rain_amt, cloud_cover):
+        DataBase.__init__(self,
+                          file_name=db_name,
+                          row_num_init=400,
+                          row_num_max=2*1e6,
+                          categ_num_init=len(daily_categories),
+                          categ_num_max=15,
+                          )
+
+    def add_data_point(self, date, site, geolocation, high, low, midday, rain_chance, rain_amt, cloud_cover, city_ID):
         '''
         Adds a data point to the first empty row of the matrix pointed to by
         self.f['metadata'][0] then advances it and updates f["metadata"][1].
@@ -81,14 +89,15 @@ class Daily_DataBase(DataBase):
             self.f["weather_data"].resize(self.f["weather_data"].shape[0]*2, 0)
 
         self.f["weather_data"][self.f["metadata"][0], 0] = date
-        self.f["weather_data"][self.f["metadata"][0], 1] = site
-        self.f["weather_data"][self.f["metadata"][0], 2] = geolocation
+        self.f["weather_data"][self.f["metadata"][0], 1] = site  # website (0-4) or historical (5)
+        self.f["weather_data"][self.f["metadata"][0], 2] = geolocation  # historical ID
         self.f["weather_data"][self.f["metadata"][0], 3] = high
         self.f["weather_data"][self.f["metadata"][0], 4] = low
         self.f["weather_data"][self.f["metadata"][0], 5] = midday
         self.f["weather_data"][self.f["metadata"][0], 6] = rain_chance
         self.f["weather_data"][self.f["metadata"][0], 7] = rain_amt
         self.f["weather_data"][self.f["metadata"][0], 8] = cloud_cover
+        self.f["weather_data"][self.f["metadata"][0], 9] = city_ID  # city
 
         self.f["metadata"][1] = self.get_cur_datetime_int()
         self.f["metadata"][0] += 1
@@ -114,9 +123,9 @@ class Daily_DataBase(DataBase):
         for f in glob.glob("./*_daily.csv"):
             self.import_from_csv(f)
 
-    def save_daily_dict(self, daily_dict):
+    def save_dict(self, daily_dict):
 
-        params = ['geolocation', 'high', 'low', 'midday', 'rain_chance', 'rain_amt', 'cloud_cover']
+        params = ['high', 'low', 'midday', 'rain_chance', 'rain_amt', 'cloud_cover', 'geolocation']
 
         try:
             date = daily_dict['date']
@@ -133,11 +142,15 @@ class Daily_DataBase(DataBase):
         data = daily_dict['daily']
 
         for hour_key, _d in data.items():
-            arg_dict = {'date': date, 'site': website, 'day': int(hour_key)}
+            arg_dict = {'date': date, 'site': website, 'day': int(hour_key),
+                        'city_ID': self.cities[_d['city']]}
 
             for param in params:
                 try:
-                    arg_dict[param] = _d[param]
+                    if _d[param] == None:
+                        arg_dict[param] = np.nan
+                    else:
+                        arg_dict[param] = _d[param]
                 except:
                     arg_dict[param] = np.nan
 
@@ -154,11 +167,20 @@ class Daily_DataBase(DataBase):
 
 
 class Hourly_DataBase(DataBase):
-
     def __init__(self, db_name="hourly_database.hdf5"):
-        DataBase.__init__(self, db_name, 4000, 300000000, 10, 15)
+        hourly_categories = ['date', 'hour', 'site', 'geolocation', 'temperature', 'humidity',
+                             'wind_speed', 'rain_chance', 'rain_amt', 'cloud_cover', 'city_ID']
 
-    def add_data_point(self, date, hour, site, geolocation, temperature, humidity, wind_speed, rain_chance, rain_amt, cloud_cover):
+        DataBase.__init__(self,
+                          file_name=db_name,
+                          row_num_init=4000,
+                          row_num_max=300000000,
+                          categ_num_init=len(hourly_categories),
+                          categ_num_max=15,
+                          )
+
+    def add_data_point(self, date, hour, site, geolocation, temperature, humidity,
+                       wind_speed, rain_chance, rain_amt, cloud_cover, city_ID):
         if self.f["metadata"][0] == self.f["weather_data"].shape[0]:
             self.f["weather_data"].resize(self.f["weather_data"].shape[0]*2, 0)
 
@@ -172,36 +194,41 @@ class Hourly_DataBase(DataBase):
         self.f["weather_data"][self.f["metadata"][0], 7] = rain_chance
         self.f["weather_data"][self.f["metadata"][0], 8] = rain_amt
         self.f["weather_data"][self.f["metadata"][0], 9] = cloud_cover
+        self.f["weather_data"][self.f["metadata"][0], 10] = city_ID
 
         self.f["metadata"][1] = self.get_cur_datetime_int()
         self.f["metadata"][0] += 1
 
-    def save_hourly_dict(self, hourly_dict):
-        params = ['temperature', 'humidity', 'wind_speed', 'rain_chance', 'rain_amt', 'cloud_cover']
+    def save_dict(self, hourly_dict):
+        params = ['geolocation', 'temperature', 'humidity', 'wind_speed',
+                  'rain_chance', 'rain_amt', 'cloud_cover']
 
         try:
             date = hourly_dict['date']
         except:
-            print('save_hourly_dict: No date')
-            return 0
+            raise Exception('save_hourly_dict: hourly dictionary has no date')
 
         try:
             website = hourly_dict['site']
         except:
-            print('save_hourly_dict: No site')
-            return 0
+            raise Exception('save_hourly_dict: hourly dictionary has no site')
 
         data = hourly_dict['hourly']
+        city_ID = self.cities[hourly_dict['city']]
 
         for hour_key, _d in data.items():
             arg_dict = {'date': date, 'site': website, 'hour': int(hour_key),
-                        'geolocation': self.cities[_d['city']]}
+                        'city_ID': city_ID}
 
             for param in params:
                 try:
-                    arg_dict[param] = _d[param]
-                except:
+                    if _d[param] == None:
+                        arg_dict[param] = np.nan
+                    else:
+                        arg_dict[param] = _d[param]
+                except:  # item doesn't exist
                     arg_dict[param] = np.nan
+
 
             self.add_data_point(**arg_dict)
 
