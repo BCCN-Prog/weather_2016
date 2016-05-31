@@ -22,7 +22,8 @@ class DataBase:
             self.f = h5py.File(file_name, "r+")
         except:
             self.f = h5py.File(file_name, "w")
-            self.f.create_dataset("weather_data", (row_num_init, categ_num_init), maxshape=(row_num_max, categ_num_max))
+            self.f.create_dataset("weather_data", (row_num_init, categ_num_init), maxshape=(row_num_max, categ_num_max),
+                    dtype='float64')
             self.f.create_dataset("metadata", (2, ), dtype='uint64')
 
             # initialize row pointer and intial write time
@@ -53,8 +54,10 @@ class DataBase:
         assert(matrix.shape[1] == self.f["weather_data"].shape[1])
         while self.f["metadata"][0] >= self.f["weather_data"].shape[0]-matrix.shape[0]:
             self.f["weather_data"].resize(self.f["weather_data"].shape[0]*2, 0)
+        assert self.f["weather_data"][self.f["metadata"][0]:int(self.f["metadata"][0])+matrix.shape[0], :].shape == \
+        matrix.shape
+        self.f["weather_data"][self.f["metadata"][0]:int(self.f["metadata"][0])+matrix.shape[0], :] = matrix
 
-        self.f["weather_data"][self.f["metadata"][0]:int(self.f["metadata"][0]+matrix.shape[0]), :] = matrix
         self.f["metadata"][0] += matrix.shape[0]
         self.f["metadata"][1] = self.get_cur_datetime_int()
 
@@ -113,7 +116,6 @@ class Daily_DataBase(DataBase):
     def auto_csv(self):
         for f in glob.glob("./*_daily.csv"):
             self.import_from_csv(f)
-
     def save_daily_dict(self, daily_dict):
 
         params = ['geolocation', 'high', 'low', 'midday', 'rain_chance', 'rain_amt', 'cloud_cover']
