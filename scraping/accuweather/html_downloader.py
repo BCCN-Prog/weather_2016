@@ -11,6 +11,10 @@ import glob
 import pprint
 import numpy as np
 
+import sys
+sys.path.append('../')
+import test_scraper_output as tester
+
 #          CITY                         PC      ID
 STATION = [('berlin',                   '10178',  '178087'),
            ('munich',                   '80331',  '178086'),
@@ -230,9 +234,10 @@ def scrape_daily_html(html_file):
             else:
                 assert False, 'Unkown variable found in stats of daily forecast.'
     
-    # rain_amnt and rain_chance average btwn day and night
+    # rain_amt, rain_chance and wind_speed average btwn day and night
     day_dict['rain_amt'] = (day_dict['rain_amount_day'] + day_dict['rain_amount_night']) / 2.
     day_dict['rain_chance'] = (day_dict['precipitation_chance_day'] + day_dict['precipitation_chance_night']) / 2.
+    day_dict['wind_speed'] = (day_dict['wind_speed_day'] + day_dict['wind_speed_night']) / 2.
 
     #pprint.pprint(day_dict)
 
@@ -265,6 +270,8 @@ def scrape_hourly_html(html_file):
     lines = find_unique(overview, n=5, name='tr')
 
     hour_entries = find_unique(lines[0], n=8, name='td')
+    print('HOUR ENTRIES')
+    print(hour_entries)
     hour = np.empty(8, dtype=str)
     for j, hour_entry in enumerate(hour_entries):
         hour_str = hour_entry.find('div').get_text()
@@ -274,6 +281,7 @@ def scrape_hourly_html(html_file):
 
     # create dict with given hourly values
     for h in hour:
+        assert(h in hour_dicts.keys()), '{} is already in the hour dictionary!'.format(h)
         hour_dicts[h] = {}
 
 
@@ -283,7 +291,7 @@ def scrape_hourly_html(html_file):
         temp_str = temp_entry.get_text()
         t = parse_unique('\d+', temp_str)
         temp[j] = t
-        hour_dicts[str(hour[j])]['temp'] = t
+        hour_dicts[str(hour[j])]['temp'] = float(t)
 
 
     felt_temp_entries = find_unique(lines[3], n=8, name='span')
@@ -292,7 +300,7 @@ def scrape_hourly_html(html_file):
         felt_temp_str = felt_temp_entry.get_text()
         ft = parse_unique('\d+', felt_temp_str)
         felt_temp[j] = ft
-        hour_dicts[str(hour[j])]['felt_temp'] = ft
+        hour_dicts[str(hour[j])]['felt_temp'] = float(ft)
 
 
     wind_entries = find_unique(lines[4], n=8, name='span')
@@ -303,7 +311,7 @@ def scrape_hourly_html(html_file):
         speed, direction = wind_str.split()
         wind_speed[j] = float(speed) * 1e3 / 3600 # m/s 
         wind_dir.append(direction)
-        hour_dicts[str(hour[j])]['wind_speed'] = speed
+        hour_dicts[str(hour[j])]['wind_speed'] = float(speed)
         hour_dicts[str(hour[j])]['wind_direction'] = direction
 
 
@@ -328,7 +336,7 @@ def scrape_hourly_html(html_file):
         rain_chance_str = rain_chance_entry.get_text()
         rc = parse_unique('\d+', rain_chance_str)
         rain_chance[j] = rc
-        hour_dicts[str(hour[j])]['rain_chance'] = rc
+        hour_dicts[str(hour[j])]['rain_chance'] = float(rc)
 
 
     snow_chance_entries = find_unique(lines[2], n=8, name='span')
@@ -337,7 +345,7 @@ def scrape_hourly_html(html_file):
         snow_chance_str = snow_chance_entry.get_text()
         sc = parse_unique('\d+', snow_chance_str)
         snow_chance[j] = sc
-        hour_dicts[str(hour[j])]['snow_chance'] = sc
+        hour_dicts[str(hour[j])]['snow_chance'] = float(sc)
 
 
     ice_chance_entries = find_unique(lines[3], n=8, name='span')
@@ -346,7 +354,7 @@ def scrape_hourly_html(html_file):
         ice_chance_str = ice_chance_entry.get_text()
         ic = parse_unique('\d+', ice_chance_str)
         ice_chance[j] = ic
-        hour_dicts[str(hour[j])]['ice_chance'] = ic
+        hour_dicts[str(hour[j])]['ice_chance'] = float(ic)
 
 
     sky_hourly = find_unique(soup, name='div', class_="hourly-table sky-hourly")
@@ -370,7 +378,7 @@ def scrape_hourly_html(html_file):
         cloud_cover_str = cloud_cover_entry.get_text()
         cc = parse_unique('\d+', cloud_cover_str)
         cloud_cover[j] = cc
-        hour_dicts[str(hour[j])]['cloud_cover'] = cc
+        hour_dicts[str(hour[j])]['cloud_cover'] = float(cc)
 
 
     humidity_entries = find_unique(lines[3], n=8, name='span')
@@ -379,7 +387,7 @@ def scrape_hourly_html(html_file):
         humidity_str = humidity_entry.get_text()
         hu = parse_unique('\d+', humidity_str)
         humidity[j] = hu
-        hour_dicts[str(hour[j])]['humidity'] = hu
+        hour_dicts[str(hour[j])]['humidity'] = float(hu)
 
 
     dew_point_entries = find_unique(lines[4], n=8, name='span')
@@ -388,16 +396,22 @@ def scrape_hourly_html(html_file):
         dew_point_str = dew_point_entry.get_text()
         dp = parse_unique('\d+', dew_point_str)
         dew_point[j] = dp
-        hour_dicts[str(hour[j])]['dew_point'] = dp
+        hour_dicts[str(hour[j])]['dew_point'] = float(dp)
+
+
+    # no rain_amt 
+    for j in range(8):
+        # no rain_amt
+        hour_dicts[str(hour[j])]['rain_amt'] = None
 
     return hour_dicts
 
 
 def scrape(date, city, data_folder):
 
-    data_dict = {'site'     :   'accuweather',
+    data_dict = {'site'     :   4, # accuweather id
                  'city'     :   city,
-                 'date'     :   date
+                 'date'     :   int(''.join(date.split('-')))
                 }
     daily_dict = {}
     hourly_dict = {}
@@ -435,7 +449,9 @@ def scrape(date, city, data_folder):
 
     pprint.pprint(data_dict)
 
-    return data_dict
+    assert(tester.run_tests(data_dict))
+
+    #return data_dict
 
 
 def scrape_all(data_folder):
@@ -461,11 +477,12 @@ def scrape_all(data_folder):
     for d in data_dictionaries:
         pprint.pprint(d)
 
+
         
 if __name__=='__main__':
-    download_html('./data/')
-    #scrape('17-05-2016', 'berlin', './data/')
-    #import sys
+    #download_html('./data/')
+    scrape('17-05-2016', 'berlin', './data/17_05/')
+    import sys
     #sys.stdout = open('./data/test_scrape_all.txt', 'w+')
     #scrape_all('./data/')
     #scrape_daily_html('/home/denis/Documents/Uni/project_software_carpentry/weather_2016/scraping/data/accuweather_10-05-2016_16:33_dortmund_daily_d15_1462890787.html')

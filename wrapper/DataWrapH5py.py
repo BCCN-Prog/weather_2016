@@ -37,7 +37,7 @@ class DataBase:
                            'kassel': 13, 'kiel': 14, 'bielefeld': 15, 'saarbrucken': 1,
                            'saarbruecken': 16, 'rostock': 17, 'freiburg': 18,
                            'magdeburg': 19, 'erfurt': 20}
-
+    
 
     def get_cur_datetime_int(self):
         '''
@@ -73,7 +73,7 @@ class Daily_DataBase(DataBase):
                             # 'midday', 'rain_chance', 'rain_amt', 'cloud_cover']
         DataBase.__init__(self, db_name, 400, 2*1e6, 9, 15)
 
-    def add_data_point(self, date, site, geolocation, high, low, midday, rain_chance, rain_amt, cloud_cover):
+    def add_data_point(self, date, site, station_id, high, low, midday, rain_chance, rain_amt, cloud_cover):
         '''
         Adds a data point to the first empty row of the matrix pointed to by
         self.f['metadata'][0] then advances it and updates f["metadata"][1].
@@ -85,7 +85,7 @@ class Daily_DataBase(DataBase):
 
         self.f["weather_data"][self.f["metadata"][0], 0] = date
         self.f["weather_data"][self.f["metadata"][0], 1] = site
-        self.f["weather_data"][self.f["metadata"][0], 2] = geolocation
+        self.f["weather_data"][self.f["metadata"][0], 2] = station_id
         self.f["weather_data"][self.f["metadata"][0], 3] = high
         self.f["weather_data"][self.f["metadata"][0], 4] = low
         self.f["weather_data"][self.f["metadata"][0], 5] = midday
@@ -118,7 +118,7 @@ class Daily_DataBase(DataBase):
             self.import_from_csv(f)
     def save_daily_dict(self, daily_dict):
 
-        params = ['geolocation', 'high', 'low', 'midday', 'rain_chance', 'rain_amt', 'cloud_cover']
+        params = ['station_id', 'high', 'low', 'midday', 'rain_chance', 'rain_amt', 'cloud_cover']
 
         try:
             date = daily_dict['date']
@@ -174,14 +174,14 @@ class Hourly_DataBase(DataBase):
     def __init__(self, db_name="hourly_database.hdf5"):
         DataBase.__init__(self, db_name, 4000, 300000000, 10, 15)
 
-    def add_data_point(self, date, hour, site, geolocation, temperature, humidity, wind_speed, rain_chance, rain_amt, cloud_cover):
+    def add_data_point(self, date, hour, site, station_id, temperature, humidity, wind_speed, rain_chance, rain_amt, cloud_cover):
         if self.f["metadata"][0] == self.f["weather_data"].shape[0]:
             self.f["weather_data"].resize(self.f["weather_data"].shape[0]*2, 0)
 
         self.f["weather_data"][self.f["metadata"][0], 0] = date
         self.f["weather_data"][self.f["metadata"][0], 1] = hour
         self.f["weather_data"][self.f["metadata"][0], 2] = site
-        self.f["weather_data"][self.f["metadata"][0], 3] = geolocation
+        self.f["weather_data"][self.f["metadata"][0], 3] = station_id
         self.f["weather_data"][self.f["metadata"][0], 4] = temperature
         self.f["weather_data"][self.f["metadata"][0], 5] = humidity
         self.f["weather_data"][self.f["metadata"][0], 6] = wind_speed
