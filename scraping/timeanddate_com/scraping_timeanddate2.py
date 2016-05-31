@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup
 import re
-import test_scraper_output
+import test_scraper_output as tester
 
 # my city names are different (in English):
 # cities_table = {"berlin": 1, "hamburg": 2, "muenchen": 3,
@@ -32,58 +32,66 @@ def get_month(string):
         raise Exception('wrong month (not in April - July interval)')
     return month
 
-def scrape(file_hourly, file_daily):
+def scrape(file_date,city, data_path = ''):
     """scraping data from timeanddate.com/weather, returning one dictionary for both files
     only for dates in April - July period
+    date format example: 30-05-2016
     first index in extended in date = 11.05 if downloaded 10.05
     first index in hourly when downloading at 17:24 is 18:00
     checks: if date in filename is date of hourly forecast,
-    if the forecast is for the city that is in the filename
+    if the forecast is for the city that is in the filename (except from saarbrucken)
     if day is between 1-31
     if rain encoding hasn't change
-    if the first file is hourly"""
-
+    """
+    file_hourly = "timeanddate_com_{}_{}_hourly.html".format(file_date,city)
+    file_daily = "timeanddate_com_{}_{}_daily.html".format(file_date,city)
     out_dict = {}
     site = 0 #'timeanddate.com/weather'
     out_dict['site'] = site
-    soup1 = BeautifulSoup(open(file_daily), "lxml")
-    soup2 = BeautifulSoup(open(file_hourly), "lxml")
+    soup = [0,0]
+    soup[0] = BeautifulSoup(open(file_daily), "lxml")
+    soup[1] = BeautifulSoup(open(file_hourly), "lxml")
 
     # log the location
-    title = soup1.title.string.split(',')[0]
-    city = title.split(' ')[-1]
-    #print(city) #city name without space at the beginning
-    #print('city:', city, 'filename:', file2)
-    if city.lower() in file1 and city.lower() in file2:
-        out_dict['city'] = city
+    title1 = soup[0].title.string.split(',')[0]
+    html_city1 = title1.split(' ')[-1]
+    title2 = soup[1].title.string.split(',')[0]
+    html_city2 = title2.split(' ')[-1]
+    
+    if city is not 'saarbrucken':
+        if html_city1.lower()==city and html_city2.lower()==city:
+            out_dict['city'] = city
+        else:
+            raise Exception('forecast for city different than in the file name for', city)
     else:
-        raise Exception('forecast for city different than in the file name')
+        out_dict['city'] = city
     out_dict['daily'] = {}
     out_dict['hourly'] = {}
 
-    date1 = soup2.find_all('tr')[2:3]
+    date1 = soup[1].find_all('tr')[2:3]
     dates = date1[0].find_all('th')
     date_check = '{}-{}-2016'
-    date = '{}{}2016'
+    date_temp = '{}{}2016'
     a = dates[0].text[2:]  # gets dates in format i.e. 10. Mai
     month = get_month(a)
     b = re.findall(r'\d+', str(dates))
+
     if 0 < int(b[-1]) < 32:
         day = b[-1]
     else:
         raise Exception('wrong day')
     date_check = date_check.format(day, month)
-    date = date.format(day,month)
+    date = date_temp.format(day,month)
 
-    if date_check in file1:
-        out_dict['date'] = float(date)
+    if date_check==file_date:
+        out_dict['date'] = int(date)
     else:
-        raise Exception('wrong date')
+        raise Exception('wrong date in html for file from {}'.format(file_date))
     #scraping table: soup.find_all('tr')
 
     ## get the daily data
-    if 'extended' in soup1.title.string:
-        for i, tr in enumerate(soup1.find_all('tr')[2:-1]):
+    if 'extended' in soup[0].title.string:
+        for i, tr in enumerate(soup[0].find_all('tr')[2:-1]):
             dict ={}
             # scraping columns in the table
             tds = tr.find_all('td')
@@ -110,8 +118,8 @@ def scrape(file_hourly, file_daily):
         raise Exception('wrong input file')
 
     ## get the hourly data
-    if 'Hourly' in soup2.title.string:
-        for j, tr in enumerate(soup2.find_all('tr')[2:-1]): #for every row in a table
+    if 'Hourly' in soup[1].title.string:
+        for j, tr in enumerate(soup[1].find_all('tr')[2:-1]): #for every row in a table
             dict = {}
             #scraping from columns of the table except the first
             tds = tr.find_all('td')
@@ -136,13 +144,14 @@ def scrape(file_hourly, file_daily):
         raise Exception('wrong input file')
 
     #print(len(out_dict['hourly'])) #24
+    assert (tester.run_tests(out_dict))
     return out_dict
 
 if __name__ == '__main__':
-    file1 = "timeanddate_com_10-05-2016_nuremberg_daily.html"
-    file2 = "timeanddate_com_10-05-2016_nuremberg_hourly.html"
-    d = scrape(file2,file1)
-    print(d)
+    date = '10-05-2016'
+    city = 'saarbrucken'
+    d = scrape(date,city)
+    #print(d['city'])
 
-    test_scraper_output.run_tests(d)
+    #tester.run_tests(d)
 
