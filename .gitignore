@@ -89,3 +89,6 @@ ENV/
 *~
 
 scraping/data/
+*~
+.DS_Store
+*.idea

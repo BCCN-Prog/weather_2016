@@ -76,6 +76,14 @@ class DataBase:
     def number_entries(self):
         return self.f['metadata'][0]
 
+    def get_sort_indices(self, param):
+        '''
+        Gets indices for dataset sorted along the param-entry. This can and should be used 
+        for presorting- and slicing the matrix ahead of time in order to increase performance.
+        '''
+        assert(param < self.f["weather_data"].shape[1])
+        return np.argsort(self.f["weather_data"][:self.f["metadata"][0], param])
+	#what if nan?
 
 class Daily_DataBase(DataBase):
     def __init__(self, db_name="daily_database.hdf5"):
@@ -135,7 +143,7 @@ class Daily_DataBase(DataBase):
         for f in glob.glob("./*_daily.csv"):
             self.import_from_csv(f)
 
-    def save_daily_dict(self, daily_dict):
+    def save_dict(self, daily_dict):
 
         params = ['station_id', 'high', 'low', 'midday', 'rain_chance', 'rain_amt', 'cloud_cover']
 
