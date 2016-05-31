@@ -1,0 +1,20 @@
+Queries needed
+
+1)   One parameter, one date, multiple stations (Q1)
+2)   One station, one parameter, multiple dates (Q2)
+3)   Average over time (Q3)
+ 
+Example questions
+
+Historical
+
+1. What is the temperature across all stations for a given time (spatial axis)
+2. What is the evolution of temperature over time (temporal axis)
+3. If it rains on the 27th of June, does it rain more for the next 4 weeks (proverb testing)
+
+Comparative
+
+4. Which service provider gives the most reliable predictions?
+5. For a given provider, which locations are most reliable to predict a weather parameter?
+6. Which day of the week provides the best predictions?
+
