@@ -87,7 +87,9 @@ def test_hourly(data_dic):
             assert(key in keys_present)
         # make sure all required values are floats
         for key in keys_required:
-            assert(isinstance(hour_dic[key], float)) #all required values need to be floats
+            val = hour_dic[key]
+            if not(np.equal(val, None)):
+                assert(isinstance(val, float)) #all required values need to be floats
         # make sure they are in a plausible range, ignore None as missing data
         temp = hour_dic['temp']
         if not(np.equal(temp, None)):
