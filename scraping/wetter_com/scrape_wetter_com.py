@@ -53,7 +53,7 @@ def scrape_hourly(date, city, data_path='../data'):
 
     # check for country, city and type
     try:
-        assert(check_header(soup, city, mode='hourly'))
+        assert(check_header(soup, city, mode='hourly')), "Wrong city name in header: {}".format(city)
     except:
         print("Wrong header for city =" + city + " hourly")
         err = sys.exc_info()[0]
@@ -91,7 +91,7 @@ def scrape_hourly(date, city, data_path='../data'):
         # get all the temperature divs
         temps = soup.find_all('div', class_ = temp_class)
         # for every div, get the string, take the temperature value and save it in the matrix
-        assert(len(temps)==24)
+        assert(len(temps)==24), "html format seems to have changed: missing temp entries"
         for j, div in enumerate(temps):
             hourly_dic[hour_strs[j]]['temp'] = float(div.string.split()[0])
     except:
@@ -184,7 +184,7 @@ def scrape_daily(date, city, data_path='../data'):
         print("Can't find PATH: " + data_path + ' ' + date + ' ' + city + ' daily')
         err = sys.exc_info()[0]
         print(err)
-        raise FileNotFoundError        
+        raise FileNotFoundError
 
     try:
         print("Scraping "+ path)
@@ -196,7 +196,7 @@ def scrape_daily(date, city, data_path='../data'):
 
     # check for country, city and type
     try:
-        assert(check_header(soup, city, mode='daily'))
+        assert(check_header(soup, city, mode='daily')), "Wrong city name in header: {}".format(city)
     except:
         print("Wrong header for city =" + city + " daily")
         err = sys.exc_info()[0]
@@ -219,7 +219,7 @@ def scrape_daily(date, city, data_path='../data'):
         # get all the high temperature divs
         temps_high = soup.find_all('div', class_=temp_high_class)
         # for every div, get the string, take the temperature value and save it in the matrix
-        assert(len(temps_high)==days)
+        assert(len(temps_high)==days), "not enough temperatures extracted"
         for j, div in enumerate(temps_high):
             # get the length of the string in div to be sensitive to one/two digit numbers
             # format is 4° vs. 14°
@@ -228,7 +228,7 @@ def scrape_daily(date, city, data_path='../data'):
         # low
         temps_low = soup.find_all('div', class_=temp_low_class)
         # for every div, get the string, take the temperature value and save it
-        assert(len(temps_low)==days)
+        assert(len(temps_low)==days), "not enough temperatures extracted 24!={}".format(len(temps_low))
         for j, div in enumerate(temps_low):
             str_len = len(div.string)
             daily_dic[days_strs[j]]['low'] = float(div.string[3:(str_len-1)])
