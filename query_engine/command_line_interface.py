@@ -12,8 +12,8 @@ parameters = input('Which parameters?: ')
 
 qe = QueryEngine()
 
-loc = city_dict[loc]
-parameters = param_dict[parameters]
+#loc = city_dict[loc]
+#berliparameters = param_dict[parameters]
 
 data = qe.get_data_point(loc, date_time, hourly_daily, historical_scraping, parameters)
 
