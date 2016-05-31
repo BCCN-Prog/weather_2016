@@ -261,6 +261,10 @@ def scrape_daily_html(html_file):
 
 def scrape_hourly_html(html_file):
 
+    site, date_, time, city_, request_type, request_index, timestemp = os.path.splitext(os.path.basename(html_file))[0].split('_') 
+    request_index = request_index[1:]
+    time = time[:2]
+
     hour_dicts = {}
 
     soup = BeautifulSoup(open(html_file))
@@ -272,16 +276,36 @@ def scrape_hourly_html(html_file):
     hour_entries = find_unique(lines[0], n=8, name='td')
     print('HOUR ENTRIES')
     print(hour_entries)
-    hour = np.empty(8, dtype=str)
+    hour_test = np.empty(8, dtype=str)
+    hour = []
+    unit = []
     for j, hour_entry in enumerate(hour_entries):
         hour_str = hour_entry.find('div').get_text()
         h, unit = split_string(hour_str)
         assert (unit == 'am' or unit == 'pm'), 'Unit of hour variable is not am, but {}'.format(unit)
-        hour[j] = h
+        hour_test[j] = h
+        print('HOURS before :', h, unit)
+        if unit == 'am':
+            if len(h) == 1:
+                h = '0' + h
+            elif h == '12':
+                h = '00'
+        if unit == 'pm':
+            if h == '12':
+                pass
+            else:
+                h = str(int(h) + 12)
+        hour.append(h)
+        print('HOURS after :', h)
+    for i, h in enumerate(hour):
+        if int(h) < int(time):
+            hour[i] = str(int(h) + 24)
 
     # create dict with given hourly values
+    print('HOUR', hour)
     for h in hour:
-        assert(h in hour_dicts.keys()), '{} is already in the hour dictionary!'.format(h)
+        print('TEST', h)
+        assert(h not in hour_dicts.keys()), '{} is already in the hour dictionary!'.format(h)
         hour_dicts[h] = {}
 
 
@@ -327,7 +351,7 @@ def scrape_hourly_html(html_file):
         h, unit = split_string(hour2_str)
         assert (unit == 'am' or unit == 'pm'), 'Unit of hour2 variable is not am, but {}'.format(unit)
         hour2[j] = h
-    assert np.all(hour==hour2), 'Something wrong with the hour variable.'
+    assert np.all(hour_test==hour2), 'Something wrong with the hour variable.'
 
 
     rain_chance_entries = find_unique(lines[1], n=8, name='span')
@@ -368,7 +392,7 @@ def scrape_hourly_html(html_file):
         h, unit = split_string(hour3_str)
         assert (unit == 'am' or unit == 'pm'), 'Unit of hour3 variable is not am, but {}'.format(unit)
         hour3[j] = h
-    assert np.all(hour==hour3), 'Something wrong with the hour variable.'
+    assert np.all(hour_test==hour3), 'Something wrong with the hour variable.'
 
     # skip UV factor
 

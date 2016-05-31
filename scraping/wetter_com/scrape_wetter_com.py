@@ -5,6 +5,7 @@ import pprint
 import os, sys
 sys.path.append("../")
 import test_scraper_output as tester
+import wrapper.DataWrapH5py as wrapper
 
 def scrape(date, city, data_path='../data'):
     """Scrape data for given date and city.
@@ -19,8 +20,12 @@ def scrape(date, city, data_path='../data'):
                 'hourly': scrape_hourly(date, city, data_path),
                 'daily': scrape_daily(date, city, data_path)}
     assert(tester.run_tests(data_dic))
-    #TODO add data to data base
-    # return nothing
+
+    daily_db = wrapper.Daily_DataBase()
+    hourly_db = wrapper.Hourly_DataBase()
+    daily_db.save_dict(data_dic)
+    hourly_db.save_dict(data_dic)
+
 
 def scrape_hourly(date, city, data_path='../data'):
     """Scrapes hourly data from html file containing the hourly data of the
