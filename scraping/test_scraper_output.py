@@ -16,7 +16,7 @@ def test_top_level(data_dic):
                 "nuremberg", "dortmund", "dresden",
                 "kassel", "kiel", "bielefeld",
                 "saarbruecken", "rostock", "freiburg",
-                "magdeburg", "erfurt", "saarbrücken",
+                "magdeburg", "erfurt", "saarbrucken",
                 "münchen", "koeln", "nuernberg",
                 "köln", "saarbrücken"]
     for key in keys_required:
