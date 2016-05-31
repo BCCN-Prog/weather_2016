@@ -3,20 +3,6 @@ from bs4 import BeautifulSoup
 import re
 import test_scraper_output as tester
 
-# my city names are different (in English):
-# cities_table = {"berlin": 1, "hamburg": 2, "muenchen": 3,
-# "koeln": 4, "frankfurt": 5, "stuttgart": 6,
-# "bremen" :7, "leipzig": 8, "hannover": 9,
-# "nuernberg": 10, "dortmund": 11, "dresden": 12,
-# "kassel": 13, "kiel": 14, "bielefeld": 15,
-# "saarbruecken": 16, "rostock": 17, "freiburg": 18,
-# "magdeburg": 19, "erfurt": 20}
-#
-# provider_list = {'timeanddate_com': 0,
-# 'wetter_com': 1,
-# 'owm': 2,
-# 'wetter_de':3,
-# 'accuweather':4}
 
 def get_month(string):
     """ function extracting month from the string from the table, for date sanity check """
@@ -57,7 +43,7 @@ def scrape(file_date,city, data_path = ''):
     html_city1 = title1.split(' ')[-1]
     title2 = soup[1].title.string.split(',')[0]
     html_city2 = title2.split(' ')[-1]
-    
+
     if city is not 'saarbrucken':
         if html_city1.lower()==city and html_city2.lower()==city:
             out_dict['city'] = city
@@ -77,7 +63,10 @@ def scrape(file_date,city, data_path = ''):
     b = re.findall(r'\d+', str(dates))
 
     if 0 < int(b[-1]) < 32:
-        day = b[-1]
+        if len(b[-1]):
+            day = b[-1]
+        else:
+            day = '0'+b[-1]
     else:
         raise Exception('wrong day')
     date_check = date_check.format(day, month)
@@ -151,7 +140,5 @@ if __name__ == '__main__':
     date = '10-05-2016'
     city = 'saarbrucken'
     d = scrape(date,city)
-    #print(d['city'])
 
-    #tester.run_tests(d)
 
