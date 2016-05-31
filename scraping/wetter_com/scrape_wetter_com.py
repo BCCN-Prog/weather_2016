@@ -21,7 +21,7 @@ def scrape(date, city):
     assert(tester.run_tests(data_dic))
     #TODO add data to data base
     # return nothing
-    
+
 def scrape_hourly(date, city):
     """Scrapes hourly data from html file containing the hourly data of the
     given date and city
@@ -143,7 +143,7 @@ def scrape_hourly(date, city):
         # SCRAPE pressure
         airpress = soup.find_all('span', class_ = pressure_class)
         for j, span in enumerate(airpress):
-            hourly_dic[hour_strs[j]]['pressure'] = float(span.text.split()[0])
+            hourly_dic[hour_strs[j]]['pressure'] = None #float(span.text.split()[0])
             pass
     except:
         print("Scraping failed: hourly pressure")
@@ -307,19 +307,19 @@ def check_header(soup, city, mode='hourly'):
     """
     result = True
     # map city name from english to german
-    if city=='munich':
+    if city in ['munich', 'muenchen']:
         city = 'münchen'
-    if city=='nuremberg':
+    if city in ['nuremberg', 'nuernberg']:
         city = 'nürnberg'
     if city=='saarbruecken':
         city = city.replace('ue', 'ü')
-    if city=='cologne':
+    if city in ['cologne', 'koeln']:
         city = 'köln'
     if city=='frankfurt':
         city = 'frankfurt am main'
     if city=='hanover':
         city = 'hannover'
-    if city=='cassel':
+    if city in ['cassel', 'kassel']:
         city = 'kassel'
     header_class = "[ breadcrumb__item ]"
     header = soup.find_all('span', class_ = header_class)
