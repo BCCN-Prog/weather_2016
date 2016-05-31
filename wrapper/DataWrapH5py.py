@@ -29,13 +29,23 @@ class DataBase:
             self.f = h5py.File(file_name, "r+")
         except:
             self.f = h5py.File(file_name, "w")
-            self.f.create_dataset("weather_data", (row_num_init, categ_num_init), maxshape=(row_num_max, categ_num_max))
+            self.f.create_dataset("weather_data",
+                                  (row_num_init, categ_num_init),
+                                  maxshape=(row_num_max, categ_num_max),
+                                  dtype='float64')
             self.f.create_dataset("metadata", (2, ), dtype='uint64')
 
             # initialize row pointer and intial write time
             self.f["metadata"][0] = 0
             self.f["metadata"][1] = self.get_cur_datetime_int()
 
+            self.cities = {'berlin': 1, 'hamburg': 2, 'munich': 3, 'muenchen': 3,
+                           'cologne': 4, 'koeln': 4, 'frankfurt': 5, 'stuttgart': 6,
+                           'bremen': 7, 'leipzig': 8, 'hannover': 9, 'nuremburg': 10,
+                           'nuernberg': 10, 'dortmund': 11, 'dresden': 12,
+                           'kassel': 13, 'kiel': 14, 'bielefeld': 15, 'saarbrucken': 1,
+                           'saarbruecken': 16, 'rostock': 17, 'freiburg': 18,
+                           'magdeburg': 19, 'erfurt': 20}
 
 
     def get_cur_datetime_int(self):
@@ -53,8 +63,10 @@ class DataBase:
         assert(matrix.shape[1] == self.f["weather_data"].shape[1])
         while self.f["metadata"][0] >= self.f["weather_data"].shape[0]-matrix.shape[0]:
             self.f["weather_data"].resize(self.f["weather_data"].shape[0]*2, 0)
+        assert self.f["weather_data"][self.f["metadata"][0]:int(self.f["metadata"][0])+matrix.shape[0], :].shape == \
+            matrix.shape
+        self.f["weather_data"][self.f["metadata"][0]:int(self.f["metadata"][0])+matrix.shape[0], :] = matrix
 
-        self.f["weather_data"][self.f["metadata"][0]:int(self.f["metadata"][0]+matrix.shape[0]), :] = matrix
         self.f["metadata"][0] += matrix.shape[0]
         self.f["metadata"][1] = self.get_cur_datetime_int()
 
@@ -78,7 +90,7 @@ class Daily_DataBase(DataBase):
                           categ_num_max=15,
                           )
 
-    def add_data_point(self, date, site, geolocation, high, low, midday, rain_chance, rain_amt, cloud_cover, city_ID):
+    def add_data_point(self, date, site, station_id, high, low, midday, rain_chance, rain_amt, cloud_cover, city_ID):
         '''
         Adds a data point to the first empty row of the matrix pointed to by
         self.f['metadata'][0] then advances it and updates f["metadata"][1].
@@ -90,7 +102,7 @@ class Daily_DataBase(DataBase):
 
         self.f["weather_data"][self.f["metadata"][0], 0] = date
         self.f["weather_data"][self.f["metadata"][0], 1] = site  # website (0-4) or historical (5)
-        self.f["weather_data"][self.f["metadata"][0], 2] = geolocation  # historical ID
+        self.f["weather_data"][self.f["metadata"][0], 2] = station_id
         self.f["weather_data"][self.f["metadata"][0], 3] = high
         self.f["weather_data"][self.f["metadata"][0], 4] = low
         self.f["weather_data"][self.f["metadata"][0], 5] = midday
@@ -123,9 +135,9 @@ class Daily_DataBase(DataBase):
         for f in glob.glob("./*_daily.csv"):
             self.import_from_csv(f)
 
-    def save_dict(self, daily_dict):
+    def save_daily_dict(self, daily_dict):
 
-        params = ['high', 'low', 'midday', 'rain_chance', 'rain_amt', 'cloud_cover', 'geolocation']
+        params = ['station_id', 'high', 'low', 'midday', 'rain_chance', 'rain_amt', 'cloud_cover']
 
         try:
             date = daily_dict['date']
@@ -160,9 +172,23 @@ class Daily_DataBase(DataBase):
         '''
         function just for mvp, not efficient and uses items not to be used later.
         '''
-        temp = self.f["weather_data"][self.f["weather_data"][:, 2] == location_id]
-        ret = temp[temp[:, 0] == time]
+        data = self.f["weather_data"]
 
+        n = data.shape[0]
+        idx = data[:, 2] == location_id
+        idx = np.arange(n)[idx]
+
+        temp = data[idx, :]
+
+        n = temp.shape[0]
+        idx = temp[:, 0] == time
+        idx = np.arange(n)[idx]
+
+        ret = temp[idx, :]
+        # print(ret.shape)
+
+        if(len(ret.shape) > 1):
+            return ret[0, param]
         return ret[param]
 
 
@@ -179,7 +205,7 @@ class Hourly_DataBase(DataBase):
                           categ_num_max=15,
                           )
 
-    def add_data_point(self, date, hour, site, geolocation, temperature, humidity,
+    def add_data_point(self, date, hour, site, station_id, temperature, humidity,
                        wind_speed, rain_chance, rain_amt, cloud_cover, city_ID):
         if self.f["metadata"][0] == self.f["weather_data"].shape[0]:
             self.f["weather_data"].resize(self.f["weather_data"].shape[0]*2, 0)
@@ -187,7 +213,7 @@ class Hourly_DataBase(DataBase):
         self.f["weather_data"][self.f["metadata"][0], 0] = date
         self.f["weather_data"][self.f["metadata"][0], 1] = hour
         self.f["weather_data"][self.f["metadata"][0], 2] = site
-        self.f["weather_data"][self.f["metadata"][0], 3] = geolocation
+        self.f["weather_data"][self.f["metadata"][0], 3] = station_id
         self.f["weather_data"][self.f["metadata"][0], 4] = temperature
         self.f["weather_data"][self.f["metadata"][0], 5] = humidity
         self.f["weather_data"][self.f["metadata"][0], 6] = wind_speed

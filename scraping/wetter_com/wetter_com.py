@@ -19,9 +19,16 @@ def download(datafolder = "../data"):
                 "kassel", "kiel", "bielefeld",
                 "saarbruecken", "rostock", "freiburg",
                 "magdeburg", "erfurt"]
+    cities_english = ["berlin", "hamburg", "munich",
+                "cologne", "frankfurt", "stuttgart",
+                "bremen", "leipzig", "hanover",
+                "nuremberg", "dortmund", "dresden",
+                "kassel", "kiel", "bielefeld",
+                "saarbruecken", "rostock", "freiburg",
+                "magdeburg", "erfurt"]
 
     # corresponding list of IDs used by wetter.com
-    IDs = ["/DE0001020", "/DE0001020", "/DE0006515",
+    IDs = ["/DE0001020", "/DE0004130", "/DE0006515",
             "/DE0005156", "/DE0002989", "/DE0010287",
             "/DE0001516", "/DE0006194", "/DE0004160",
             "/DE0007131", "/DE0002221", "/DE0002265",
@@ -36,7 +43,7 @@ def download(datafolder = "../data"):
         # construct url from city name and city ID, build filenname
         # example url: http://www.wetter.com/deutschland/berlin/DE0001020.html
         cityUrl = "http://www.wetter.com/wetter_aktuell/wettervorhersage/heute/deutschland/" + city + IDs[i] + ".html?showDiagram=true#detailsDiagram"
-        filename = "wetter_com_" + time.strftime("%d-%m-%Y_") + city + "_hourly.html"
+        filename = "wetter_com_" + time.strftime("%d-%m-%Y_%H_%M_%S_") + cities_english[i] + "_hourly.html"
         filename = file_existence_check(datafolder, filename)
         # download and save html file with given url and filename
         urllib.request.urlretrieve(cityUrl, os.path.join(datafolder, filename))
@@ -45,7 +52,7 @@ def download(datafolder = "../data"):
         # example url: http://www.wetter.com/wetter_aktuell/wettervorhersage/16_tagesvorhersage/deutschland/flensburg/DE0002929.html
         urlbase = "http://www.wetter.com/wetter_aktuell/wettervorhersage/16_tagesvorhersage/deutschland/"
         cityUrl = urlbase + city + IDs[i] + ".html"
-        filename = "wetter_com_" + time.strftime("%d-%m-%Y_%H_%M_%S_") + city + "_daily.html"
+        filename = "wetter_com_" + time.strftime("%d-%m-%Y_%H_%M_%S_") + cities_english[i] + "_daily.html"
         filename = file_existence_check(datafolder, filename)
         # download and save html file with given url and filename
         urllib.request.urlretrieve(cityUrl, os.path.join(datafolder, filename))
@@ -66,9 +73,9 @@ def download(datafolder = "../data"):
                     daystring = "in-{}-tagen".format(day+1) # day runs from 0-6
                 # example url: http://www.wetter.com/wetter_aktuell/wettervorhersage/morgen/deutschland/flensburg/DE0002929.html
                 # example url: http://www.wetter.com/wetter_aktuell/wettervorhersage/in-2-tagen/deutschland/flensburg/DE0002929.html ...
-                cityUrl = urlbase + daystring + "/deutschland/" + city + IDs[i]  + ".html"
+                cityUrl = urlbase + daystring + "/deutschland/" + cities_english[i] + IDs[i]  + ".html"
                 # join filename and data folder path, add timestamp
-                filename = "wetter_com_" + time.strftime("%d-%m-%Y_%H_%M_%S_") + city + "_detailed_daily.html"
+                filename = "wetter_com_" + time.strftime("%d-%m-%Y_%H_%M_%S_") + cities_english[i] + "_detailed_daily.html"
                 filename = file_existence_check(datafolder, filename)
                 # download and save html file with given url and filename
                 urllib.request.urlretrieve(cityUrl, os.path.join(datafolder, filename))
