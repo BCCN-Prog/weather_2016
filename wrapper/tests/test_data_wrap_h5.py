@@ -8,8 +8,12 @@ from wrapper.DataWrapH5py import Daily_DataBase, Hourly_DataBase
 DAILY_TEST_FILE = 'test_daily.hdf5'
 HOURLY_TEST_FILE = 'test_hourly.hdf5'
 class Test_DataBase(unittest.TestCase):
-    os.remove(DAILY_TEST_FILE)
-    os.remove(HOURLY_TEST_FILE)
+
+    if os.path.exists(DAILY_TEST_FILE):
+        os.remove(DAILY_TEST_FILE)
+    if os.path.exists(HOURLY_TEST_FILE):
+        os.remove(HOURLY_TEST_FILE)
+
     daily_DB = Daily_DataBase(DAILY_TEST_FILE)
     hourly_DB = Hourly_DataBase(HOURLY_TEST_FILE)
 
@@ -17,12 +21,15 @@ class Test_DataBase(unittest.TestCase):
     hourly_test_dict = {'date': test_num, 'hour': test_num, 'site': test_num,
                         'geolocation': test_num, 'temperature': test_num,
                         'humidity': test_num, 'wind_speed': test_num,
-                        'rain_chance': test_num, 'rain_amt': test_num, 'cloud_cover': test_num}
+                        'rain_chance': test_num, 'rain_amt': test_num,
+                        'cloud_cover': test_num, 'city_ID': test_num}
+
     daily_test_dict = {'date': test_num, 'site': test_num, 'geolocation': test_num,
                        'high': test_num, 'low': test_num, 'midday': test_num,
-                       'rain_chance': test_num, 'rain_amt': test_num, 'cloud_cover': test_num}
+                       'rain_chance': test_num, 'rain_amt': test_num,
+                       'cloud_cover': test_num, 'city_ID': test_num}
 
-    full_hourly_dict = {'site': test_num, 'date': test_num,
+    full_hourly_dict = {'site': test_num, 'date': test_num, 'city': 'berlin',
                         'hourly': {'00': hourly_test_dict, '01': hourly_test_dict,
                                    '03': daily_test_dict}}
 
@@ -32,8 +39,10 @@ class Test_DataBase(unittest.TestCase):
         print('Test database creation')
         print('------------------------')
         print('Checking intial shapes of arrays...')
-        self.assertEqual(self.daily_DB.f["weather_data"].shape, (400, 9))
-        self.assertEqual(self.hourly_DB.f["weather_data"].shape, (4000, 10))
+        self.assertEqual(self.daily_DB.f["weather_data"].shape,
+                         (400, len(self.daily_test_dict)))
+        self.assertEqual(self.hourly_DB.f["weather_data"].shape,
+                         (4000, len(self.hourly_test_dict)))
         print('------------------------')
 
     def test_2_add_hourly_single_point(self):
@@ -124,7 +133,7 @@ class Test_DataBase(unittest.TestCase):
         _n1 = self.hourly_DB.number_entries()
         print('Number of entries before insert:', _n1)
 
-        self.hourly_DB.save_hourly_dict(self.full_hourly_dict)
+        self.hourly_DB.save_dict(self.full_hourly_dict)
 
         _n2 = self.hourly_DB.number_entries()
         print('Number of entries before insert:', _n2)

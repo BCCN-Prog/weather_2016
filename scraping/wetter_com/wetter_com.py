@@ -23,7 +23,7 @@ def download(datafolder = "../data"):
                 "cologne", "frankfurt", "stuttgart",
                 "bremen", "leipzig", "hanover",
                 "nuremberg", "dortmund", "dresden",
-                "cassel", "kiel", "bielefeld",
+                "kassel", "kiel", "bielefeld",
                 "saarbruecken", "rostock", "freiburg",
                 "magdeburg", "erfurt"]
 
