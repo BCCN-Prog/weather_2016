@@ -135,7 +135,7 @@ class Daily_DataBase(DataBase):
         for f in glob.glob("./*_daily.csv"):
             self.import_from_csv(f)
 
-    def save_daily_dict(self, daily_dict):
+    def save_dict(self, daily_dict):
 
         params = ['station_id', 'high', 'low', 'midday', 'rain_chance', 'rain_amt', 'cloud_cover']
 
