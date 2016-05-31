@@ -274,8 +274,8 @@ def scrape_hourly_html(html_file):
     lines = find_unique(overview, n=5, name='tr')
 
     hour_entries = find_unique(lines[0], n=8, name='td')
-    print('HOUR ENTRIES')
-    print(hour_entries)
+    #print('HOUR ENTRIES')
+    #print(hour_entries)
     hour_test = np.empty(8, dtype=str)
     hour = []
     unit = []
@@ -284,7 +284,7 @@ def scrape_hourly_html(html_file):
         h, unit = split_string(hour_str)
         assert (unit == 'am' or unit == 'pm'), 'Unit of hour variable is not am, but {}'.format(unit)
         hour_test[j] = h
-        print('HOURS before :', h, unit)
+        #print('HOURS before :', h, unit)
         if unit == 'am':
             if len(h) == 1:
                 h = '0' + h
@@ -296,15 +296,15 @@ def scrape_hourly_html(html_file):
             else:
                 h = str(int(h) + 12)
         hour.append(h)
-        print('HOURS after :', h)
+        #print('HOURS after :', h)
     for i, h in enumerate(hour):
         if int(h) < int(time):
             hour[i] = str(int(h) + 24)
 
     # create dict with given hourly values
-    print('HOUR', hour)
+    #print('HOUR', hour)
     for h in hour:
-        print('TEST', h)
+        #print('TEST', h)
         assert(h not in hour_dicts.keys()), '{} is already in the hour dictionary!'.format(h)
         hour_dicts[h] = {}
 
@@ -439,6 +439,8 @@ def scrape(date, city, data_folder):
                 }
     daily_dict = {}
     hourly_dict = {}
+
+    #print(glob.glob(data_folder + '/accuweather_' + date + '*' + city + '*.html'))
 
     for html_file in glob.glob(data_folder + '/accuweather_' + date + '*' + city + '*.html'):
 
