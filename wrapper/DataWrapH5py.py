@@ -92,20 +92,18 @@ class DataBase:
 
     def create_presorted(self, params):
         '''
-        Creates presorted datasets in f, corresponding to params (a list). Careful, as
-        this function will increase the space f takes up on your hard dist considerably.
+        Creates presorted datasets in f, corresponding to params (a list). 
         If, for example params=['date', 'high'], we will get 2 new datasets named
-        "date_sorted_weather_data" and "high_sorted_weather_data" in f which are sorted
-        wrt to date and high.
+        "date_indices" and "high_indices" which contain the sorted indices wrt to
+        date and high.
         '''
         params_int = [self.categories_dict[i] for i in params]
         for i in range(len(params)):
             ind = self.get_sort_indices(params_int[i])
-            database_name = "{}_sorted_weather_data".format(params[i])
-            temp = self.f["weather_data"][:][ind]
+            database_name = "{}_indices".format(params[i])
+            temp = self.f["weather_data"][:,params_int[i]][ind]
             self.f.create_dataset(database_name, data=temp)
-            #above line must be monitored carefully because a lot of data is loaded
-            #(potentially) into memory, maybe there is a better way to do it?
+
             #also, watch out for nans
 
 class Daily_DataBase(DataBase):
