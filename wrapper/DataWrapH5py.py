@@ -17,7 +17,7 @@ class DataBase:
                   row of the matrix, in the second the time and day the database
                   was last changed.
     """
-    def __init__(self, file_name, row_num_init, row_num_max, categ_num_init, categ_num_max):
+    def __init__(self, file_name, row_num_init, row_num_max, categ_num_init, categ_num_max, make_new=False):
         self.cities = {'berlin': 1, 'hamburg': 2, 'munich': 3, 'muenchen': 3,
                        'koeln': 4, 'cologne': 4, 'frankfurt': 5, 'stuttgart': 6,
                        'bremen': 7, 'leipzig': 8, 'hannover': 9, 'nuernberg': 10,
@@ -25,27 +25,32 @@ class DataBase:
                        'kassel': 13, 'kiel': 14, 'bielefeld': 15, 'saarbrucken': 16,
                        'saarbruecken': 16, 'rostock': 17, 'freiburg': 18,
                        'magdeburg': 19, 'erfurt': 20}
-        try:
-            self.f = h5py.File(file_name, "r+")
-        except:
-            self.f = h5py.File(file_name, "w")
-            self.f.create_dataset("weather_data",
-                                  (row_num_init, categ_num_init),
-                                  maxshape=(row_num_max, categ_num_max),
-                                  dtype='float64')
-            self.f.create_dataset("metadata", (2, ), dtype='uint64')
 
-            # initialize row pointer and intial write time
-            self.f["metadata"][0] = 0
-            self.f["metadata"][1] = self.get_cur_datetime_int()
+        if make_new == False:
+            try:
+                self.f = h5py.File(file_name, "r+")
+            except:
+                self.f = h5py.File(file_name, "w")
+                self.f.create_dataset("weather_data",
+                                    (row_num_init, categ_num_init),
+                                    maxshape=(row_num_max, categ_num_max),
+                                    dtype='float64')
+                self.f.create_dataset("metadata", (2, ), dtype='uint64')
 
-            self.cities = {'berlin': 1, 'hamburg': 2, 'munich': 3, 'muenchen': 3,
-                           'cologne': 4, 'koeln': 4, 'frankfurt': 5, 'stuttgart': 6,
-                           'bremen': 7, 'leipzig': 8, 'hannover': 9, 'nuremburg': 10,
-                           'nuernberg': 10, 'dortmund': 11, 'dresden': 12,
-                           'kassel': 13, 'kiel': 14, 'bielefeld': 15, 'saarbrucken': 1,
-                           'saarbruecken': 16, 'rostock': 17, 'freiburg': 18,
-                           'magdeburg': 19, 'erfurt': 20}
+                # initialize row pointer and intial write time
+                self.f["metadata"][0] = 0
+                self.f["metadata"][1] = self.get_cur_datetime_int() 
+        else:
+                self.f = h5py.File(file_name, "w")
+                self.f.create_dataset("weather_data",
+                                    (row_num_init, categ_num_init),
+                                    maxshape=(row_num_max, categ_num_max),
+                                    dtype='float64')
+                self.f.create_dataset("metadata", (2, ), dtype='uint64')
+
+                # initialize row pointer and intial write time
+                self.f["metadata"][0] = 0
+                self.f["metadata"][1] = self.get_cur_datetime_int()
 
 
     def get_cur_datetime_int(self):
@@ -86,7 +91,7 @@ class DataBase:
 	#what if nan?
 
 class Daily_DataBase(DataBase):
-    def __init__(self, db_name="daily_database.hdf5"):
+    def __init__(self, db_name="daily_database.hdf5", make_new=False):
         daily_categories = ['date', 'site', 'geolocation', 'high', 'low', 'midday',
                             'rain_chance', 'rain_amt', 'cloud_cover', 'city_ID']
 
@@ -96,6 +101,7 @@ class Daily_DataBase(DataBase):
                           row_num_max=2*1e6,
                           categ_num_init=len(daily_categories),
                           categ_num_max=15,
+                          make_new=make_new
                           )
 
     def add_data_point(self, date, site, station_id, high, low, midday, rain_chance, rain_amt, cloud_cover, city_ID):
@@ -130,11 +136,12 @@ class Daily_DataBase(DataBase):
         df = pd.read_csv(file_name, usecols=[2, 1, 10, 11, 14, 6])
 
         df = np.array(df.values)
-        site = np.array([[np.nan] for i in range(df.shape[0])])
+        site = np.ones((df.shape[0],1))*5
         midday = np.array([[np.nan] for i in range(df.shape[0])])
         rain_chance = np.array([[np.nan] for i in range(df.shape[0])])
+        city_id = np.array([[np.nan] for i in range(df.shape[0])])
 
-        df = np.hstack((df, site, midday, rain_chance))[:, [1, 6, 0, 3, 4, 7, 8, 5, 2]]
+        df = np.hstack((df, site, midday, rain_chance, city_id))[:, [1, 6, 0, 3, 4, 7, 8, 5, 2, 9]]
 
         self.add_data_matrix(df)
         # should be more general.
@@ -201,7 +208,7 @@ class Daily_DataBase(DataBase):
 
 
 class Hourly_DataBase(DataBase):
-    def __init__(self, db_name="hourly_database.hdf5"):
+    def __init__(self, db_name="hourly_database.hdf5", make_new=False):
         hourly_categories = ['date', 'hour', 'site', 'geolocation', 'temperature', 'humidity',
                              'wind_speed', 'rain_chance', 'rain_amt', 'cloud_cover', 'city_ID']
 
@@ -211,6 +218,7 @@ class Hourly_DataBase(DataBase):
                           row_num_max=300000000,
                           categ_num_init=len(hourly_categories),
                           categ_num_max=15,
+                          make_new=make_new
                           )
 
     def add_data_point(self, date, hour, site, station_id, temperature, humidity,
