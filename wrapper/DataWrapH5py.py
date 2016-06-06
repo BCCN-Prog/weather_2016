@@ -101,8 +101,8 @@ class DataBase:
         for i in range(len(params)):
             ind = self.get_sort_indices(params_int[i])
             database_name = "{}_indices".format(params[i])
-            temp = self.f["weather_data"][:,params_int[i]][ind]
-            self.f.create_dataset(database_name, data=temp)
+            #temp = self.f["weather_data"][:,params_int[i]][ind]
+            self.f.create_dataset(database_name, data=ind)
 
             #also, watch out for nans
 
