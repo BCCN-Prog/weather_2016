@@ -143,7 +143,7 @@ class Test_DataBase(unittest.TestCase):
         self.assertEqual(_n2, _n1+3)
 
     def test_6_csv_loading(self):
-        daily_DB.auto_csv()
+        self.daily_DB.auto_csv()
 
 if __name__ == '__main__':
     unittest.main()
