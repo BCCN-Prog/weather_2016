@@ -12,6 +12,7 @@ loc_list = ['Berlin', 'Munich', 'Hamburg', 'Cologne', 'Frankfurt', 'Stuttgart', 
 
 def download(datafolder):
     #download daily 10 day forecast
+    #example url: http://api.wunderground.com/api/944b3f3c879d2394/geolookup/forecast10day/q/Germany/Berlin.json
     for loc in loc_list:
         #get the json object
         f = urllib.request.urlopen('http://api.wunderground.com/api/944b3f3c879d2394/geolookup/forecast10day/q/Germany/'+loc+'.json')
@@ -25,6 +26,7 @@ def download(datafolder):
         time.sleep(10)
         
     #hourly data
+    # example url: http://api.wunderground.com/api/944b3f3c879d2394/geolookup/hourly/q/Germany/Berlin.json
         f = urllib.request.urlopen('http://api.wunderground.com/api/944b3f3c879d2394/geolookup/hourly/q/Germany/'+loc+'.json')
         reader = codecs.getreader('utf-8') #how is data encoded? 
         parsed_json = json.load(reader(f)) 

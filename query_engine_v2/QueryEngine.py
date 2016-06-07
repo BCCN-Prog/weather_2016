@@ -38,7 +38,7 @@ class QueryEngine:
         ind = dset.get_sort_indices(param_int)
         
         lo_ind = np.argmax(dset.f["weather_data"][:,param_int][ind] >= lower)
-        hi_ind = np.argmin(dset.f["weather_data"][:,param_int][ind] <= upper)
+        hi_ind = np.argmin(dset.f["weather_data"][:,param_int][ind] <= upper) + 1
         
         #nan handling!
 
@@ -54,12 +54,13 @@ class QueryEngine:
 
     def smart_slice(self, dset, params, lower, upper, return_matrix=True):
         '''
-        Slices utilizing the presorted indices. After solving the nan issue, all categories will be
-        presorted, such that this function takes care of everything.
+        Slices utilizing the presorted indices. By default, all categories are presorted.
         dset string "hourly" or "daily" specifies the dataset, params is the list of categories involved
         in the slicing, lower and upper the lists of lower and upper limits corresponding to params.
         By default returns a matrix sliced according to the above criteria. If return_matrix==False,
         returns just the indices to be sliced by.
+        There is still a bug wrt to nan handling and wrt to all numbers being outside the boundaries.
+
         '''
         assert(len(params) == len(lower) and len(lower) == len(upper))
 
@@ -86,8 +87,11 @@ class QueryEngine:
         lo_ind = []
         hi_ind = []
         for i in range(len(params_intersect)):
-            lo_ind.append(np.argmax(dset.f["weather_data"][:,params_intersect_int[i]][dset.f[dset_names[i]]]>=lo_intersect[i]))
-            hi_ind.append(np.argmin(dset.f["weather_data"][:,params_intersect_int[i]][dset.f[dset_names[i]]]<=hi_intersect[i]))
+            s = dset.f["weather_data"][:,params_intersect_int[i]][dset.f[dset_names[i]]]
+            lo_ind.append(np.argmax(s >= lo_intersect[i]))
+            hi_ind.append(len(s) - np.argmax(s[::-1] <= hi_intersect[i]))
+            #lo_ind.append(np.argmax(dset.f["weather_data"][:,params_intersect_int[i]][dset.f[dset_names[i]]]>=lo_intersect[i]))
+            #hi_ind.append(np.argmin(dset.f["weather_data"][:,params_intersect_int[i]][dset.f[dset_names[i]]]<=hi_intersect[i]))
         #getting the slicing indices wrt to all parameters in params_intersect
 
         set_list = [set(dset.f[dset_names[i]][lo_ind[i]:hi_ind[i]]) for i in range(len(params_intersect))]
@@ -99,7 +103,8 @@ class QueryEngine:
         #sorting in oder to better comply with h5py.
 
         if not ind:
-            return "No matching enrties."
+            print("No matching entries.")
+            return np.array([])
 
         if return_matrix == True:
             return dset.f["weather_data"][ind,:]

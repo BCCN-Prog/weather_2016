@@ -21,7 +21,7 @@ def get_month(string):
     return month
 
 def prepend_0_if_single_digit(x):
-    return '0' + str(x) if len(x) == 1 else x
+    return '0' + x if len(x) == 1 else x
 
 
 def scrape(file_date,city, data_path = ''):
@@ -39,11 +39,16 @@ def scrape(file_date,city, data_path = ''):
     hours = [prepend_0_if_single_digit(str(i)) for i in range(24)]
     minutes = [prepend_0_if_single_digit(str(i)) for i in range(60)]
 
+    file_exists = False
     for hour, minute in product(hours,minutes):
-        name = data_path + "timeanddate_com_{}_{}_{}_{}_hourly.html".format(file_date,hour,minute,city)
+        name = data_path + "/timeanddate_com_{}_{}_{}_{}_hourly.html".format(file_date,hour,minute,city)
         if os.path.exists(name):
-            file_hourly = data_path + "\timeanddate_com_{}_{}_{}_{}_hourly.html".format(file_date,hour,minute,city)
-            file_daily = data_path + "\timeanddate_com_{}_{}_{}_{}_daily.html".format(file_date,hour,minute,city)
+            file_hourly = data_path + "/timeanddate_com_{}_{}_{}_{}_hourly.html".format(file_date,hour,minute,city)
+            file_daily = data_path + "/timeanddate_com_{}_{}_{}_{}_daily.html".format(file_date,hour,minute,city)
+            file_exists = True
+            break
+    if not file_exists:
+        return
     out_dict = {}
     site = 0 #'timeanddate.com/weather'
     out_dict['site'] = site
@@ -70,7 +75,7 @@ def scrape(file_date,city, data_path = ''):
     date1 = soup[1].find_all('tr')[2:3]
     dates = date1[0].find_all('th')
     date_check = '{}_{}_2016'
-    date_temp = '{}{}2016'
+    date_temp = '2016{}{}'
     a = dates[0].text[2:]  # gets dates in format i.e. 10. Mai
     month = get_month(a)
     b = re.findall(r'\d+', str(dates))
@@ -83,7 +88,7 @@ def scrape(file_date,city, data_path = ''):
     else:
         raise Exception('wrong day')
     date_check = date_check.format(day, month)
-    date = date_temp.format(day,month)
+    date = date_temp.format(month,day)
 
 
     if date_check==file_date:
