@@ -24,7 +24,7 @@ def test_top_level(data_dic):
     # check for date
     date = data_dic['date']
     assert(isinstance(date, int)) # date should be int
-    assert(date>10000000 and date<32000000)    # date should be ddmmyyyy
+    assert(date>1000000 and date<32000000)    # date should be ddmmyyyy
     # check for site, this is in integer now
     site = data_dic['site']
     assert(isinstance(site, int)) # site should be integer, as coded in the wiki
