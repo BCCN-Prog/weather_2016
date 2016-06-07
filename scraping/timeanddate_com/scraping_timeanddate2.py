@@ -63,14 +63,15 @@ def scrape(file_date,city, data_path = ''):
     b = re.findall(r'\d+', str(dates))
 
     if 0 < int(b[-1]) < 32:
-        if len(b[-1]):
+        if len(b[-1])>1:
             day = b[-1]
         else:
-            day = '0'+b[-1]
+            day = '0'+b[-1] #handling first nine days of each month
     else:
         raise Exception('wrong day')
     date_check = date_check.format(day, month)
     date = date_temp.format(day,month)
+
 
     if date_check==file_date:
         out_dict['date'] = int(date)
@@ -137,8 +138,8 @@ def scrape(file_date,city, data_path = ''):
     return out_dict
 
 if __name__ == '__main__':
-    date = '10-05-2016'
-    city = 'saarbrucken'
+    date = '07-06-2016'
+    city = 'nuremberg'
     d = scrape(date,city)
-
+    
 
