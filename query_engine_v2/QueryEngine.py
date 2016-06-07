@@ -126,7 +126,15 @@ class QueryEngine:
         #quite a bit of time here. Maybe issue a warning or something if the matrix is too large.
         #Can get problematic for hourly data.
 
-        def get_sorted_indices(self):
-            pass
-        def sort(self):
-            pass
+    def get_sorted_indices(self, param, data_matrix, dset=None):
+        if type(param) == int:
+            assert(param < data_matrix.shape[1])
+        else:
+            assert(type(param) == str)
+            assert(dset != None)
+            dset = self.dset_dict[dset]
+            assert(data_matrix.shape[1] == len(dset.params_dict))
+            param = dset.categories_dict[param]
+            
+    def sort(self):
+        pass
