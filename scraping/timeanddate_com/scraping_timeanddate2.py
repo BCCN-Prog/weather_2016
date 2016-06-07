@@ -2,6 +2,8 @@
 from bs4 import BeautifulSoup
 import re
 import test_scraper_output as tester
+from itertools import product
+import os.path
 
 
 def get_month(string):
@@ -18,6 +20,10 @@ def get_month(string):
         raise Exception('wrong month (not in April - July interval)')
     return month
 
+def prepend_0_if_single_digit(x):
+    return '0' + str(x) if len(x) == 1 else x
+
+
 def scrape(file_date,city, data_path = ''):
     """scraping data from timeanddate.com/weather, returning one dictionary for both files
     only for dates in April - July period
@@ -29,8 +35,15 @@ def scrape(file_date,city, data_path = ''):
     if day is between 1-31
     if rain encoding hasn't change
     """
-    file_hourly = "timeanddate_com_{}_{}_hourly.html".format(file_date,city)
-    file_daily = "timeanddate_com_{}_{}_daily.html".format(file_date,city)
+
+    hours = [prepend_0_if_single_digit(str(i)) for i in range(24)]
+    minutes = [prepend_0_if_single_digit(str(i)) for i in range(60)]
+
+    for hour, minute in product(hours,minutes):
+        name = data_path + "timeanddate_com_{}_{}_{}_{}_hourly.html".format(file_date,hour,minute,city)
+        if os.path.exists(name):
+            file_hourly = data_path + "\timeanddate_com_{}_{}_{}_{}_hourly.html".format(file_date,hour,minute,city)
+            file_daily = data_path + "\timeanddate_com_{}_{}_{}_{}_daily.html".format(file_date,hour,minute,city)
     out_dict = {}
     site = 0 #'timeanddate.com/weather'
     out_dict['site'] = site
@@ -56,7 +69,7 @@ def scrape(file_date,city, data_path = ''):
 
     date1 = soup[1].find_all('tr')[2:3]
     dates = date1[0].find_all('th')
-    date_check = '{}-{}-2016'
+    date_check = '{}_{}_2016'
     date_temp = '{}{}2016'
     a = dates[0].text[2:]  # gets dates in format i.e. 10. Mai
     month = get_month(a)
@@ -138,8 +151,8 @@ def scrape(file_date,city, data_path = ''):
     return out_dict
 
 if __name__ == '__main__':
-    date = '07-06-2016'
-    city = 'nuremberg'
+    date = '07_06_2016'
+    city = 'munich'
     d = scrape(date,city)
-    
+    print(d['daily']['1'])
 

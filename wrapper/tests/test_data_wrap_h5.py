@@ -31,7 +31,9 @@ class Test_DataBase(unittest.TestCase):
 
     full_hourly_dict = {'site': test_num, 'date': test_num, 'city': 'berlin',
                         'hourly': {'00': hourly_test_dict, '01': hourly_test_dict,
-                                   '03': daily_test_dict}}
+                                   '03': daily_test_dict},
+                        'daily': {'00': daily_test_dict},
+                        }
 
     def test_1_database_create(self):
 
@@ -139,6 +141,9 @@ class Test_DataBase(unittest.TestCase):
         print('Number of entries before insert:', _n2)
 
         self.assertEqual(_n2, _n1+3)
+
+    def test_6_csv_loading(self):
+        self.daily_DB.auto_csv()
 
 if __name__ == '__main__':
     unittest.main()
