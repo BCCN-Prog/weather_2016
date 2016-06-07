@@ -105,9 +105,6 @@ class QueryEngine:
             return dset.f["weather_data"][ind,:]
         else:
             return ind
-        #1: check which params match daily/hourly_params
-        #2: slice these ways first (manually, without argsort)
-        #3: then slice along the other ways, smartly
-        #meaning: find out the smallest range of values, slice that way, and then
-        #in rising order
-
+        #is there a way to return a view here? If the matrix is large, passing by value takes
+        #quite a bit of time here. Maybe issue a warning or something if the matrix is too large.
+        #Can get problematic for hourly data.
