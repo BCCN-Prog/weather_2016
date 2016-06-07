@@ -6,6 +6,7 @@ HOURLY_DB = 'hourly_database.hdf5'
 DAILY_DB = 'daily_database.hdf5'
 from scraping import test_scraper_output
 
+
 def get_element_val(div_obj, el_type, class_string):
     return div_obj.findAll(el_type, {"class": class_string})[0].string
 
@@ -56,14 +57,14 @@ def daily_sub_dict_from_div(div_obj):
     sub_dict = {}
 
     # <div class="text-date">26.04.</div>
-    sub_dict['date'] = get_element_val(div_obj, "div", "text-date")  # 'DD.MM.'
+    # sub_dict['date'] = get_element_val(div_obj, "div", "text-date")  # 'DD.MM.'
 
     # <div class="forecast-day-temperature">
         # <span class="wt-color-temperature-max">8°</span> /
         # <span class="wt-color-temperature-min">2°</span>
     # </div>
-    sub_dict['high'] = get_element_val(div_obj, "span", "wt-color-temperature-max")[:-1]  # deg C
-    sub_dict['low'] = get_element_val(div_obj, "span", "wt-color-temperature-min")[:-1]  # deg C
+    sub_dict['high'] = float(get_element_val(div_obj, "span", "wt-color-temperature-max")[:-1])  # deg C
+    sub_dict['low'] = float(get_element_val(div_obj, "span", "wt-color-temperature-min")[:-1])  # deg C
 
 
     # Get forecasts for every 6 hours
@@ -87,15 +88,18 @@ def daily_sub_dict_from_div(div_obj):
         rain_span = get_sub_element(rain_div, "span", "wt-font-semibold")
 
         rain_chance_str = rain_span[0].string  # %
-        col_dict['rain_chance'] = rain_chance_str[:-1]
+        col_dict['rain_chance'] = float(rain_chance_str[:-1].replace(',', '.'))
         if int(rain_chance_str.split('%')[0]) > max_rain_chance:
             max_rain_chance = int(rain_chance_str.split('%')[0])
 
         if len(rain_span) > 1:
             rain_amt_str = rain_span[1].string.split('l')[0].strip()  # l/m^2
             if rain_amt_str:
-                rain_amt_sum += float(rain_amt_str.replace(',', '.'))
-                col_dict['rain_amt'] = rain_amt_str
+                rain_amt = float(rain_amt_str.replace(',', '.'))
+                rain_amt_sum += rain_amt
+                col_dict['rain_amt'] = rain_amt
+        else:
+            sub_dict['rain_amt'] = None
 
 
         # wind
@@ -105,16 +109,16 @@ def daily_sub_dict_from_div(div_obj):
         wind_div = get_sub_element(div_obj, "div", "forecast-wind-text")[0]
         wind_speed_string = get_element_val(wind_div, "span", "wt-font-semibold").split(' ')
 
-        # convert km/h to m/h
-        m_per_h = int(wind_speed_string[0].split('(')[1]) * 1000
-        wind_speed_sum += m_per_h
-        col_dict['wind_speed'] = str(m_per_h)
+        # convert km/h to m/s
+        m_per_s = float(wind_speed_string[0].split('(')[1]) * 1000 / 60
+        wind_speed_sum += m_per_s
+        col_dict['wind_speed'] = m_per_s
 
         sub_dict[six_hour_str] = col_dict
 
-    sub_dict['rain_chance'] = str(max_rain_chance)
-    sub_dict['rain_amt'] = str(rain_amt_sum)
-    sub_dict['wind_speed'] = str(wind_speed_sum / 4)
+    sub_dict['rain_chance'] = float(max_rain_chance)
+    sub_dict['rain_amt'] = float(rain_amt_sum)
+    sub_dict['wind_speed'] = float(wind_speed_sum / 4)
 
     return sub_dict
 
@@ -126,7 +130,7 @@ def build_daily_dict(daily_results):
         daily_dict[str(div_num+1)] = daily_sub_dict_from_div(res_div)
 
 
-    return daily_results
+    return daily_dict
 
 
 def scrape(base_dir, DB_dir):
@@ -148,7 +152,7 @@ def scrape(base_dir, DB_dir):
             soup = BeautifulSoup(html_fh, from_encoding='utf-8')
 
             data_dict = None
-
+            pu.db  # @XXX
             try:
                 if SAMPLE_TYPE == 'hourly':
                     hour_forecast = soup.findAll("div", {"class": "column column-4 forecast-detail-column-1h"})
@@ -163,10 +167,8 @@ def scrape(base_dir, DB_dir):
 
             main_dict[SAMPLE_TYPE] = data_dict
 
-            pu.db  # @XXX
             # call Jan's verify function on dict
-            if not test_scraper_output.run_tests(main_dict):
-                print('poop')
+            assert(test_scraper_output.run_tests(main_dict))
 
             if SAMPLE_TYPE == 'hourly':
                 DB = Hourly_DataBase()

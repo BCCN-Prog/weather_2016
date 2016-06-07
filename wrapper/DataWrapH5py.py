@@ -192,10 +192,11 @@ class Daily_DataBase(DataBase):
             return 0
 
         data = daily_dict['daily']
+        city_ID = self.cities[daily_dict['city']]
 
         for day_key, _d in data.items():
             arg_dict = {'date': date, 'site': website, 'day': int(day_key),
-                        'city_ID': self.cities[_d['city']]}
+                        'city_ID': city_ID}
 
             for param in params:
                 try:
