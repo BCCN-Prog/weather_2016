@@ -435,7 +435,7 @@ def scrape(date, city, data_folder):
 
     data_dict = {'site'     :   4, # accuweather id
                  'city'     :   city,
-                 'date'     :   int(''.join(date.split('-')))
+                 'date'     :   int(''.join(date.split('-')[::-1]))
                 }
     daily_dict = {}
     hourly_dict = {}
@@ -475,7 +475,7 @@ def scrape(date, city, data_folder):
 
     #pprint.pprint(data_dict)
 
-    assert(tester.run_tests(data_dict))
+    assert tester.run_tests(data_dict), 'test_scraper_output.py failed!!!'
 
     #return data_dict
 
