@@ -9,6 +9,7 @@ from scraping import test_scraper_output
 def get_element_val(div_obj, el_type, class_string):
     return div_obj.findAll(el_type, {"class": class_string})[0].string
 
+
 def get_sub_element(div_obj, el_type, class_string):
     return div_obj.findAll(el_type, {"class": class_string})
 
@@ -23,20 +24,23 @@ def hourly_sub_dict_from_div(div_obj):
     sub_dict['rain_chance'] = float(rain_span[0].string[:-1].replace(',', '.'))  # %
     if len(rain_span) > 1:
         sub_dict['rain_amt'] = float(rain_span[1].string.split('l')[0].replace(',', '.'))  # l/m^2
+    else:
+        sub_dict['rain_amt'] = None
 
     wind_div = get_sub_element(div_obj, "div", "forecast-wind-text")[0]
     wind_speed_string = get_element_val(wind_div, "span", "wt-font-semibold").split(' ')
 
     # convert km/h to m/h
     km_per_h = float(wind_speed_string[0].split('(')[1].replace(',', '.'))
-    m_per_h = km_per_h * 1000
-    sub_dict['wind_speed'] = m_per_h
+    m_per_s = km_per_h * 1000 / 60
+    sub_dict['wind_speed'] = m_per_s
 
     hum_div = get_sub_element(div_obj, "div", "forecast-humidity-text")[0]
     sub_dict['humidity'] = float(get_sub_element(hum_div, "span", "wt-font-semibold")[0].string[:-1].replace(',', '.'))  # %
     sub_dict['pressure'] = float(get_sub_element(hum_div, "span", "wt-font-semibold")[1].string.split('h')[0].replace(',', '.'))  # hPa
 
     return sub_dict
+
 
 def build_hourly_dict(hourly_results):
     hourly_dict = {}
@@ -114,6 +118,7 @@ def daily_sub_dict_from_div(div_obj):
 
     return sub_dict
 
+
 def build_daily_dict(daily_results):
     daily_dict = {}
 
@@ -136,9 +141,9 @@ def scrape(base_dir, DB_dir):
     for html_name in os.listdir(IN_DIR):
         with open(IN_DIR + html_name) as html_fh:
             CITY = html_name.split('_')[-2]
-            DATE = int(('').join(html_name.split('_')[-5:-2]))
+            DATE = int(('').join(html_name.split('_')[-5:-2][::-1]))
             SAMPLE_TYPE = html_name.split('_')[-1].split('.')[0]
-            main_dict = {"site": SITE_ID, "city": CITY, "date": DATE, 'daily': None, 'hourly': None}
+            main_dict = {"site": SITE_ID, "city": CITY, "date": DATE, 'daily': {}, 'hourly': {}}
 
             soup = BeautifulSoup(html_fh, from_encoding='utf-8')
 
@@ -158,6 +163,7 @@ def scrape(base_dir, DB_dir):
 
             main_dict[SAMPLE_TYPE] = data_dict
 
+            pu.db  # @XXX
             # call Jan's verify function on dict
             if not test_scraper_output.run_tests(main_dict):
                 print('poop')
@@ -167,12 +173,10 @@ def scrape(base_dir, DB_dir):
             if SAMPLE_TYPE == 'daily':
                 DB = Daily_DataBase()
 
-            # pu.db
-            # print(main_dict)
             DB.save_dict(main_dict)
 
         # move html to processed folder
-        # os.rename(IN_DIR + html_name, OUT_DIR + html_name)
+        os.rename(IN_DIR + html_name, OUT_DIR + html_name)
 
 if __name__ == '__main__':
     scrape(os.getcwd() + '/output/', os.getcwd() + '/output/')
