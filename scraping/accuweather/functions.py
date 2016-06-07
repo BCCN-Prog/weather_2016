@@ -473,7 +473,7 @@ def scrape(date, city, data_folder):
     data_dict['hourly'] = hourly_dict
     data_dict['daily'] = daily_dict
 
-    pprint.pprint(data_dict)
+    #pprint.pprint(data_dict)
 
     assert(tester.run_tests(data_dict))
 
