@@ -2,6 +2,7 @@ import sys
 sys.path.append('../wrapper/')
 import DataWrapH5py
 import numpy as np
+import bisect
 
 class QueryEngine:
     daily_params = ['date', 'site', 'station_id', 'high', 'low', 'midday', 'rain_chance', 'rain_amt',
@@ -59,8 +60,8 @@ class QueryEngine:
         in the slicing, lower and upper the lists of lower and upper limits corresponding to params.
         By default returns a matrix sliced according to the above criteria. If return_matrix==False,
         returns just the indices to be sliced by.
-        There is still a bug wrt to nan handling and wrt to all numbers being outside the boundaries.
-
+        Nan handling: Nans always considered outside the bounds. This means that slicing wrt to a
+        category whose corresponding column contains only nans will always return an empty array.
         '''
         assert(len(params) == len(lower) and len(lower) == len(upper))
 
@@ -88,11 +89,12 @@ class QueryEngine:
         hi_ind = []
         for i in range(len(params_intersect)):
             s = dset.f["weather_data"][:,params_intersect_int[i]][dset.f[dset_names[i]]]
-            lo_ind.append(np.argmax(s >= lo_intersect[i]))
-            hi_ind.append(len(s) - np.argmax(s[::-1] <= hi_intersect[i]))
-            #lo_ind.append(np.argmax(dset.f["weather_data"][:,params_intersect_int[i]][dset.f[dset_names[i]]]>=lo_intersect[i]))
-            #hi_ind.append(np.argmin(dset.f["weather_data"][:,params_intersect_int[i]][dset.f[dset_names[i]]]<=hi_intersect[i]))
-        #getting the slicing indices wrt to all parameters in params_intersect
+            s = s[:np.argmin(s)]
+            #above line removes the nans
+
+            lo_ind.append(bisect.bisect_left(s, lo_intersect[i]))
+            hi_ind.append(bisect.bisect_right(s, hi_intersect[i]))
+            #getting the slicing indices wrt to all parameters in params_intersect
 
         set_list = [set(dset.f[dset_names[i]][lo_ind[i]:hi_ind[i]]) for i in range(len(params_intersect))]
         #make a list of sets of indices. I hope this step is not too computation intensive, I do not know how
@@ -101,6 +103,7 @@ class QueryEngine:
         ind = list(set.intersection(*set_list))
         ind = list(np.sort(ind))
         #sorting in oder to better comply with h5py.
+
 
         if not ind:
             print("No matching entries.")
