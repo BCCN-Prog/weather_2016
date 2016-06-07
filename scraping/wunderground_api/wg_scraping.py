@@ -1,5 +1,7 @@
 import pickle
 import numpy as np
+import datetime
+
 
 def scrape (filename):
     with open(filename, 'rb') as f:
@@ -13,7 +15,23 @@ def scrape (filename):
     return res
     
 def scrape_daily (dat):
-    pass
+    res = {}
+    res['site'] = 'weather underground' #!add right number once it is  assigned
+    res['city'] = dat['location']['city']
+    datf = dat['forecast']['simpleforecast']['forecastday']
+    month = datf[0]['date']['month']
+    day = datf[0]['date']['day']
+    year = datf[0]['date']['year']
+    date = '{}{}{}'.format(year, month, day)
+    res['date'] = int(date) #check for sanity here!
+    res['daily'] = {} #what is day 0?
+    
+
+# you are here and wanted to convert a yeaday to a date. datetime.datetime(year, 1, 1) + datetime.timedelta(days - 1)
+
+
+    for i 
+    
 
 def scrape_hourly (dat):
     res = {}
