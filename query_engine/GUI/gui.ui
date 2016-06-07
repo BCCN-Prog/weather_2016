@@ -141,7 +141,7 @@
       <x>30</x>
       <y>400</y>
       <width>198</width>
-      <height>51</height>
+      <height>66</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -155,7 +155,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QDateEdit" name="dateEdit"/>
+        <widget class="QDateEdit" name="StartingDate"/>
        </item>
       </layout>
      </item>
@@ -169,7 +169,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QDateEdit" name="dateEdit_2"/>
+        <widget class="QDateEdit" name="EndingDate"/>
        </item>
       </layout>
      </item>
@@ -222,13 +222,6 @@
      </item>
     </layout>
    </widget>
-   <zorder>verticalLayoutWidget</zorder>
-   <zorder>verticalLayoutWidget_2</zorder>
-   <zorder>verticalLayoutWidget_3</zorder>
-   <zorder>IntervalType_2</zorder>
-   <zorder>IntervalType_2</zorder>
-   <zorder>verticalLayoutWidget_4</zorder>
-   <zorder>verticalLayoutWidget_5</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -249,5 +242,22 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>radioButton_4</sender>
+   <signal>clicked()</signal>
+   <receiver>comboBox_2</receiver>
+   <slot>clearEditText()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>240</x>
+     <y>175</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>222</x>
+     <y>305</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

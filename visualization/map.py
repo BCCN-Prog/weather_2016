@@ -29,15 +29,15 @@ def get_geo_locations():
 
 
 def station_map(coordinates, temperature, hex_grid_size=(50,50)):
-    map = Basemap(projection='tmerc', lat_0=51, lon_0=10, llcrnrlat=47, llcrnrlon=5, urcrnrlat=55, urcrnrlon=16, resolution='i')
-    map.drawcoastlines()
-    map.drawcountries()
-    map.drawmapboundary()
+    m = Basemap(projection='tmerc', lat_0=51, lon_0=10, llcrnrlat=47, llcrnrlon=5, urcrnrlat=55, urcrnrlon=16, resolution='i')
+    m.drawcoastlines()
+    m.drawcountries()
+    m.drawmapboundary()
     lats = coordinates[:,0]
     lons = coordinates[:,1]
-    x, y  = map(lons, lats)
-    map.hexbin(x, y, C = temperature, gridsize=hex_grid_size, linewidth=0.5, edgecolor='k')
-    map.colorbar(location='bottom')
+    x, y  = m(lons, lats)
+    m.hexbin(x, y, C = temperature, gridsize=hex_grid_size, linewidth=0.5, edgecolor='k')
+    m.colorbar(location='bottom')
     plt.show()
 
 
