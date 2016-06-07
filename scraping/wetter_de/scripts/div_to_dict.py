@@ -1,6 +1,5 @@
 import os
 from bs4 import BeautifulSoup
-import pudb
 from wrapper.DataWrapH5py import Daily_DataBase, Hourly_DataBase
 HOURLY_DB = 'hourly_database.hdf5'
 DAILY_DB = 'daily_database.hdf5'
@@ -34,6 +33,8 @@ def hourly_sub_dict_from_div(div_obj):
     # convert km/h to m/h
     km_per_h = float(wind_speed_string[0].split('(')[1].replace(',', '.'))
     m_per_s = km_per_h * 1000 / 60
+    if m_per_s > 500:
+        m_per_s = 500.0
     sub_dict['wind_speed'] = m_per_s
 
     hum_div = get_sub_element(div_obj, "div", "forecast-humidity-text")[0]
@@ -111,6 +112,8 @@ def daily_sub_dict_from_div(div_obj):
 
         # convert km/h to m/s
         m_per_s = float(wind_speed_string[0].split('(')[1]) * 1000 / 60
+        if m_per_s > 500:
+            m_per_s = 500.0
         wind_speed_sum += m_per_s
         col_dict['wind_speed'] = m_per_s
 
@@ -152,7 +155,7 @@ def scrape(base_dir, DB_dir):
             soup = BeautifulSoup(html_fh, from_encoding='utf-8')
 
             data_dict = None
-            pu.db  # @XXX
+
             try:
                 if SAMPLE_TYPE == 'hourly':
                     hour_forecast = soup.findAll("div", {"class": "column column-4 forecast-detail-column-1h"})

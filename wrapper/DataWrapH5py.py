@@ -20,9 +20,9 @@ class DataBase:
     def __init__(self, file_name, row_num_init, row_num_max, categ_num_init, categ_num_max, make_new=False):
         self.cities = {'berlin': 1, 'hamburg': 2, 'munich': 3, 'muenchen': 3,
                        'koeln': 4, 'cologne': 4, 'frankfurt': 5, 'stuttgart': 6,
-                       'bremen': 7, 'leipzig': 8, 'hannover': 9, 'nuernberg': 10,
-                       'nuremburg': 10, 'dortmund': 11, 'dresden': 12,
-                       'kassel': 13, 'kiel': 14, 'bielefeld': 15, 'saarbrucken': 16,
+                       'bremen': 7, 'leipzig': 8, 'hannover': 9, 'hanover': 9,
+                       'nuernberg': 10, 'nuremburg': 10, 'dortmund': 11, 'dresden': 12,
+                       'kassel': 13, 'kiel': 14, 'bielfeld': 15, 'bielefeld': 15, 'saarbrucken': 16,
                        'saarbruecken': 16, 'rostock': 17, 'freiburg': 18,
                        'magdeburg': 19, 'erfurt': 20}
 
