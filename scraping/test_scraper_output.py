@@ -10,11 +10,11 @@ def test_top_level(data_dic):
     keys_present = data_dic.keys()
     keys_required = ['site', 'city', 'date', 'daily','hourly']
     sites_possible = ['0', '1', '2', '3', '4']
-    cities_possible = ["berlin", "hamburg", "munich",
+    cities_possible = ["berlin", "hamburg", "munich", "muenchen",
                 "cologne", "frankfurt", "stuttgart",
-                "bremen", "leipzig", "hanover",
+                "bremen", "leipzig", "hanover", "hannover",
                 "nuremberg", "dortmund", "dresden",
-                "kassel", "kiel", "bielefeld",
+                "kassel", "kiel", "bielefeld", "bielfeld",
                 "saarbruecken", "rostock", "freiburg",
                 "magdeburg", "erfurt", "saarbrucken",
                 "münchen", "koeln", "nuernberg",
@@ -107,7 +107,7 @@ def test_hourly(data_dic):
             assert(rain_chance>=0 and rain_chance<=100), "Inplausible value for rain_chance: {}".format(rain_chance)
         wind_speed = hour_dic['wind_speed']
         if not(np.equal(wind_speed, None)):
-            assert(wind_speed>=0 and wind_speed<500), "Inplausible value for wind_speed: {}".format(wind_speed)
+            assert(wind_speed>=0 and wind_speed<=500), "Inplausible value for wind_speed: {}".format(wind_speed)
         humidity = hour_dic['humidity']
         if not(np.equal(humidity, None)):
             assert(humidity>=0 and humidity<=100), "Inplausible value for humidity: {}".format(humidity)
