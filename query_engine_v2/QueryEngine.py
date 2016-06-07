@@ -58,6 +58,7 @@ class QueryEngine:
         Slices utilizing the presorted indices. By default, all categories are presorted.
         dset string "hourly" or "daily" specifies the dataset, params is the list of categories involved
         in the slicing, lower and upper the lists of lower and upper limits corresponding to params.
+        Alternitively, params can be just a string, lower and upper just numbers.
         By default returns a matrix sliced according to the above criteria. If return_matrix==False,
         returns just the indices to be sliced by. This can be used to increase performance if the matrix
         is very large.
@@ -65,8 +66,14 @@ class QueryEngine:
         Nan handling: Nans always considered outside the bounds. This means that slicing wrt to a
         category whose corresponding column contains only nans will always return an empty array.
         '''
-        assert(len(params) == len(lower) and len(lower) == len(upper))
-
+        if(type(params) != list and type(lower) != list and type(upper) != list):
+            assert(type(params) == str and isinstance(lower, (int, float)) and isinstance(upper, (int, float)))
+            params = [params]
+            lower = [lower]
+            upper = [upper]
+        else:
+            assert(len(params) == len(lower) and len(lower) == len(upper))
+        #Accomodation for non-list arguments, checking if they are of the same length if the are lists
         if dset == "daily":
             sorted_params = self.daily_params
         else:
@@ -118,3 +125,8 @@ class QueryEngine:
         #is there a way to return a view here? If the matrix is large, passing by value takes
         #quite a bit of time here. Maybe issue a warning or something if the matrix is too large.
         #Can get problematic for hourly data.
+
+        def get_sorted_indices(self):
+            pass
+        def sort(self):
+            pass
