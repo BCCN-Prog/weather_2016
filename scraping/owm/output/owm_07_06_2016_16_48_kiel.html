@@ -1,0 +1,3755 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+  <meta charset="utf-8"/>
+  <!--<meta http-equiv="X-UA-Compatible" content="IE=edge">-->
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta content="weather, world, Openstreetmap, forecast, Openweather, current" name="keywords"/>
+  <meta content="Current weather conditions in cities for world wide" name="description"/>
+  <meta content="OpenWeatherMap.org" name="author"/>
+  <meta content="OpenWeatherMap.org" name="domain"/>
+  <meta content="no-cache" http-equiv="pragma"/>
+  <meta content="-1" http-equiv="Expires"/>
+  <title>
+   City
+  </title>
+  <!-- Bootstrap core CSS -->
+  <!--<link href="css/bootstrap.css" rel="stylesheet"> -->
+  <!-- Custom styles for this template -->
+  <link href="/combine/70a60c128cef9af892512b63a908cc49-1456039778" rel="stylesheet"/>
+  <link href="/combine/64bcac555f440fc9d411629c99b809d5-1402933099" rel="stylesheet"/>
+  <!-- Resources -->
+  <link href="http://fonts.googleapis.com/css?family=Oswald:400,700,300" rel="stylesheet" type="text/css"/>
+  <link href="http://fonts.googleapis.com/css?family=Roboto:400,700,500,400italic,500italic,700italic" rel="stylesheet" type="text/css"/>
+  <script src="https://pagead2.googlesyndication.com/pub-config/r20160212/ca-pub-9649553505534207.js">
+  </script>
+  <script async="" src="http://www.google-analytics.com/ga.js" type="text/javascript">
+  </script>
+  <script src="/combine/d101692439773a09e020146fe251340a-1400776594">
+  </script>
+  <script type="text/javascript">
+   var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-31601618-1']);
+  _gaq.push(['_setDomainName', 'openweathermap.org']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+  </script>
+  <script type="text/javascript">
+   function ShowSuccessMess(mess)
+{
+	var html = '&lt;div class="alert alert-success" &gt;&lt;a class="close" data-dismiss="alert" href="#"&gt;×&lt;/a&gt;'+mess+'&lt;/div&gt;';
+	document.getElementById("alert_body").innerHTML = html;
+}
+
+function ShowInfoMess(mess)
+{
+    console.log(mess);
+	//var html = '&lt;div class="container"&gt;&lt;div class="row"&gt;&lt;div class="col-md-12"&gt;&lt;div class="panel-body"&gt;';
+	//html = html + '&lt;div class="alert alert-info" &gt;&lt;a class="close" data-dismiss="alert" href="#"&gt;×&lt;/a&gt;'+mess+'&lt;/div&gt;';
+	//html = html + '&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;';
+	//document.getElementById("notes_block").innerHTML = html;
+}
+
+function ShowAlertMess(mess)
+{
+    console.log(mess);
+	//var html = '&lt;div class="alert alert-error" &gt;&lt;a class="close" data-dismiss="alert" href="#"&gt;×&lt;/a&gt;'+mess+'&lt;/div&gt;';
+	//document.getElementById("alert_body").innerHTML = html;
+}
+
+function  errorHandler(e)
+{
+    console.log(e);
+	ShowAlertMess(e.status +' '+e.statusText);
+}
+
+
+function ParseJson(JSONtext)
+{
+	try{
+		JSONobject = JSON.parse(JSONtext); 
+	}catch(e){
+		ShowAlertMess('Error JSON');
+		return;
+	}
+
+	if(JSONobject.cod != '200') {
+		ShowAlertMess('Error '+ JSONobject.cod + ' ('+ JSONobject.message +')');
+		return;
+	}
+	var mes = JSONobject.cod;
+	if(JSONobject.calctime)
+		mes = mes + ' ' + JSONobject.calctime;
+	if(JSONobject.message)
+		mes = mes + ' ' + JSONobject.message;
+	console.log( mes );
+	return JSONobject;
+}
+function set_cookie(name, value, expires)
+{
+if (!expires)
+{
+expires = new Date();
+}
+document.cookie = name + "=" + escape(value) + "; expires=" + expires.toGMTString() +  "; path=/";
+}
+
+function get_cookie(name) {
+    var matches = document.cookie.match(new RegExp(
+        "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+      ))
+  return matches ? decodeURIComponent(matches[1]) : undefined
+}
+function set_lang(lang)
+{
+	expires = new Date();
+	expires.setTime(expires.getTime() + (1000 * 60 * 60 * 24));	
+	set_cookie('lang', lang, expires);
+	window.location.reload();
+}
+
+function set_units()
+{
+  var units = 'metric';
+  if( document.getElementById("units_check").checked ) units = 'imperial';
+  expires = new Date();         
+  expires.setTime(expires.getTime() + (1000 * 60 * 60 * 24)); 
+  set_cookie('units', units, expires);
+  window.location.reload();
+}
+
+
+function pad(num, size) {
+    var s = num+"";
+    while (s.length &lt; size) s = "0" + s;
+    return s;
+}
+  </script>
+  <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  <link href="theme/default/style.css" rel="stylesheet" type="text/css"/>
+ </head>
+ <body class="body-orange">
+  <!-- Extra Bar -->
+  <div class="mini-navbar mini-navbar-dark hidden-xs">
+   <div class="container">
+    <div class="col-sm-10">
+     <a class="first-child" href="https://openweathermap.desk.com/" target="_blank">
+      <i class="fa fa-envelope">
+      </i>
+      <span class="hidden-sm">
+       Support Center
+      </span>
+     </a>
+     <!--
+          <a href="/register" class="pull-right" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'register']);"><i class="fa fa-arrow-circle-down"></i> Sign Up</a>
+          <a href="/signin" class="pull-right" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'signin']);"><i class="fa fa-sign-in"></i> Sign In</a>
+-->
+     <a class="pull-right" href="https://home.openweathermap.org/users/sign_up" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'register']);">
+      <i class="fa fa-arrow-circle-down">
+      </i>
+      Sign Up
+     </a>
+     <a class="pull-right" href="https://home.openweathermap.org/users/sign_in" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'signin']);">
+      <i class="fa fa-sign-in">
+      </i>
+      Sign In
+     </a>
+     <a class="pull-right" href="#" id="nav-search">
+      <i class="fa fa-search" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'search']);">
+      </i>
+      Weather in your city
+     </a>
+     <a class="pull-right hidden" href="#" id="nav-search-close">
+      <i class="fa fa-times">
+      </i>
+     </a>
+     <!-- Search Form -->
+     <form action="/find" class="pull-right hidden" id="nav-search-form" method="get" role="search">
+      <div class="input-group">
+       <input class="form-control" id="q" name="q" placeholder="Search" type="text"/>
+       <span class="input-group-btn">
+        <button class="btn btn-default" type="submit">
+         <i class="fa fa-search">
+         </i>
+        </button>
+       </span>
+      </div>
+     </form>
+    </div>
+    <div class="col-sm-2">
+     <label class="toggle candy blue" onclick="" style="width:100px">
+      <input id="units_check" type="checkbox"/>
+      <p onclick="set_units()">
+       <span>
+        °C
+       </span>
+       <span>
+        °F
+       </span>
+      </p>
+      <a class="slide-button">
+      </a>
+     </label>
+    </div>
+   </div>
+  </div>
+  <div class="sticky-wrapper" id="undefined-sticky-wrapper" style="height: 75px;">
+   <div class="navbar navbar-dark navbar-static-top" role="navigation">
+    <div class="container">
+     <!-- Navbar Header -->
+     <div class="navbar-header">
+      <a class="navbar-brand" href="/">
+       <img height="30" src="/themes/demo/assets/vendor/owm/images/logo_OpenWeatherMap_orange_website.png"/>
+       <!-- <img src="/themes/demo/assets/vendor/owm/images/OWM_logo32_32.png" style="vertical-align:bottom">
+            OpenWeatherMap<span class="hidden-sm"></span> -->
+      </a>
+     </div>
+     <!-- / Navbar Header -->
+     <!-- Navbar Links -->
+     <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav navbar-right">
+       <!-- <li><a href="/" class="bg-hover-color" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'home']);">Home</a></li> -->
+       <li>
+        <a class="bg-hover-color" href="/city" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'weather']);">
+         Weather
+        </a>
+       </li>
+       <!--<li><a href="/maps" class="bg-hover-color" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'maps']);">Maps</a></li>-->
+       <li class="dropdown">
+        <a class="dropdown-toggle bg-hover-color" data-toggle="dropdown" href="#">
+         Maps
+         <b class="caret">
+         </b>
+        </a>
+        <ul class="dropdown-menu">
+         <li>
+          <a class="bg-hover-color" href="/weathermap">
+           Weather maps
+          </a>
+         </li>
+         <li>
+          <a class="bg-hover-color" href="http://owm.io/modis">
+           Current satellite maps
+          </a>
+         </li>
+         <!--<li><a href="/help/sat.html" class="bg-hover-color">Current satellite maps</a></li>
+                <li><a href="/beautifulmaps" class="bg-hover-color">Beautiful maps</a></li>-->
+         <li>
+          <a class="bg-hover-color" href="http://owm.io/beautiful_maps" target="_blank">
+           Beautiful maps
+          </a>
+         </li>
+         <li>
+          <a class="bg-hover-color" href="http://openweathermap.org/map_editor_2">
+           Map Editor 2.0
+          </a>
+         </li>
+        </ul>
+       </li>
+       <li>
+        <a class="bg-hover-color" href="/api" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'api']);">
+         API
+        </a>
+       </li>
+       <li>
+        <a class="bg-hover-color" href="/price" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'price']);">
+         Price
+        </a>
+       </li>
+       <li>
+        <a class="bg-hover-color" href="/examples" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'examples']);">
+         Partners
+        </a>
+       </li>
+       <!--<li><a href="/technology" class="bg-hover-color" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'technology']);">Platform</a></li>-->
+       <!--
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle bg-hover-color" data-toggle="dropdown">Platform <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/owm-platform" class="bg-hover-color">OWM Big Data Platform</a></li>
+                <li><a href="/technology" class="bg-hover-color">Weather technology</a></li>
+              </ul>
+            </li>
+            -->
+       <li>
+        <a class="bg-hover-color" href="/stations" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'station']);">
+         Stations
+        </a>
+       </li>
+       <li>
+        <a class="bg-hover-color" href="/news" onclick="_gaq.push(['_trackEvent', 'Navbar', 'Main', 'news']);">
+         News
+        </a>
+       </li>
+       <li class="dropdown">
+        <a class="dropdown-toggle bg-hover-color" data-toggle="dropdown" href="#">
+         About
+         <b class="caret">
+         </b>
+        </a>
+        <ul class="dropdown-menu">
+         <li>
+          <a class="bg-hover-color" href="/about">
+           About company
+          </a>
+         </li>
+         <li>
+          <a class="bg-hover-color" href="/owm-platform">
+           OWM Platform
+          </a>
+         </li>
+         <li>
+          <a class="bg-hover-color" href="/technology">
+           Big Data Technology
+          </a>
+         </li>
+         <li>
+          <a class="bg-hover-color" href="/models">
+           Meteorological models
+          </a>
+         </li>
+         <li>
+          <a class="bg-hover-color" href="/datasource">
+           Data sources
+          </a>
+         </li>
+        </ul>
+       </li>
+       <!--
+            <li><a href="http://openweathermap.org/help/design/" class="bg-hover-color">Partners</a></li>
+            -->
+      </ul>
+      <!-- Search Form (xs) -->
+      <form class="navbar-form navbar-left visible-xs" role="search">
+       <div class="form-group">
+        <input class="form-control" placeholder="Search" type="text"/>
+       </div>
+       <button class="btn btn-default" type="submit">
+        Go!
+       </button>
+      </form>
+      <!-- / Search Form (xs) -->
+     </div>
+     <!-- / Navbar Links -->
+    </div>
+    <!-- / container -->
+   </div>
+  </div>
+  <!-- / navbar -->
+  <div id="notes_block">
+  </div>
+  <!-- Wrapper -->
+  <div class="wrapper">
+   <!-- Topic Header -->
+   <div class="topic">
+    <div class="container">
+     <div class="row">
+      <div class="col-sm-4">
+       <h3 class="primary-font">
+        Weather in your city
+       </h3>
+      </div>
+      <div class="col-sm-8">
+       <ol class="breadcrumb pull-right hidden-xs">
+       </ol>
+      </div>
+     </div>
+    </div>
+   </div>
+   <script src="/combine/7397a120786f6cd2568f01d443b988e5-1455184460">
+   </script>
+   <script type="text/javascript">
+    var time_zone = 1000 * (new Date().getTimezoneOffset())*(-60);
+
+var forecast = [];
+var daily = [];
+
+jQuery(document).ready(function() {
+
+	expires = new Date();
+	expires.setTime(expires.getTime() + (1000 * 3600 * 24 * 365));
+	set_cookie('cityid', 2891122, expires);
+
+
+
+	$.getJSON("/data/2.5/forecast?callback=?&amp;id=2891122&amp;units=metric&amp;appid=b1b15e88fa797225412429c1c50c122a", showForecast).error(errorHandler);
+	$.getJSON("/data/2.5/forecast/daily?callback=?&amp;id=2891122&amp;units=metric&amp;cnt=14&amp;appid=b1b15e88fa797225412429c1c50c122a", showForecastDaily).error(errorHandler);
+
+	var t=document.location.href.split('#');
+	if(t[1])	$("#"+t[1]+'_a').click();
+    //$.getJSON("http://api.sat.owm.io/api/1.0/search?lat=54.32&amp;lon=10.13&amp;sensor=OLI_TIRS&amp;mode=json&amp;appid=b1b15e88fa797225412429c1c50c122a", showSatellite).error(errorHandler);
+
+// Tab dispacher
+
+$('a[data-toggle="tab"]').on('shown', function (e) {
+
+	if($(this).attr('href') == "#forecast") {
+	}
+
+	if($(this).attr('href') == "#forecast-chart") {
+		showForcastChartVal('temp');
+	}
+
+	if($(this).attr('href') == "#map") {
+	//	ShowMap();
+	}
+
+})
+
+	var map = new OpenLayers.Map("map_canvas",
+		{
+		        units: 'm',
+		        projection: new OpenLayers.Projection("EPSG:900913"),
+		        displayProjection: new OpenLayers.Projection("EPSG:4326")
+		}
+	);
+
+    var mapnik = 	new OpenLayers.Layer.OSM();
+
+	var precipitation = new OpenLayers.Layer.XYZ(
+		"precipitation",
+		[
+		"http://a.maps.owm.io/weather/precipitation/${z}/${x}/${y}.png?appid=b1b15e88fa797225412429c1c50c122a",
+		"http://b.maps.owm.io/weather/precipitation/${z}/${x}/${y}.png?appid=b1b15e88fa797225412429c1c50c122a",
+		"http://c.maps.owm.io/weather/precipitation/${z}/${x}/${y}.png?appid=b1b15e88fa797225412429c1c50c122a",
+		"http://d.maps.owm.io/weather/precipitation/${z}/${x}/${y}.png?appid=b1b15e88fa797225412429c1c50c122a"
+		],
+		{
+			numZoomLevels: 15,
+			isBaseLayer: false,
+			opacity: 0.7,
+			sphericalMercator: true
+		}
+	);
+	var PRMSL_MSL_CONTOUR = new OpenLayers.Layer.XYZ(
+		"pressure",
+		[
+		"http://a.maps.owm.io/weather/pressure_cntr/${z}/${x}/${y}.png?appid=b1b15e88fa797225412429c1c50c122a",
+		"http://b.maps.owm.io/weather/pressure_cntr/${z}/${x}/${y}.png?appid=b1b15e88fa797225412429c1c50c122a",
+		"http://c.maps.owm.io/weather/pressure_cntr/${z}/${x}/${y}.png?appid=b1b15e88fa797225412429c1c50c122a",
+		"http://d.maps.owm.io/weather/pressure_cntr/${z}/${x}/${y}.png?appid=b1b15e88fa797225412429c1c50c122a"
+		],
+		{
+			numZoomLevels: 15,
+			isBaseLayer: false,
+			opacity: 0.4,
+			sphericalMercator: true
+
+		}
+	);
+	var centre = new OpenLayers.LonLat( 10.13, 54.32).transform(
+		new OpenLayers.Projection("EPSG:4326"),
+		new OpenLayers.Projection("EPSG:900913"));
+	map.addLayers([mapnik, precipitation, PRMSL_MSL_CONTOUR]);
+    map.setCenter( centre, 4);
+    var ls = new OpenLayers.Control.LayerSwitcher({'ascending':false});
+	map.addControl(ls);
+
+
+
+});
+
+
+// **************************** forecast *******************************
+
+function showCurrentCity(d)
+{
+	current_city_id = d.id;
+	$('#city_name').html( d.name +', '+ d.sys.country);
+}
+
+function showForecast(d)
+{
+    if( ! d.list) {
+        console.log(d);
+    }
+	forecast = d.list;
+	showForecastSmall();
+	showHourlyForecastChart();
+	showForcastHourlyListLong();
+	showForcastChartVal('temp');
+}
+
+function showForecastDaily(d)
+{
+    console.log(d);
+	daily = d.list;
+	showDailyListVertical();
+	showDailyChart();
+}
+
+function showSatellite(list)
+{
+  scenes = list;
+  html = '';
+
+  var cnt=0;
+  for(var i = 0; i &lt;  list.length; i ++){
+    if(! list[i].links.tile ) continue;
+    if( list[i].clouds &gt; 20 ) continue;
+
+    var dt = new Date(list[i].dt * 1000);
+    var day = list[i].ind.year +'.'+ pad(dt.getMonth()+1,2) + '.'+ pad(dt.getDate(),2);
+
+    var addurl = '?';
+    if(54.32 != 0 ) addurl = addurl + "lat=54.32";
+    if(10.13 != 0 ) addurl = addurl + "&amp;lon=10.13";
+    if(10 != 7 ) addurl = addurl + "&amp;zoom=10";
+
+
+html += '&lt;li class="col-sm-3"&gt; \
+                &lt;div class="portfolio-item"&gt;  \
+                  &lt;div class="portfolio-thumbnail"&gt; \
+                    &lt;img class="img-responsive" src="http://' + list[i].links.tiny + '" alt="..."&gt; \
+              &lt;a href="http://owm.io/info/' + list[i].scene + addurl + '"&gt;&lt;h6 class="primary-font"&gt;' + list[i].scene + '&lt;/h6&gt;&lt;/a&gt; \
+              &lt;p class="text-muted"&gt;    \
+               ' + day + '&lt;br&gt;  \
+                clouds ' + list[i].clouds + '%  \
+              &lt;/p&gt;  \
+                  &lt;/div&gt; \
+                &lt;/div&gt; \
+              &lt;/li&gt;';
+
+
+    cnt++;
+ }
+
+  html='&lt;ul class="row list-inline glr-list-p"&gt;'+html+'&lt;/ul&gt;';
+  $("#scenes_list").html(html);
+  $("#scenes_count").html( "Find: " + cnt + ' scenes');
+}
+
+
+var month = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Avg", "Sen", "Oct", "Nov", "Dec"];
+
+function showDailyListVertical()
+{
+
+	var html = ''
+
+	for(var i = 0; i &lt;  daily.length-1; i ++){
+
+		var dt = new Date(daily[i].dt * 1000 + time_zone);
+		var day =dt.getDate() +' '+ month[dt.getMonth()];
+
+		var temp = Math.round(10*(daily[i].temp.day))/10 ;
+		var eve = Math.round(10*(daily[i].temp.eve))/10 ;
+		var morn = Math.round(10*(daily[i].temp.morn))/10 ;
+		var night = Math.round(10*(daily[i].temp.night))/10 ;
+		var icon = daily[i].weather[0].icon;
+		var text = daily[i].weather[0].description;
+
+		html += '&lt;tr&gt;&lt;td&gt;' + day + ' &lt;img src="/img/w/'+icon+'.png" &gt;&lt;/td&gt;&lt;td&gt;';
+ 		if(temp &gt; 0)
+ 		    html += '&lt;span class="label label-warning"&gt;';
+ 		else
+ 		    html += '&lt;span class="label label-primary"&gt;';
+		html += temp +'°C &lt;/span&gt;&amp;nbsp&lt;span class="label label-default"&gt;' + night +
+		'°C &lt;/span&gt; &amp;nbsp&amp;nbsp&lt;i&gt;' +text+'&lt;/i&gt; &lt;p&gt; '+daily[i].speed+ 'm/s &lt;br&gt;clouds: '+daily[i].clouds + '%, ' +
+			daily[i].pressure+' hpa&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;';
+	}
+
+	html='&lt;table class="table"&gt;'+html+'&lt;/table&gt;';
+
+	$("#daily_list").html(html);
+
+}
+
+function showDailyChart()
+{
+
+	var time = new Array();
+	var tmp = new Array();
+	var tmpr = new Array();
+	var rain = new Array();
+	var snow = new Array();
+	//var prcp = new Array();
+	//var wind = new Array();
+
+
+	for(var i = 0; i &lt;  daily.length-1; i ++){
+
+		tmp.push( Math.round(10*(daily[i].temp.day))/10  );
+		var dt = new Date( daily[i].dt * 1000 + time_zone);
+		time.push( dt );
+
+		var tmpi =  Math.round(10*(daily[i].temp.min))/10 ;
+		var tmpa =  Math.round(10*(daily[i].temp.max))/10 ;
+		tmpr.push( [tmpi, tmpa ]  );
+
+
+		if(daily[i]['rain'])	{
+			rain.push( Math.round(daily[i]['rain']*100) / 100 );
+		}else{
+			rain.push( 0 );
+		}
+		if(daily[i]['snow'])	{
+			snow.push( Math.round(daily[i]['snow']*100) / 100 );
+		}else{
+			snow.push( 0 );
+		}
+	}
+
+
+	$('#chart').highcharts({
+            chart: {
+            //    zoomType: 'xy'
+           		type: 'column'
+            },
+            title: NaN,
+            xAxis: {
+                categories: time,
+				labels: {
+				    formatter: function() {
+						return Highcharts.dateFormat('%d %b', this.value);
+				    }
+            	}
+            },
+
+            yAxis: [
+            {
+                labels: {
+                    format: '{value}°C',
+                    style: {
+                        color: 'blue'
+                    }
+                },
+                title: {
+                    text: 'Temp',
+					style: {
+                        color: 'blue'
+                    }
+                }
+            },{
+                labels: {
+                    format: '{value} mm',
+                    style: {
+                        color: '#909090'
+                    }
+                },
+                opposite: true,
+                title: {
+                    text: 'Precipitation',
+                    style: {
+                        color: '#4572A7'
+                    }
+                }
+            }],
+            tooltip: {
+            	useHTML: true,
+                shared: true,
+                formatter: function() {
+ 					var s = '&lt;small&gt;'+ Highcharts.dateFormat('%d %b', this.x) +'&lt;/small&gt;&lt;table&gt;';
+                	$.each(this.points, function(i, point) {
+                		//console.log(point);
+                			if(point.y != 0)
+                    			s += '&lt;tr&gt;&lt;td style="color:'+point.series.color+'"&gt;'+ point.series.name +': &lt;/td&gt;'+
+                        		'&lt;td style="text-align: right"&gt;&lt;b&gt;'+point.y +'&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;';
+                	}
+                	);
+                	return s+'&lt;/table&gt;';
+				}
+            },
+			plotOptions: {
+                column: {
+                    stacking: 'normal'
+                }
+            },
+			legend: NaN,
+            series: [
+            {
+                name: 'Snow',
+				type: 'column',
+				color: '#909090',
+				yAxis: 1,
+                data: snow,
+                stack: 'precipitation'
+            },
+            {
+                name: 'Rain',
+				type: 'column',
+				color: '#B0B0B0',
+				yAxis: 1,
+                data: rain,
+                stack: 'precipitation'
+            },
+			{
+                name: 'Temperature',
+				type: 'spline',
+				color: 'blue',
+                data: tmp
+            },
+            {
+		        name: 'Temperature min',
+		        data: tmpr,
+		        type: 'arearange',
+		        lineWidth: 0,
+		    	linkedTo: ':previous',
+		    	color: Highcharts.getOptions().colors[0],
+		    	fillOpacity: 0.3,
+		    	zIndex: 0
+		    }
+            ]
+        });
+}
+
+function showHourlyForecastChart()
+{
+
+ 	var curdate = new Date( (new Date()).getTime()- 180 * 60 * 1000 );
+
+	var cnt=0;
+
+	var time = new Array();
+	var tmp = new Array();
+ 	var wind = new Array();
+	var prcp = new Array();
+
+	for(var i = 0; i &lt;  forecast.length; i ++){
+
+		var dt = new Date(forecast[i].dt * 1000);
+		if( curdate  &gt; dt )	continue;
+		if(cnt &gt; 10)		break;
+		cnt++;
+
+		tmp.push( Math.round(10*(forecast[i].main.temp))/10  );
+		time.push( new Date( forecast[i].dt * 1000 + time_zone) );
+		wind.push(forecast[i].speed);
+
+		var p=0;
+		if(forecast[i]['rain'] &amp;&amp; forecast[i]['rain']['3h'])	p += forecast[i]['rain']['3h'];
+		if(forecast[i]['snow'] &amp;&amp; forecast[i]['snow']['3h'])	p += forecast[i]['snow']['3h'];
+		prcp.push( Math.round( p * 10 ) / 10 );
+	}
+
+	$('#chart_small').highcharts({
+            chart: {
+                zoomType: 'xy'
+            },
+            title: NaN,
+
+            xAxis: {
+                categories: time,
+                type: 'datetime',
+				labels: {
+				    formatter: function() {
+						return Highcharts.dateFormat('%H:%M', this.value);
+				    }
+            	}
+            },
+            yAxis: [
+            {
+                labels: {
+                    format: '{value}°C',
+                    style: {
+                        color: 'blue'
+                    }
+                },
+                opposite: true,
+                title:NaN
+            },{
+                labels: {
+                    format: '{value}mm',
+                    style: {
+                        color: '#4572A7'
+                    }
+                },
+                opposite: true,
+                title: NaN
+            }],
+            tooltip: {
+            	useHTML: true,
+                shared: true,
+                formatter: function() {
+ 					var s = '&lt;small&gt;'+ Highcharts.dateFormat('%d %b. %H:%M', this.x) +'&lt;/small&gt;&lt;table&gt;';
+                	$.each(this.points, function(i, point) {
+                    		s += '&lt;tr&gt;&lt;td style="color:'+point.series.color+'"&gt;'+ point.series.name +': &lt;/td&gt;'+
+                        	'&lt;td style="text-align: right"&gt;&lt;b&gt;'+point.y +'&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;';
+                	});
+                	return s+'&lt;/table&gt;';
+				}
+            },
+			legend: {
+                layout: 'vertical',
+                align: 'left',
+                x: 410,
+                verticalAlign: 'top',
+                y: 0,
+                floating: true,
+                backgroundColor: '#FFFFFF'
+            },
+            series: [
+            {
+                name: 'Precipitation',
+				type: 'column',
+				color: '#A0A0A0',
+				yAxis: 1,
+                data: prcp
+            },{
+                name: 'Temperature',
+				type: 'spline',
+				color: 'blue',
+                data: tmp
+            }]
+        });
+
+
+};
+
+
+function showForecastSmall()
+{
+
+ 	var curdate = new Date( (new Date()).getTime()- 180 * 60 * 1000 );
+
+	var html = ''
+
+	var cnt=0;
+	for(var i = 0; i &lt;  forecast.length ; i ++){
+
+		var dt = new Date(forecast[i].dt * 1000);
+
+		if( curdate  &gt; dt )	continue;
+		if(cnt &gt; 10)		break;
+		cnt++;
+
+		var temp = Math.round(10*(forecast[i].main.temp))/10 ;
+		var tmin = Math.round(10*(forecast[i].main.temp_min)) / 10;
+		var tmax = Math.round(10*(forecast[i].main.temp_max)) / 10 ;
+
+		var text = forecast[i].weather[0].description;
+		var gust = forecast[i].wind.speed;
+		var pressure = forecast[i].main.pressure ;
+		var cloud=forecast[i].clouds.all ;
+		var icon = forecast[i].weather[0].icon;
+
+		if( forecast[i].sys.pod == 'd' )
+			html=html+ '&lt;div style="float: left; text-align: center;" &gt;';
+		else
+			html=html+ '&lt;div style="float: left; text-align: center; background-color:#eeeeee" &gt;';
+
+		html=html+ '&lt;img alt="'+text+'" src="/img/w/'+icon+'.png"/&gt;\
+		&lt;div class="small_val" title="Temp"&gt;'+forecast[i].main.temp+'C&lt;/div&gt;\
+		&lt;div class="small_val" title="Wind"&gt;'+forecast[i].wind.speed+'m/s&lt;/div&gt;\
+		&lt;div class="small_val_grey" title="Pressure"&gt;'+forecast[i].main.pressure+'&lt;/div&gt;\
+		&lt;/div&gt;';
+	}
+
+	$("#forecast_small").html(html);
+
+};
+
+
+function showForcastHourlyListLong()
+{
+
+ 	var curdate = new Date( (new Date()).getTime()- 180 * 60 * 1000 );
+
+	var html = ''
+	var lastday=0;
+	var ar_tmin = new Array();
+	var ar_tmax = new Array();
+	min_cur = 500;
+	max_cur = 0;
+	lastday=0;
+
+	for(var i = 0; i &lt;  forecast.length-2; i ++){
+		if(! forecast[i].main) continue;
+
+		var dt = new Date(forecast[i].dt * 1000);
+
+		if( curdate  &gt; dt )	continue;
+
+		var day =dt.getDate();
+		var hr =dt.getHours();
+		if(hr &lt; 10) hr = '0'+hr;
+
+		if(day!=lastday){
+			html=html+"&lt;tr class='well'&gt;&lt;td colspan='2'&gt;&lt;b&gt;"+dt.toDateString()+"&lt;/b&gt; &lt;/td&gt;&lt;/tr&gt;" ;
+			lastday = day;
+		}
+		//console.log(forecast[i].main);
+		var temp = Math.round(10*(forecast[i].main.temp))/10 ;
+		var tmin = Math.round(10*(forecast[i].main.temp_min)) / 10;
+		var tmax = Math.round(10*(forecast[i].main.temp_max)) / 10 ;
+
+		var text = forecast[i].weather[0].description;
+
+		var img =  forecast[i].weather[0].icon;
+		var gust = 0;
+		if( forecast[i].wind )
+		    gust = forecast[i].wind.speed;
+		var pressure = forecast[i].main.pressure ;
+		var cloud=forecast[i].clouds.all ;
+
+html=html+'&lt;tr&gt;&lt;td&gt;' + hr + ':00 &lt;img src="http://openweathermap.org/img/w/'+img+'.png" &gt; &lt;/td&gt;&lt;td&gt;&lt;span class="badge badge-info"&gt;'+temp +'°C &lt;/span&gt; &lt;i&gt;' +text+'&lt;/i&gt; ' +
+'&lt;p&gt; '+tmin+'  '+tmax+'°C,  '+gust+ 'm/s.  '+cloud+'%, ' +pressure+' hpa&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;';
+
+	}
+	html='&lt;table class="table"&gt;'+html+'&lt;/table&gt;';
+
+	$("#hourly_long_list").html(html);
+
+};
+
+//**************************** Chart *************************
+var chart;
+
+
+function showForcastChartVal(val)
+{
+	var tmp = new Array();
+	var tlbl = new Array();
+
+
+	for(var i = 0; i &lt;  forecast.length; i ++){
+		if(val == 'temp')
+			tmp.push(  Math.round( (forecast[i]['main']['temp']) * 100) / 100  );
+		if(val == 'wind_ms')
+			tmp.push(  Math.round( forecast[i]['wind']['speed'] ) );
+		if(val == 'pressure')
+			tmp.push(  Math.round( forecast[i]['main']['pressure'] ) );
+		if(val == 'humidity')
+			tmp.push(  Math.round( forecast[i]['main']['humidity'] ) );
+		if(val == 'precipitation') {
+			if(forecast[i]['rain'] &amp;&amp; forecast[i]['rain']['3h'])
+				tmp.push( Math.round( forecast[i]['rain']['3h'] ) );
+			if(forecast[i]['snow'] &amp;&amp; forecast[i]['snow']['3h'])
+				tmp.push( Math.round( forecast[i]['snow']['3h'] ) );
+			else
+				tmp.push( 0 );
+		}
+
+		tlbl.push( new Date(forecast[i]['dt'] * 1000 + time_zone) );
+	}
+
+	if(val == 'temp')
+		label = 'temp';
+	if(val == 'wind_ms')
+		label = 'wind';
+	if(val == 'pressure')
+		label = 'pressure';
+	if(val == 'humidity')
+		label = 'humidity';
+	if(val == 'precipitation')
+		label = 'precipitation';
+
+	chart = new Highcharts.Chart({
+		chart: {
+			renderTo: 'chart-forecast',
+			type: 'spline'
+		},
+		title: {
+			text: NaN,
+		},
+
+		tooltip: {
+			formatter: function() {
+				return '&lt;b&gt;'+ this.series.name +" &lt;/b&gt;&lt;p&gt;"+ Highcharts.dateFormat('%Y-%m-%d %H:%M', this.x)+' '+this.y +'°C &lt;/p&gt;';
+			}
+		},
+		xAxis: {
+			type: 'datetime',
+			categories: tlbl,
+			tickInterval: 7,
+
+			labels: {
+			    formatter: function() {
+				return Highcharts.dateFormat('%d', this.value);
+			    },
+				align: 'right',
+				style: {
+					font: 'normal 13px Verdana, sans-serif'
+				}
+
+			}
+		},
+
+		yAxis: {
+			title: {
+				text: NaN
+			},
+
+			plotLines: [{
+				value: 0,
+				width: 1,
+				color: '#808080'
+			}]
+		},
+
+		series: [{
+			name: label,
+			type: 'spline',
+			data: tmp
+		}
+		]
+
+	});
+
+
+}
+
+function vote(v)
+{
+    	ShowInfoMess("Please, &lt;a href='/signin'&gt;sign in&lt;/a&gt; to vote for weather accuracy. Your voice is very important to us!");
+	}
+
+function voteOK(v)
+{
+	r=ParseJson(v);
+	ShowInfoMess(r.message);
+}
+   </script>
+   <div class="container">
+    <div class="row">
+     <div class="row">
+      <!-- left column -->
+      <div class="col-sm-4">
+       <!-- weather  -->
+       <div class="weather-widget">
+        <h3>
+         Kiel, DE
+        </h3>
+        <h2>
+         <img src="http://openweathermap.org/img/w/03d.png"/>
+         25.3 °C
+        </h2>
+        Clouds
+        <p>
+         <span id="date_m">
+          get at 2016.06.07 16:00
+         </span>
+         (
+         <a data-toggle="modal" href="#wrong-data-modal" type="button">
+          Wrong data?
+         </a>
+         )
+        </p>
+        <!-- Large modal -->
+        <!-- Wrong data modal -->
+        <div class="modal fade" id="wrong-data-modal" role="dialog" tabindex="-1">
+         <div class="modal-dialog" style="margin-top: 70px">
+          <div class="modal-content" style="max-width: 500px; margin: 0 auto;">
+           <form action="/" id="wrong-data">
+            <input name="type" type="hidden" value="weather_current"/>
+            <input name="posted_from" type="hidden" value="openweathermap.org"/>
+            <input name="location[lat]" type="hidden" value="54.32"/>
+            <input name="location[lng]" type="hidden" value="10.13"/>
+            <div class="modal-header">
+             <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+              <span aria-hidden="true">
+               ×
+              </span>
+             </button>
+             <h4 class="modal-title">
+              Contact us
+             </h4>
+            </div>
+            <div class="modal-body">
+             <div class="alert-block">
+             </div>
+             <div class="form-group description-group">
+              <label class="control-label" for="wd-description">
+               Description (required)
+              </label>
+              <textarea class="form-control" id="wd-description" name="description" placeholder="Describe your problem" rows="4" style="resize:vertical">
+              </textarea>
+             </div>
+             <div class="form-group" style="margin-bottom: 0">
+              <label class="control-label" for="wd-email">
+               Email
+              </label>
+              <input class="form-control" id="wd-email" name="email" placeholder="Your email" type="email"/>
+             </div>
+            </div>
+            <div class="modal-footer">
+             <input class="btn btn-orange" type="submit" value="Send"/>
+            </div>
+           </form>
+          </div>
+         </div>
+        </div>
+        <!-- Wrong data modal -->
+        <table class="table table-striped table-bordered table-condensed">
+         <tbody>
+          <tr>
+           <td>
+            Wind
+           </td>
+           <td>
+            Gentle Breeze 3.6 m/s
+            <br/>
+            West (270  )
+           </td>
+          </tr>
+          <tr>
+           <td>
+            Cloudiness
+           </td>
+           <td>
+            scattered clouds
+           </td>
+          </tr>
+          <tr>
+           <td>
+            Pressure
+            <br/>
+           </td>
+           <td>
+            1021 hpa
+           </td>
+          </tr>
+          <tr>
+           <td>
+            Humidity
+           </td>
+           <td>
+            50 %
+           </td>
+          </tr>
+          <tr>
+           <td>
+            Sunrise
+           </td>
+           <td id="sunrise">
+            4:48
+           </td>
+          </tr>
+          <tr>
+           <td>
+            Sunset
+           </td>
+           <td id="sunset">
+            21:50
+           </td>
+          </tr>
+          <tr>
+           <td>
+            Geo coords
+           </td>
+           <td id="coord">
+            <a href="/Maps?zoom=12&amp;lat=54.32&amp;lon=10.13&amp;layers=B0FTTFF">
+             [ 10.13, 54.32 ]
+            </a>
+           </td>
+          </tr>
+         </tbody>
+        </table>
+        <script type="text/javascript">
+         var dt = new Date(1465308010 * 1000);
+        var hr =dt.getHours();
+        if(hr &lt; 10) hr = '0'+hr;
+        var mn =dt.getMinutes();
+    if(mn &lt; 10) mn = '0'+mn;
+        var mon =dt.getMonth()+1;
+        if(mon &lt; 10) mon = '0'+mon;
+        var day =dt.getDate();
+        if(day &lt; 10) day = '0'+day;
+        var year =dt.getFullYear();
+        $("#date_m").html('get at ' + year+'.'+mon+'.'+day+' '+hr+':'+mn );
+
+        var times = SunCalc.getTimes(new Date(), 54.32, 10.13);
+        $("#sunrise").html(times.sunrise.getHours() + ':' + times.sunrise.getMinutes());
+        $("#sunset").html(times.sunset.getHours() + ':' + times.sunset.getMinutes());
+        </script>
+       </div>
+       <br/>
+       <!-- weather  -->
+       <!--
+<table class="table table-striped table-bordered table-condensed">
+<tbody id="station_last">
+<tr><td>Votes pro</td><td> &nbsp&nbsp <a class="vote-plus"  href="javascript:vote(1);"></a></td></tr>
+<tr><td>Votes contra</td><td> &nbsp&nbsp<a class="vote-minus" href="javascript:vote(0);"></a></td></tr>
+</tbody></table>
+-->
+       <!--AddvStation_300-250-->
+       <script async="" src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+       </script>
+       <!-- OWM Station -->
+       <ins class="adsbygoogle" data-ad-client="ca-pub-9649553505534207" data-ad-slot="4023774774" data-adsbygoogle-status="done" style="display: inline-block; width: 300px; height: 250px;">
+        <ins id="aswift_0_expand" style="display:inline-table;border:none;height:250px;margin:0;padding:0;position:relative;visibility:visible;width:300px;background-color:transparent">
+         <ins id="aswift_0_anchor" style="display:block;border:none;height:250px;margin:0;padding:0;position:relative;visibility:visible;width:300px;background-color:transparent">
+          <iframe allowfullscreen="true" allowtransparency="true" frameborder="0" height="250" hspace="0" id="aswift_0" marginheight="0" marginwidth="0" name="aswift_0" onload="var i=this.id,s=window.google_iframe_oncopy,H=s&amp;&amp;s.handlers,h=H&amp;&amp;H[i],w=this.contentWindow,d;try{d=w.document}catch(e){}if(h&amp;&amp;d&amp;&amp;(!d.body||!d.body.firstChild)){if(h.call){setTimeout(h,0)}else if(h.match){try{h=s.upd(h,i)}catch(e){}w.location.replace(h)}}" scrolling="no" style="left:0;position:absolute;top:0;" vspace="0" width="300">
+          </iframe>
+         </ins>
+        </ins>
+       </ins>
+       <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+       </script>
+       <br/>
+       <!--AddvWideSkyscraper_300-600-->
+       <script async="" src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+       </script>
+       <!-- Wide Skyscraper -->
+       <ins class="adsbygoogle" data-ad-client="ca-pub-9649553505534207" data-ad-slot="9791106779" data-adsbygoogle-status="done" style="display:inline-block;width:300px;height:600px">
+        <ins id="aswift_1_expand" style="display:inline-table;border:none;height:600px;margin:0;padding:0;position:relative;visibility:visible;width:300px;background-color:transparent">
+         <ins id="aswift_1_anchor" style="display:block;border:none;height:600px;margin:0;padding:0;position:relative;visibility:visible;width:300px;background-color:transparent">
+          <iframe allowfullscreen="true" allowtransparency="true" frameborder="0" height="600" hspace="0" id="aswift_1" marginheight="0" marginwidth="0" name="aswift_1" onload="var i=this.id,s=window.google_iframe_oncopy,H=s&amp;&amp;s.handlers,h=H&amp;&amp;H[i],w=this.contentWindow,d;try{d=w.document}catch(e){}if(h&amp;&amp;d&amp;&amp;(!d.body||!d.body.firstChild)){if(h.call){setTimeout(h,0)}else if(h.match){try{h=s.upd(h,i)}catch(e){}w.location.replace(h)}}" scrolling="no" style="left:0;position:absolute;top:0;" vspace="0" width="300">
+          </iframe>
+         </ins>
+        </ins>
+       </ins>
+       <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+       </script>
+      </div>
+      <!-- right body -->
+      <div class="col-sm-8">
+       <ul class="nav nav-tabs">
+        <li class="active">
+         <a data-toggle="tab" href="#forecast-main" id="forecast-main_a">
+          Main
+         </a>
+        </li>
+        <li>
+         <a data-toggle="tab" href="#daily_chart" id="daily_chart_a">
+          Daily
+         </a>
+        </li>
+        <li>
+         <a data-toggle="tab" href="#hourly_list" id="hourly_list_a">
+          Hourly
+         </a>
+        </li>
+        <li>
+         <a data-toggle="tab" href="#forecast-chart" id="forecast-chart_a">
+          Chart
+         </a>
+        </li>
+        <li>
+         <a data-toggle="tab" href="#map" id="map_a">
+          Map
+         </a>
+        </li>
+        <li>
+         <a data-toggle="tab" href="#satellite" id="map_sat">
+          Satellite
+         </a>
+        </li>
+        <!--    <li><a href="#stations" data-toggle="tab" id="stations_a">Stations</a></li> -->
+       </ul>
+       <div class="tab-content">
+        <!--Main-->
+        <div class="tab-pane active" id="forecast-main">
+         <h3>
+          Next hours
+         </h3>
+         <div data-highcharts-chart="1" id="chart_small" style="width: 100%; height: 200px; ">
+          <div class="highcharts-container" id="highcharts-4" style='position: relative; overflow: hidden; width: 657px; height: 200px; text-align: left; line-height: normal; z-index: 0; font-family: "Lucida Grande","Lucida Sans Unicode",Verdana,Arial,Helvetica,sans-serif; font-size: 12px; left: 0.666687px; top: 0.600006px;'>
+           <svg height="200" version="1.1" width="657" xmlns="http://www.w3.org/2000/svg">
+            <desc>
+             Created with Highcharts 3.0.1
+            </desc>
+            <defs>
+             <clippath id="highcharts-5">
+              <rect fill="none" height="200" rx="0" ry="0" width="9999" x="0" y="0">
+              </rect>
+             </clippath>
+             <clippath id="highcharts-6">
+              <rect fill="none" height="160" width="563" x="0" y="0">
+              </rect>
+             </clippath>
+            </defs>
+            <rect fill="#FFFFFF" height="200" rx="5" ry="5" width="657" x="0" y="0">
+            </rect>
+            <g class="highcharts-grid" zindex="1">
+            </g>
+            <g class="highcharts-grid" zindex="1">
+             <path d="M 10 117.5 L 573 117.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 10 64.5 L 573 64.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 10 10.5 L 573 10.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 10 170.5 L 573 170.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+            </g>
+            <g class="highcharts-grid" zindex="1">
+             <path d="M 10 117.5 L 573 117.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 10 64.5 L 573 64.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 10 10.5 L 573 10.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 10 171.5 L 573 171.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+            </g>
+            <g class="highcharts-axis" zindex="2">
+             <path d="M 111.5 171 L 111.5 176" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 163.5 171 L 163.5 176" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 214.5 171 L 214.5 176" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 265.5 171 L 265.5 176" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 316.5 171 L 316.5 176" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 367.5 171 L 367.5 176" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 418.5 171 L 418.5 176" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 470.5 171 L 470.5 176" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 521.5 171 L 521.5 176" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 572.5 171 L 572.5 176" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 60.5 171 L 60.5 176" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 10.5 171 L 10.5 176" fill="none" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 10 170.5 L 573 170.5" fill="none" stroke="#C0D0E0" stroke-width="1" visibility="visible" zindex="7">
+             </path>
+            </g>
+            <g class="highcharts-axis" zindex="2">
+            </g>
+            <g class="highcharts-axis" zindex="2">
+            </g>
+            <g class="highcharts-series-group" zindex="3">
+             <g class="highcharts-series highcharts-tracker" clip-path="url(#highcharts-6)" style="" transform="translate(10,10) scale(1 1)" visibility="visible" zindex="0.1">
+              <rect fill="#A0A0A0" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="24" x="13.5" y="160.5">
+              </rect>
+              <rect fill="#A0A0A0" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="24" x="64.5" y="160.5">
+              </rect>
+              <rect fill="#A0A0A0" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="24" x="115.5" y="160.5">
+              </rect>
+              <rect fill="#A0A0A0" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="24" x="166.5" y="160.5">
+              </rect>
+              <rect fill="#A0A0A0" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="24" x="218.5" y="160.5">
+              </rect>
+              <rect fill="#A0A0A0" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="24" x="269.5" y="160.5">
+              </rect>
+              <rect fill="#A0A0A0" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="24" x="320.5" y="160.5">
+              </rect>
+              <rect fill="#A0A0A0" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="24" x="371.5" y="160.5">
+              </rect>
+              <rect fill="#A0A0A0" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="24" x="422.5" y="160.5">
+              </rect>
+              <rect fill="#A0A0A0" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="24" x="473.5" y="160.5">
+              </rect>
+              <rect fill="#A0A0A0" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="24" x="525.5" y="160.5">
+              </rect>
+             </g>
+             <g class="highcharts-markers" transform="translate(10,10) scale(1 1)" visibility="visible" zindex="0.1">
+             </g>
+             <g class="highcharts-series" clip-path="url(#highcharts-6)" transform="translate(10,10) scale(1 1)" visibility="visible" zindex="0.1">
+              <path d="M 25.59090909090909 38.6 C 25.59090909090909 38.6 56.3 42.239999999999995 76.77272727272727 50.4 C 97.24545454545455 58.56 107.48181818181817 66.72000000000001 127.95454545454545 79.4 C 148.42727272727274 92.08000000000001 158.66363636363636 103.27999999999999 179.13636363636363 113.8 C 199.6090909090909 124.32 209.84545454545454 132 230.3181818181818 132 C 250.7909090909091 132 261.0272727272727 132 281.5 126.7 C 301.97272727272724 121.4 312.2090909090909 106.67999999999998 332.68181818181813 95.5 C 353.1545454545454 84.32 363.3909090909091 70.8 383.8636363636363 70.8 C 404.3363636363636 70.8 414.5727272727272 71.04 435.0454545454545 71.9 C 455.5181818181818 72.75999999999999 465.7545454545454 71.9 486.2272727272727 75.1 C 506.7 78.29999999999998 537.4090909090909 104.1 537.4090909090909 104.1" fill="none" stroke="blue" stroke-width="2" zindex="1">
+              </path>
+             </g>
+             <g class="highcharts-markers" clip-path="none" transform="translate(10,10) scale(1 1)" visibility="visible" zindex="0.1">
+              <path d="M 537.4090909090909 100.1 C 542.7370909090909 100.1 542.7370909090909 108.1 537.4090909090909 108.1 C 532.0810909090909 108.1 532.0810909090909 100.1 537.4090909090909 100.1 Z" fill="blue">
+              </path>
+              <path d="M 486.2272727272727 71.1 C 491.55527272727267 71.1 491.55527272727267 79.1 486.2272727272727 79.1 C 480.8992727272727 79.1 480.8992727272727 71.1 486.2272727272727 71.1 Z" fill="blue">
+              </path>
+              <path d="M 435.0454545454545 67.9 C 440.3734545454545 67.9 440.3734545454545 75.9 435.0454545454545 75.9 C 429.71745454545453 75.9 429.71745454545453 67.9 435.0454545454545 67.9 Z" fill="blue">
+              </path>
+              <path d="M 383.8636363636363 66.8 C 389.1916363636363 66.8 389.1916363636363 74.8 383.8636363636363 74.8 C 378.53563636363634 74.8 378.53563636363634 66.8 383.8636363636363 66.8 Z" fill="blue">
+              </path>
+              <path d="M 332.68181818181813 91.5 C 338.0098181818181 91.5 338.0098181818181 99.5 332.68181818181813 99.5 C 327.35381818181816 99.5 327.35381818181816 91.5 332.68181818181813 91.5 Z" fill="blue">
+              </path>
+              <path d="M 281.5 122.7 C 286.828 122.7 286.828 130.7 281.5 130.7 C 276.172 130.7 276.172 122.7 281.5 122.7 Z" fill="blue">
+              </path>
+              <path d="M 230.3181818181818 128 C 235.64618181818182 128 235.64618181818182 136 230.3181818181818 136 C 224.9901818181818 136 224.9901818181818 128 230.3181818181818 128 Z" fill="blue">
+              </path>
+              <path d="M 179.13636363636363 109.8 C 184.46436363636363 109.8 184.46436363636363 117.8 179.13636363636363 117.8 C 173.80836363636362 117.8 173.80836363636362 109.8 179.13636363636363 109.8 Z" fill="blue">
+              </path>
+              <path d="M 127.95454545454545 75.4 C 133.28254545454544 75.4 133.28254545454544 83.4 127.95454545454545 83.4 C 122.62654545454545 83.4 122.62654545454545 75.4 127.95454545454545 75.4 Z" fill="blue">
+              </path>
+              <path d="M 76.77272727272727 46.4 C 82.10072727272727 46.4 82.10072727272727 54.4 76.77272727272727 54.4 C 71.44472727272726 54.4 71.44472727272726 46.4 76.77272727272727 46.4 Z" fill="blue">
+              </path>
+              <path d="M 25.59090909090909 34.6 C 30.91890909090909 34.6 30.91890909090909 42.6 25.59090909090909 42.6 C 20.26290909090909 42.6 20.26290909090909 34.6 25.59090909090909 34.6 Z" fill="blue">
+              </path>
+              <path class="highcharts-tracker highcharts-tracker" d="M 15.59090909090909 38.6 L 25.59090909090909 38.6 C 25.59090909090909 38.6 56.3 42.239999999999995 76.77272727272727 50.4 C 97.24545454545455 58.56 107.48181818181817 66.72000000000001 127.95454545454545 79.4 C 148.42727272727274 92.08000000000001 158.66363636363636 103.27999999999999 179.13636363636363 113.8 C 199.6090909090909 124.32 209.84545454545454 132 230.3181818181818 132 C 250.7909090909091 132 261.0272727272727 132 281.5 126.7 C 301.97272727272724 121.4 312.2090909090909 106.67999999999998 332.68181818181813 95.5 C 353.1545454545454 84.32 363.3909090909091 70.8 383.8636363636363 70.8 C 404.3363636363636 70.8 414.5727272727272 71.04 435.0454545454545 71.9 C 455.5181818181818 72.75999999999999 465.7545454545454 71.9 486.2272727272727 75.1 C 506.7 78.29999999999998 537.4090909090909 104.1 537.4090909090909 104.1 L 547.4090909090909 104.1" fill="none" stroke="rgb(192,192,192)" stroke-linejoin="round" stroke-opacity="0.0001" stroke-width="22" style="" visibility="visible" zindex="2">
+              </path>
+             </g>
+            </g>
+            <g class="highcharts-legend" transform="translate(420,10)" zindex="7">
+             <rect fill="#FFFFFF" height="40" rx="5" ry="5" stroke="#909090" stroke-width="1" visibility="visible" width="112" x="0.5" y="0.5">
+             </rect>
+             <g clip-path="url(#highcharts-5)" zindex="1">
+              <g>
+               <g class="highcharts-legend-item" transform="translate(8,3)" zindex="1">
+                <text style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:12px;cursor:pointer;color:#274b6d;fill:#274b6d;' text-anchor="start" x="21" y="15" zindex="2">
+                 <tspan x="21">
+                  Precipitation
+                 </tspan>
+                </text>
+                <rect fill="#A0A0A0" height="12" rx="2" ry="2" width="16" x="0" y="4" zindex="3">
+                </rect>
+               </g>
+               <g class="highcharts-legend-item" transform="translate(8,18)" zindex="1">
+                <path d="M 0 11 L 16 11" fill="none" stroke="blue" stroke-width="2">
+                </path>
+                <path d="M 8 7 C 13.328 7 13.328 15 8 15 C 2.6719999999999997 15 2.6719999999999997 7 8 7 Z" fill="blue">
+                </path>
+                <text style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:12px;cursor:pointer;color:#274b6d;fill:#274b6d;' text-anchor="start" x="21" y="15" zindex="2">
+                 <tspan x="21">
+                  Temperature
+                 </tspan>
+                </text>
+               </g>
+              </g>
+             </g>
+            </g>
+            <g class="highcharts-axis-labels" zindex="7">
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:31px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="35.59090909090909" y="185">
+              <tspan x="35.59090909090909">
+               17:00
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:31px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="86.77272727272727" y="185">
+              <tspan x="86.77272727272727">
+               20:00
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:31px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="137.95454545454544" y="185">
+              <tspan x="137.95454545454544">
+               23:00
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:31px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="189.13636363636363" y="185">
+              <tspan x="189.13636363636363">
+               02:00
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:31px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="240.31818181818178" y="185">
+              <tspan x="240.31818181818178">
+               05:00
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:31px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="291.5" y="185">
+              <tspan x="291.5">
+               08:00
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:31px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="342.6818181818182" y="185">
+              <tspan x="342.6818181818182">
+               11:00
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:31px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="393.8636363636364" y="185">
+              <tspan x="393.8636363636364">
+               14:00
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:31px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="445.0454545454545" y="185">
+              <tspan x="445.0454545454545">
+               17:00
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:31px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="496.2272727272727" y="185">
+              <tspan x="496.2272727272727">
+               20:00
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:31px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="547.4090909090909" y="185">
+              <tspan x="547.4090909090909">
+               23:00
+              </tspan>
+             </text>
+            </g>
+            <g class="highcharts-axis-labels" zindex="7">
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:262px;color:blue;cursor:default;line-height:14px;fill:blue;' text-anchor="start" x="581" y="176.6">
+              <tspan x="581">
+               15°C
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:262px;color:blue;cursor:default;line-height:14px;fill:blue;' text-anchor="start" x="581" y="122.93333333333334">
+              <tspan x="581">
+               20°C
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:262px;color:blue;cursor:default;line-height:14px;fill:blue;' text-anchor="start" x="581" y="69.26666666666667">
+              <tspan x="581">
+               25°C
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:262px;color:blue;cursor:default;line-height:14px;fill:blue;' text-anchor="start" x="581" y="15.6">
+              <tspan x="581">
+               30°C
+              </tspan>
+             </text>
+            </g>
+            <g class="highcharts-axis-labels" zindex="7">
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:262px;color:#4572A7;cursor:default;line-height:14px;fill:#4572A7;' text-anchor="start" x="617.2666664123535" y="176.54635121626123">
+              <tspan x="617.2666664123535">
+               0mm
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:262px;color:#4572A7;cursor:default;line-height:14px;fill:#4572A7;' text-anchor="start" x="617.2666664123535" y="122.8975674775075">
+              <tspan x="617.2666664123535">
+               1mm
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:262px;color:#4572A7;cursor:default;line-height:14px;fill:#4572A7;' text-anchor="start" x="617.2666664123535" y="69.24878373875374">
+              <tspan x="617.2666664123535">
+               2mm
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:262px;color:#4572A7;cursor:default;line-height:14px;fill:#4572A7;' text-anchor="start" x="617.2666664123535" y="15.6">
+              <tspan x="617.2666664123535">
+               3mm
+              </tspan>
+             </text>
+            </g>
+            <g class="highcharts-tooltip" style="cursor:default;padding:0;white-space:nowrap;" visibility="hidden" zindex="8">
+             <rect fill="none" fill-opacity="0.85" height="16" isshadow="true" rx="3" ry="3" stroke="black" stroke-opacity="0.049999999999999996" stroke-width="5" transform="translate(1, 1)" width="16" x="0.5" y="0.5">
+             </rect>
+             <rect fill="none" fill-opacity="0.85" height="16" isshadow="true" rx="3" ry="3" stroke="black" stroke-opacity="0.09999999999999999" stroke-width="3" transform="translate(1, 1)" width="16" x="0.5" y="0.5">
+             </rect>
+             <rect fill="none" fill-opacity="0.85" height="16" isshadow="true" rx="3" ry="3" stroke="black" stroke-opacity="0.15" stroke-width="1" transform="translate(1, 1)" width="16" x="0.5" y="0.5">
+             </rect>
+             <rect fill="rgb(255,255,255)" fill-opacity="0.85" height="16" rx="3" ry="3" width="16" x="0.5" y="0.5">
+             </rect>
+            </g>
+            <text style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:9px;cursor:pointer;color:#909090;fill:#909090;' text-anchor="end" x="647" y="195" zindex="8">
+             <tspan x="647">
+              Highcharts.com
+             </tspan>
+            </text>
+           </svg>
+           <div class="highcharts-tooltip" style="position: absolute; left: 0px; top: 0px;">
+            <span style='position: absolute; white-space: nowrap; font-family: "Lucida Grande","Lucida Sans Unicode",Verdana,Arial,Helvetica,sans-serif; font-size: 12px; color: rgb(51, 51, 51); left: 8px; top: 8px;' zindex="1">
+            </span>
+           </div>
+          </div>
+         </div>
+         <div id="forecast_small" style="width: 100%;">
+          <div style="float: left; text-align: center;">
+           <img alt="scattered clouds" src="/img/w/03d.png"/>
+           <div class="small_val" title="Temp">
+            26.42C
+           </div>
+           <div class="small_val" title="Wind">
+            2.76m/s
+           </div>
+           <div class="small_val_grey" title="Pressure">
+            1033.07
+           </div>
+          </div>
+          <div style="float: left; text-align: center;">
+           <img alt="clear sky" src="/img/w/02d.png"/>
+           <div class="small_val" title="Temp">
+            25.26C
+           </div>
+           <div class="small_val" title="Wind">
+            2.96m/s
+           </div>
+           <div class="small_val_grey" title="Pressure">
+            1032.35
+           </div>
+          </div>
+          <div style="float: left; text-align: center; background-color:#eeeeee">
+           <img alt="clear sky" src="/img/w/01n.png"/>
+           <div class="small_val" title="Temp">
+            22.59C
+           </div>
+           <div class="small_val" title="Wind">
+            5.86m/s
+           </div>
+           <div class="small_val_grey" title="Pressure">
+            1032.36
+           </div>
+          </div>
+          <div style="float: left; text-align: center; background-color:#eeeeee">
+           <img alt="clear sky" src="/img/w/01n.png"/>
+           <div class="small_val" title="Temp">
+            19.41C
+           </div>
+           <div class="small_val" title="Wind">
+            6.18m/s
+           </div>
+           <div class="small_val_grey" title="Pressure">
+            1031.93
+           </div>
+          </div>
+          <div style="float: left; text-align: center;">
+           <img alt="clear sky" src="/img/w/01d.png"/>
+           <div class="small_val" title="Temp">
+            17.65C
+           </div>
+           <div class="small_val" title="Wind">
+            6.16m/s
+           </div>
+           <div class="small_val_grey" title="Pressure">
+            1031
+           </div>
+          </div>
+          <div style="float: left; text-align: center;">
+           <img alt="few clouds" src="/img/w/02d.png"/>
+           <div class="small_val" title="Temp">
+            18.2C
+           </div>
+           <div class="small_val" title="Wind">
+            6.46m/s
+           </div>
+           <div class="small_val_grey" title="Pressure">
+            1030.08
+           </div>
+          </div>
+          <div style="float: left; text-align: center;">
+           <img alt="clear sky" src="/img/w/01d.png"/>
+           <div class="small_val" title="Temp">
+            21.06C
+           </div>
+           <div class="small_val" title="Wind">
+            6.47m/s
+           </div>
+           <div class="small_val_grey" title="Pressure">
+            1028.88
+           </div>
+          </div>
+          <div style="float: left; text-align: center;">
+           <img alt="clear sky" src="/img/w/01d.png"/>
+           <div class="small_val" title="Temp">
+            23.4C
+           </div>
+           <div class="small_val" title="Wind">
+            7.26m/s
+           </div>
+           <div class="small_val_grey" title="Pressure">
+            1027.67
+           </div>
+          </div>
+          <div style="float: left; text-align: center;">
+           <img alt="clear sky" src="/img/w/01d.png"/>
+           <div class="small_val" title="Temp">
+            23.31C
+           </div>
+           <div class="small_val" title="Wind">
+            7.51m/s
+           </div>
+           <div class="small_val_grey" title="Pressure">
+            1027.04
+           </div>
+          </div>
+          <div style="float: left; text-align: center;">
+           <img alt="scattered clouds" src="/img/w/03d.png"/>
+           <div class="small_val" title="Temp">
+            22.97C
+           </div>
+           <div class="small_val" title="Wind">
+            5.26m/s
+           </div>
+           <div class="small_val_grey" title="Pressure">
+            1026.48
+           </div>
+          </div>
+          <div style="float: left; text-align: center; background-color:#eeeeee">
+           <img alt="clear sky" src="/img/w/02n.png"/>
+           <div class="small_val" title="Temp">
+            20.28C
+           </div>
+           <div class="small_val" title="Wind">
+            7.66m/s
+           </div>
+           <div class="small_val_grey" title="Pressure">
+            1027.81
+           </div>
+          </div>
+         </div>
+         <div class="row">
+          <div class="col-sm-8">
+           <br/>
+           <br/>
+           <h3>
+            Next days
+           </h3>
+           <div id="daily_list">
+            <table class="table">
+             <tbody>
+              <tr>
+               <td>
+                7 Jun
+                <img src="/img/w/10d.png"/>
+               </td>
+               <td>
+                <span class="label label-warning">
+                 25.7°C
+                </span>
+                <span class="label label-default">
+                 14.5°C
+                </span>
+                <i>
+                 moderate rain
+                </i>
+                <p>
+                 3.01m/s
+                 <br/>
+                 clouds: 64%, 1031.72 hpa
+                </p>
+               </td>
+              </tr>
+              <tr>
+               <td>
+                8 Jun
+                <img src="/img/w/01d.png"/>
+               </td>
+               <td>
+                <span class="label label-warning">
+                 22.3°C
+                </span>
+                <span class="label label-default">
+                 16.1°C
+                </span>
+                <i>
+                 clear sky
+                </i>
+                <p>
+                 6.31m/s
+                 <br/>
+                 clouds: 0%, 1025.64 hpa
+                </p>
+               </td>
+              </tr>
+              <tr>
+               <td>
+                9 Jun
+                <img src="/img/w/01d.png"/>
+               </td>
+               <td>
+                <span class="label label-warning">
+                 19.2°C
+                </span>
+                <span class="label label-default">
+                 11.4°C
+                </span>
+                <i>
+                 clear sky
+                </i>
+                <p>
+                 1.96m/s
+                 <br/>
+                 clouds: 0%, 1026.79 hpa
+                </p>
+               </td>
+              </tr>
+              <tr>
+               <td>
+                10 Jun
+                <img src="/img/w/02d.png"/>
+               </td>
+               <td>
+                <span class="label label-warning">
+                 16.9°C
+                </span>
+                <span class="label label-default">
+                 8.7°C
+                </span>
+                <i>
+                 few clouds
+                </i>
+                <p>
+                 8.81m/s
+                 <br/>
+                 clouds: 12%, 1019.21 hpa
+                </p>
+               </td>
+              </tr>
+              <tr>
+               <td>
+                11 Jun
+                <img src="/img/w/02d.png"/>
+               </td>
+               <td>
+                <span class="label label-warning">
+                 17.3°C
+                </span>
+                <span class="label label-default">
+                 9°C
+                </span>
+                <i>
+                 few clouds
+                </i>
+                <p>
+                 2.06m/s
+                 <br/>
+                 clouds: 20%, 1024.67 hpa
+                </p>
+               </td>
+              </tr>
+              <tr>
+               <td>
+                12 Jun
+                <img src="/img/w/10d.png"/>
+               </td>
+               <td>
+                <span class="label label-warning">
+                 19.2°C
+                </span>
+                <span class="label label-default">
+                 15.7°C
+                </span>
+                <i>
+                 heavy intensity rain
+                </i>
+                <p>
+                 6.97m/s
+                 <br/>
+                 clouds: 29%, 1017.44 hpa
+                </p>
+               </td>
+              </tr>
+              <tr>
+               <td>
+                13 Jun
+                <img src="/img/w/10d.png"/>
+               </td>
+               <td>
+                <span class="label label-warning">
+                 17.3°C
+                </span>
+                <span class="label label-default">
+                 13.5°C
+                </span>
+                <i>
+                 moderate rain
+                </i>
+                <p>
+                 5.68m/s
+                 <br/>
+                 clouds: 32%, 1004.82 hpa
+                </p>
+               </td>
+              </tr>
+              <tr>
+               <td>
+                14 Jun
+                <img src="/img/w/10d.png"/>
+               </td>
+               <td>
+                <span class="label label-warning">
+                 16.3°C
+                </span>
+                <span class="label label-default">
+                 14.1°C
+                </span>
+                <i>
+                 moderate rain
+                </i>
+                <p>
+                 6.12m/s
+                 <br/>
+                 clouds: 58%, 1007.57 hpa
+                </p>
+               </td>
+              </tr>
+              <tr>
+               <td>
+                15 Jun
+                <img src="/img/w/10d.png"/>
+               </td>
+               <td>
+                <span class="label label-warning">
+                 17.5°C
+                </span>
+                <span class="label label-default">
+                 13.9°C
+                </span>
+                <i>
+                 moderate rain
+                </i>
+                <p>
+                 2.46m/s
+                 <br/>
+                 clouds: 64%, 1013.78 hpa
+                </p>
+               </td>
+              </tr>
+              <tr>
+               <td>
+                16 Jun
+                <img src="/img/w/10d.png"/>
+               </td>
+               <td>
+                <span class="label label-warning">
+                 18°C
+                </span>
+                <span class="label label-default">
+                 11.9°C
+                </span>
+                <i>
+                 light rain
+                </i>
+                <p>
+                 7.65m/s
+                 <br/>
+                 clouds: 76%, 1017.57 hpa
+                </p>
+               </td>
+              </tr>
+              <tr>
+               <td>
+                17 Jun
+                <img src="/img/w/10d.png"/>
+               </td>
+               <td>
+                <span class="label label-warning">
+                 18°C
+                </span>
+                <span class="label label-default">
+                 14.6°C
+                </span>
+                <i>
+                 light rain
+                </i>
+                <p>
+                 6.18m/s
+                 <br/>
+                 clouds: 3%, 1027.88 hpa
+                </p>
+               </td>
+              </tr>
+              <tr>
+               <td>
+                18 Jun
+                <img src="/img/w/10d.png"/>
+               </td>
+               <td>
+                <span class="label label-warning">
+                 19.5°C
+                </span>
+                <span class="label label-default">
+                 18.1°C
+                </span>
+                <i>
+                 light rain
+                </i>
+                <p>
+                 6.45m/s
+                 <br/>
+                 clouds: 59%, 1028.64 hpa
+                </p>
+               </td>
+              </tr>
+              <tr>
+               <td>
+                19 Jun
+                <img src="/img/w/10d.png"/>
+               </td>
+               <td>
+                <span class="label label-warning">
+                 24.7°C
+                </span>
+                <span class="label label-default">
+                 17.3°C
+                </span>
+                <i>
+                 light rain
+                </i>
+                <p>
+                 5.55m/s
+                 <br/>
+                 clouds: 9%, 1022.15 hpa
+                </p>
+               </td>
+              </tr>
+             </tbody>
+            </table>
+           </div>
+          </div>
+         </div>
+        </div>
+        <!--Daily-->
+        <div class="tab-pane" id="daily_chart">
+         <div data-highcharts-chart="0" id="chart" style="width: 650px; height: 400px; margin: 0 auto">
+          <div class="highcharts-container" id="highcharts-0" style='position: relative; overflow: hidden; width: 650px; height: 400px; text-align: left; line-height: normal; z-index: 0; font-family: "Lucida Grande","Lucida Sans Unicode",Verdana,Arial,Helvetica,sans-serif; font-size: 12px; left: 0px; top: 0px;'>
+           <svg height="400" version="1.1" width="650" xmlns="http://www.w3.org/2000/svg">
+            <desc>
+             Created with Highcharts 3.0.1
+            </desc>
+            <defs>
+             <clippath id="highcharts-1">
+              <rect fill="none" height="346" width="486" x="0" y="0">
+              </rect>
+             </clippath>
+            </defs>
+            <rect fill="#FFFFFF" height="400" rx="5" ry="5" width="650" x="0" y="0">
+            </rect>
+            <g class="highcharts-grid" zindex="1">
+            </g>
+            <g class="highcharts-grid" zindex="1">
+             <path d="M 71 307.5 L 557 307.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 71 258.5 L 557 258.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 71 208.5 L 557 208.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 71 159.5 L 557 159.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 71 109.5 L 557 109.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 71 60.5 L 557 60.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 71 10.5 L 557 10.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 71 356.5 L 557 356.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+            </g>
+            <g class="highcharts-grid" zindex="1">
+             <path d="M 71 307.5 L 557 307.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 71 258.5 L 557 258.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 71 208.5 L 557 208.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 71 159.5 L 557 159.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 71 109.5 L 557 109.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 71 60.5 L 557 60.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 71 10.5 L 557 10.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 71 356.5 L 557 356.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+            </g>
+            <g class="highcharts-axis" zindex="2">
+             <path d="M 145.5 357 L 145.5 362" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 182.5 357 L 182.5 362" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 220.5 357 L 220.5 362" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 257.5 357 L 257.5 362" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 294.5 357 L 294.5 362" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 332.5 357 L 332.5 362" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 369.5 357 L 369.5 362" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 406.5 357 L 406.5 362" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 444.5 357 L 444.5 362" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 481.5 357 L 481.5 362" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 519.5 357 L 519.5 362" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 556.5 357 L 556.5 362" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 107.5 357 L 107.5 362" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 71.5 357 L 71.5 362" fill="none" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 71 356.5 L 557 356.5" fill="none" stroke="#C0D0E0" stroke-width="1" visibility="visible" zindex="7">
+             </path>
+            </g>
+            <g class="highcharts-axis" zindex="2">
+             <text style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:12px;color:blue;font-weight:bold;fill:blue;' text-anchor="middle" transform="rotate(270 24.733333587646484 183.5)" visibility="visible" x="24.733333587646484" y="183.5" zindex="7">
+              <tspan x="24.733333587646484">
+               Temp
+              </tspan>
+             </text>
+            </g>
+            <g class="highcharts-axis" zindex="2">
+             <text style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:12px;color:#4572A7;font-weight:bold;fill:#4572A7;' text-anchor="middle" transform="rotate(90 625.3333320617676 183.5)" visibility="visible" x="625.3333320617676" y="183.5" zindex="7">
+              <tspan x="625.3333320617676">
+               Precipitation
+              </tspan>
+             </text>
+            </g>
+            <g class="highcharts-series-group" zindex="3">
+             <g class="highcharts-series highcharts-tracker" clip-path="url(#highcharts-1)" style="" transform="translate(71,10) scale(1 1)" visibility="visible" zindex="0.1">
+              <rect fill="#909090" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="9.5" y="261.5">
+              </rect>
+              <rect fill="#909090" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="47.5" y="346.5">
+              </rect>
+              <rect fill="#909090" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="84.5" y="346.5">
+              </rect>
+              <rect fill="#909090" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="121.5" y="346.5">
+              </rect>
+              <rect fill="#909090" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="159.5" y="346.5">
+              </rect>
+              <rect fill="#909090" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="196.5" y="58.5">
+              </rect>
+              <rect fill="#909090" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="234.5" y="206.5">
+              </rect>
+              <rect fill="#909090" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="271.5" y="279.5">
+              </rect>
+              <rect fill="#909090" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="308.5" y="179.5">
+              </rect>
+              <rect fill="#909090" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="346.5" y="315.5">
+              </rect>
+              <rect fill="#909090" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="383.5" y="303.5">
+              </rect>
+              <rect fill="#909090" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="420.5" y="336.5">
+              </rect>
+              <rect fill="#909090" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="458.5" y="293.5">
+              </rect>
+             </g>
+             <g class="highcharts-markers" transform="translate(71,10) scale(1 1)" visibility="visible" zindex="0.1">
+             </g>
+             <g class="highcharts-series highcharts-tracker" clip-path="url(#highcharts-1)" style="" transform="translate(71,10) scale(1 1)" visibility="visible" zindex="0.1">
+              <rect fill="#B0B0B0" height="85" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="9.5" y="261.5">
+              </rect>
+              <rect fill="#B0B0B0" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="47.5" y="346.5">
+              </rect>
+              <rect fill="#B0B0B0" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="84.5" y="346.5">
+              </rect>
+              <rect fill="#B0B0B0" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="121.5" y="346.5">
+              </rect>
+              <rect fill="#B0B0B0" height="0" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="159.5" y="346.5">
+              </rect>
+              <rect fill="#B0B0B0" height="288" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="196.5" y="58.5">
+              </rect>
+              <rect fill="#B0B0B0" height="140" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="234.5" y="206.5">
+              </rect>
+              <rect fill="#B0B0B0" height="67" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="271.5" y="279.5">
+              </rect>
+              <rect fill="#B0B0B0" height="167" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="308.5" y="179.5">
+              </rect>
+              <rect fill="#B0B0B0" height="31" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="346.5" y="315.5">
+              </rect>
+              <rect fill="#B0B0B0" height="43" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="383.5" y="303.5">
+              </rect>
+              <rect fill="#B0B0B0" height="10" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="420.5" y="336.5">
+              </rect>
+              <rect fill="#B0B0B0" height="53" rx="0" ry="0" stroke="#FFFFFF" stroke-width="1" width="17" x="458.5" y="293.5">
+              </rect>
+             </g>
+             <g class="highcharts-markers" transform="translate(71,10) scale(1 1)" visibility="visible" zindex="0.1">
+             </g>
+             <g class="highcharts-series" clip-path="url(#highcharts-1)" transform="translate(71,10) scale(1 1)" visibility="visible" zindex="0.1">
+              <path d="M 18.692307692307693 141.8 C 18.692307692307693 141.8 41.12307692307692 162.62 56.07692307692308 175.5 C 71.03076923076924 188.38 78.50769230769231 195.49999999999997 93.46153846153847 206.2 C 108.41538461538462 216.89999999999998 115.89230769230771 229 130.84615384615387 229 C 145.8 229 153.27692307692308 229 168.23076923076923 225.1 C 183.18461538461537 221.2 190.66153846153847 206.2 205.61538461538464 206.2 C 220.56923076923076 206.2 228.04615384615386 219.33999999999997 243 225.1 C 257.9538461538462 230.86 265.4307692307692 235 280.3846153846154 235 C 295.3384615384615 235 302.8153846153847 226.48 317.7692307692308 223.1 C 332.723076923077 219.72 340.2 218.1 355.15384615384613 218.1 C 370.1076923076923 218.1 377.5846153846154 218.1 392.53846153846155 218.1 C 407.4923076923077 218.1 414.9692307692309 216.47999999999996 429.92307692307696 203.2 C 444.87692307692316 189.91999999999993 467.3076923076923 151.7 467.3076923076923 151.7" fill="none" stroke="blue" stroke-width="2" zindex="1">
+              </path>
+             </g>
+             <g class="highcharts-markers" clip-path="none" transform="translate(71,10) scale(1 1)" visibility="visible" zindex="0.1">
+              <path d="M 467.3076923076923 147.7 C 472.6356923076923 147.7 472.6356923076923 155.7 467.3076923076923 155.7 C 461.97969230769235 155.7 461.97969230769235 147.7 467.3076923076923 147.7 Z" fill="blue">
+              </path>
+              <path d="M 429.92307692307696 199.2 C 435.25107692307694 199.2 435.25107692307694 207.2 429.92307692307696 207.2 C 424.595076923077 207.2 424.595076923077 199.2 429.92307692307696 199.2 Z" fill="blue">
+              </path>
+              <path d="M 392.53846153846155 214.1 C 397.8664615384615 214.1 397.8664615384615 222.1 392.53846153846155 222.1 C 387.2104615384616 222.1 387.2104615384616 214.1 392.53846153846155 214.1 Z" fill="blue">
+              </path>
+              <path d="M 355.15384615384613 214.1 C 360.4818461538461 214.1 360.4818461538461 222.1 355.15384615384613 222.1 C 349.82584615384616 222.1 349.82584615384616 214.1 355.15384615384613 214.1 Z" fill="blue">
+              </path>
+              <path d="M 317.7692307692308 219.1 C 323.09723076923075 219.1 323.09723076923075 227.1 317.7692307692308 227.1 C 312.4412307692308 227.1 312.4412307692308 219.1 317.7692307692308 219.1 Z" fill="blue">
+              </path>
+              <path d="M 280.3846153846154 231 C 285.7126153846154 231 285.7126153846154 239 280.3846153846154 239 C 275.05661538461544 239 275.05661538461544 231 280.3846153846154 231 Z" fill="blue">
+              </path>
+              <path d="M 243 221.1 C 248.328 221.1 248.328 229.1 243 229.1 C 237.672 229.1 237.672 221.1 243 221.1 Z" fill="blue">
+              </path>
+              <path d="M 205.61538461538464 202.2 C 210.94338461538464 202.2 210.94338461538464 210.2 205.61538461538464 210.2 C 200.28738461538464 210.2 200.28738461538464 202.2 205.61538461538464 202.2 Z" fill="blue">
+              </path>
+              <path d="M 168.23076923076923 221.1 C 173.55876923076923 221.1 173.55876923076923 229.1 168.23076923076923 229.1 C 162.90276923076922 229.1 162.90276923076922 221.1 168.23076923076923 221.1 Z" fill="blue">
+              </path>
+              <path d="M 130.84615384615387 225 C 136.17415384615387 225 136.17415384615387 233 130.84615384615387 233 C 125.51815384615387 233 125.51815384615387 225 130.84615384615387 225 Z" fill="blue">
+              </path>
+              <path d="M 93.46153846153847 202.2 C 98.78953846153847 202.2 98.78953846153847 210.2 93.46153846153847 210.2 C 88.13353846153846 210.2 88.13353846153846 202.2 93.46153846153847 202.2 Z" fill="blue">
+              </path>
+              <path d="M 56.07692307692308 171.5 C 61.40492307692308 171.5 61.40492307692308 179.5 56.07692307692308 179.5 C 50.74892307692308 179.5 50.74892307692308 171.5 56.07692307692308 171.5 Z" fill="blue">
+              </path>
+              <path d="M 18.692307692307693 137.8 C 24.020307692307693 137.8 24.020307692307693 145.8 18.692307692307693 145.8 C 13.364307692307694 145.8 13.364307692307694 137.8 18.692307692307693 137.8 Z" fill="blue">
+              </path>
+              <path class="highcharts-tracker highcharts-tracker" d="M 8.692307692307693 141.8 L 18.692307692307693 141.8 C 18.692307692307693 141.8 41.12307692307692 162.62 56.07692307692308 175.5 C 71.03076923076924 188.38 78.50769230769231 195.49999999999997 93.46153846153847 206.2 C 108.41538461538462 216.89999999999998 115.89230769230771 229 130.84615384615387 229 C 145.8 229 153.27692307692308 229 168.23076923076923 225.1 C 183.18461538461537 221.2 190.66153846153847 206.2 205.61538461538464 206.2 C 220.56923076923076 206.2 228.04615384615386 219.33999999999997 243 225.1 C 257.9538461538462 230.86 265.4307692307692 235 280.3846153846154 235 C 295.3384615384615 235 302.8153846153847 226.48 317.7692307692308 223.1 C 332.723076923077 219.72 340.2 218.1 355.15384615384613 218.1 C 370.1076923076923 218.1 377.5846153846154 218.1 392.53846153846155 218.1 C 407.4923076923077 218.1 414.9692307692309 216.47999999999996 429.92307692307696 203.2 C 444.87692307692316 189.91999999999993 467.3076923076923 151.7 467.3076923076923 151.7 L 477.3076923076923 151.7" fill="none" stroke="rgb(192,192,192)" stroke-linejoin="round" stroke-opacity="0.0001" stroke-width="22" style="" visibility="visible" zindex="2">
+              </path>
+             </g>
+             <g class="highcharts-series" clip-path="url(#highcharts-1)" transform="translate(71,10) scale(1 1)" visibility="visible" zindex="0.1">
+              <path d="M 18.692307692307693 252.8 L 56.07692307692308 247.9 L 93.46153846153847 283.5 L 130.84615384615387 310.3 L 168.23076923076923 307.3 L 205.61538461538464 240.9 L 243 262.7 L 280.3846153846154 258.8 L 317.7692307692308 258.8 L 355.15384615384613 278.6 L 392.53846153846155 262.7 L 429.92307692307696 249.8 L 467.3076923076923 225.1 L 467.3076923076923 151.68857142857144 L 429.92307692307696 192.33714285714285 L 392.53846153846155 218.1142857142857 L 355.15384615384613 218.1142857142857 L 317.7692307692308 223.07142857142856 L 280.3846153846154 232.98571428571427 L 243 225.0542857142857 L 205.61538461538464 206.21714285714285 L 168.23076923076923 223.07142857142856 L 130.84615384615387 229.02 L 93.46153846153847 198.28571428571428 L 56.07692307692308 175.48285714285714 L 18.692307692307693 124.92000000000002" fill="rgb(47,126,216)" fill-opacity="0.3" zindex="0">
+              </path>
+             </g>
+             <g class="highcharts-markers" clip-path="none" transform="translate(71,10) scale(1 1)" visibility="visible" zindex="0.1">
+              <path class="highcharts-tracker highcharts-tracker" d="M 18.692307692307693 252.8 L 56.07692307692308 247.9 L 93.46153846153847 283.5 L 130.84615384615387 310.3 L 168.23076923076923 307.3 L 205.61538461538464 240.9 L 243 262.7 L 280.3846153846154 258.8 L 317.7692307692308 258.8 L 355.15384615384613 278.6 L 392.53846153846155 262.7 L 429.92307692307696 249.8 L 467.3076923076923 225.1 L 467.3076923076923 151.68857142857144 L 429.92307692307696 192.33714285714285 L 392.53846153846155 218.1142857142857 L 355.15384615384613 218.1142857142857 L 317.7692307692308 223.07142857142856 L 280.3846153846154 232.98571428571427 L 243 225.0542857142857 L 205.61538461538464 206.21714285714285 L 168.23076923076923 223.07142857142856 L 130.84615384615387 229.02 L 93.46153846153847 198.28571428571428 L 56.07692307692308 175.48285714285714 L 18.692307692307693 124.92000000000002" fill="rgb(192,192,192)" fill-opacity="0.0001" stroke-linejoin="round" stroke-opacity="0.0001" style="" visibility="visible" zindex="2">
+              </path>
+             </g>
+            </g>
+            <g class="highcharts-axis-labels" zindex="7">
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:17px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="89.6923076923077" y="371">
+              <tspan x="89.6923076923077">
+               07
+              </tspan>
+              <tspan dy="14px" x="89.6923076923077">
+               Jun
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:17px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="127.07692307692308" y="371">
+              <tspan x="127.07692307692308">
+               08
+              </tspan>
+              <tspan dy="14px" x="127.07692307692308">
+               Jun
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:17px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="164.46153846153845" y="371">
+              <tspan x="164.46153846153845">
+               09
+              </tspan>
+              <tspan dy="14px" x="164.46153846153845">
+               Jun
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:17px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="201.84615384615387" y="371">
+              <tspan x="201.84615384615387">
+               10
+              </tspan>
+              <tspan dy="14px" x="201.84615384615387">
+               Jun
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:17px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="239.23076923076923" y="371">
+              <tspan x="239.23076923076923">
+               11
+              </tspan>
+              <tspan dy="14px" x="239.23076923076923">
+               Jun
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:17px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="276.61538461538464" y="371">
+              <tspan x="276.61538461538464">
+               12
+              </tspan>
+              <tspan dy="14px" x="276.61538461538464">
+               Jun
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:17px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="314" y="371">
+              <tspan x="314">
+               13
+              </tspan>
+              <tspan dy="14px" x="314">
+               Jun
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:17px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="351.3846153846154" y="371">
+              <tspan x="351.3846153846154">
+               14
+              </tspan>
+              <tspan dy="14px" x="351.3846153846154">
+               Jun
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:17px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="388.7692307692308" y="371">
+              <tspan x="388.7692307692308">
+               15
+              </tspan>
+              <tspan dy="14px" x="388.7692307692308">
+               Jun
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:17px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="426.1538461538462" y="371">
+              <tspan x="426.1538461538462">
+               16
+              </tspan>
+              <tspan dy="14px" x="426.1538461538462">
+               Jun
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:17px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="463.53846153846155" y="371">
+              <tspan x="463.53846153846155">
+               17
+              </tspan>
+              <tspan dy="14px" x="463.53846153846155">
+               Jun
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:17px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="500.92307692307696" y="371">
+              <tspan x="500.92307692307696">
+               18
+              </tspan>
+              <tspan dy="14px" x="500.92307692307696">
+               Jun
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:17px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="middle" x="538.3076923076923" y="371">
+              <tspan x="538.3076923076923">
+               19
+              </tspan>
+              <tspan dy="14px" x="538.3076923076923">
+               Jun
+              </tspan>
+             </text>
+            </g>
+            <g class="highcharts-axis-labels" zindex="7">
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:223px;color:blue;cursor:default;line-height:14px;fill:blue;' text-anchor="end" x="63" y="362.6">
+              <tspan x="63">
+               5°C
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:223px;color:blue;cursor:default;line-height:14px;fill:blue;' text-anchor="end" x="63" y="313.02857142857147">
+              <tspan x="63">
+               10°C
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:223px;color:blue;cursor:default;line-height:14px;fill:blue;' text-anchor="end" x="63" y="263.4571428571429">
+              <tspan x="63">
+               15°C
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:223px;color:blue;cursor:default;line-height:14px;fill:blue;' text-anchor="end" x="63" y="213.88571428571427">
+              <tspan x="63">
+               20°C
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:223px;color:blue;cursor:default;line-height:14px;fill:blue;' text-anchor="end" x="63" y="164.31428571428572">
+              <tspan x="63">
+               25°C
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:223px;color:blue;cursor:default;line-height:14px;fill:blue;' text-anchor="end" x="63" y="114.74285714285713">
+              <tspan x="63">
+               30°C
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:223px;color:blue;cursor:default;line-height:14px;fill:blue;' text-anchor="end" x="63" y="65.17142857142855">
+              <tspan x="63">
+               35°C
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:223px;color:blue;cursor:default;line-height:14px;fill:blue;' text-anchor="end" x="63" y="15.6">
+              <tspan x="63">
+               40°C
+              </tspan>
+             </text>
+            </g>
+            <g class="highcharts-axis-labels" zindex="7">
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:223px;color:#909090;cursor:default;line-height:14px;fill:#909090;' text-anchor="start" x="565" y="362.6">
+              <tspan x="565">
+               0 mm
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:223px;color:#909090;cursor:default;line-height:14px;fill:#909090;' text-anchor="start" x="565" y="313.02857142857147">
+              <tspan x="565">
+               2.5 mm
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:223px;color:#909090;cursor:default;line-height:14px;fill:#909090;' text-anchor="start" x="565" y="263.4571428571429">
+              <tspan x="565">
+               5 mm
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:223px;color:#909090;cursor:default;line-height:14px;fill:#909090;' text-anchor="start" x="565" y="213.88571428571427">
+              <tspan x="565">
+               7.5 mm
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:223px;color:#909090;cursor:default;line-height:14px;fill:#909090;' text-anchor="start" x="565" y="164.31428571428572">
+              <tspan x="565">
+               10 mm
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:223px;color:#909090;cursor:default;line-height:14px;fill:#909090;' text-anchor="start" x="565" y="114.74285714285713">
+              <tspan x="565">
+               12.5 mm
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:223px;color:#909090;cursor:default;line-height:14px;fill:#909090;' text-anchor="start" x="565" y="65.17142857142855">
+              <tspan x="565">
+               15 mm
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:223px;color:#909090;cursor:default;line-height:14px;fill:#909090;' text-anchor="start" x="565" y="15.6">
+              <tspan x="565">
+               17.5 mm
+              </tspan>
+             </text>
+            </g>
+            <g class="highcharts-tooltip" style="cursor:default;padding:0;white-space:nowrap;" visibility="hidden" zindex="8">
+             <rect fill="none" fill-opacity="0.85" height="16" isshadow="true" rx="3" ry="3" stroke="black" stroke-opacity="0.049999999999999996" stroke-width="5" transform="translate(1, 1)" width="16" x="0.5" y="0.5">
+             </rect>
+             <rect fill="none" fill-opacity="0.85" height="16" isshadow="true" rx="3" ry="3" stroke="black" stroke-opacity="0.09999999999999999" stroke-width="3" transform="translate(1, 1)" width="16" x="0.5" y="0.5">
+             </rect>
+             <rect fill="none" fill-opacity="0.85" height="16" isshadow="true" rx="3" ry="3" stroke="black" stroke-opacity="0.15" stroke-width="1" transform="translate(1, 1)" width="16" x="0.5" y="0.5">
+             </rect>
+             <rect fill="rgb(255,255,255)" fill-opacity="0.85" height="16" rx="3" ry="3" width="16" x="0.5" y="0.5">
+             </rect>
+            </g>
+            <text style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:9px;cursor:pointer;color:#909090;fill:#909090;' text-anchor="end" x="640" y="395" zindex="8">
+             <tspan x="640">
+              Highcharts.com
+             </tspan>
+            </text>
+           </svg>
+           <div class="highcharts-tooltip" style="position: absolute; left: 0px; top: 0px;">
+            <span style='position: absolute; white-space: nowrap; font-family: "Lucida Grande","Lucida Sans Unicode",Verdana,Arial,Helvetica,sans-serif; font-size: 12px; color: rgb(51, 51, 51); left: 8px; top: 8px;' zindex="1">
+            </span>
+           </div>
+          </div>
+         </div>
+        </div>
+        <!--Hourly-->
+        <div class="tab-pane" id="hourly_list">
+         <div id="hourly_long_list">
+          <table class="table">
+           <tbody>
+            <tr class="well">
+             <td colspan="2">
+              <b>
+               Tue Jun 07 2016
+              </b>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              17:00
+              <img src="http://openweathermap.org/img/w/03d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               26.4°C
+              </span>
+              <i>
+               scattered clouds
+              </i>
+              <p>
+               20  26.4°C,  2.76m/s.  36%, 1033.07 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              20:00
+              <img src="http://openweathermap.org/img/w/02d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               25.3°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               19.2  25.3°C,  2.96m/s.  8%, 1032.35 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              23:00
+              <img src="http://openweathermap.org/img/w/01n.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               22.6°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               16.8  22.6°C,  5.86m/s.  0%, 1032.36 hpa
+              </p>
+             </td>
+            </tr>
+            <tr class="well">
+             <td colspan="2">
+              <b>
+               Wed Jun 08 2016
+              </b>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              02:00
+              <img src="http://openweathermap.org/img/w/01n.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               19.4°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               14  19.4°C,  6.18m/s.  0%, 1031.93 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              05:00
+              <img src="http://openweathermap.org/img/w/01d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               17.7°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               12.6  17.7°C,  6.16m/s.  0%, 1031 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              08:00
+              <img src="http://openweathermap.org/img/w/02d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               18.2°C
+              </span>
+              <i>
+               few clouds
+              </i>
+              <p>
+               13.5  18.2°C,  6.46m/s.  12%, 1030.08 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              11:00
+              <img src="http://openweathermap.org/img/w/01d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               21.1°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               16.6  21.1°C,  6.47m/s.  0%, 1028.88 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              14:00
+              <img src="http://openweathermap.org/img/w/01d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               23.4°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               19.3  23.4°C,  7.26m/s.  0%, 1027.67 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              17:00
+              <img src="http://openweathermap.org/img/w/01d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               23.3°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               19.6  23.3°C,  7.51m/s.  0%, 1027.04 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              20:00
+              <img src="http://openweathermap.org/img/w/03d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               23°C
+              </span>
+              <i>
+               scattered clouds
+              </i>
+              <p>
+               19.6  23°C,  5.26m/s.  48%, 1026.48 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              23:00
+              <img src="http://openweathermap.org/img/w/02n.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               20.3°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               17.2  20.3°C,  7.66m/s.  8%, 1027.81 hpa
+              </p>
+             </td>
+            </tr>
+            <tr class="well">
+             <td colspan="2">
+              <b>
+               Thu Jun 09 2016
+              </b>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              02:00
+              <img src="http://openweathermap.org/img/w/03n.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               18.7°C
+              </span>
+              <i>
+               scattered clouds
+              </i>
+              <p>
+               16  18.7°C,  6.55m/s.  32%, 1028.86 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              05:00
+              <img src="http://openweathermap.org/img/w/10d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               16.7°C
+              </span>
+              <i>
+               light rain
+              </i>
+              <p>
+               14.3  16.7°C,  5.66m/s.  76%, 1029.91 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              08:00
+              <img src="http://openweathermap.org/img/w/10d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               16.8°C
+              </span>
+              <i>
+               light rain
+              </i>
+              <p>
+               14.8  16.8°C,  2.72m/s.  0%, 1030.56 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              11:00
+              <img src="http://openweathermap.org/img/w/01d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               17.3°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               15.6  17.3°C,  1.53m/s.  0%, 1030.66 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              14:00
+              <img src="http://openweathermap.org/img/w/01d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               18.2°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               16.8  18.2°C,  2.31m/s.  0%, 1029.87 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              17:00
+              <img src="http://openweathermap.org/img/w/04d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               18.4°C
+              </span>
+              <i>
+               overcast clouds
+              </i>
+              <p>
+               17.4  18.4°C,  2.72m/s.  100%, 1027.96 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              20:00
+              <img src="http://openweathermap.org/img/w/10d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               17.9°C
+              </span>
+              <i>
+               light rain
+              </i>
+              <p>
+               17.2  17.9°C,  6.72m/s.  0%, 1026.24 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              23:00
+              <img src="http://openweathermap.org/img/w/02n.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               14.6°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               14.3  14.6°C,  8.32m/s.  8%, 1025.58 hpa
+              </p>
+             </td>
+            </tr>
+            <tr class="well">
+             <td colspan="2">
+              <b>
+               Fri Jun 10 2016
+              </b>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              02:00
+              <img src="http://openweathermap.org/img/w/01n.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               13°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               13  13°C,  8.96m/s.  0%, 1024.45 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              05:00
+              <img src="http://openweathermap.org/img/w/01d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               12.3°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               12.3  12.3°C,  10.56m/s.  0%, 1022.8 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              08:00
+              <img src="http://openweathermap.org/img/w/02d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               13.3°C
+              </span>
+              <i>
+               few clouds
+              </i>
+              <p>
+               13.3  13.3°C,  11.86m/s.  12%, 1021.46 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              11:00
+              <img src="http://openweathermap.org/img/w/01d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               15.3°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               15.3  15.3°C,  11.41m/s.  0%, 1020.77 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              14:00
+              <img src="http://openweathermap.org/img/w/04d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               16.6°C
+              </span>
+              <i>
+               broken clouds
+              </i>
+              <p>
+               16.6  16.6°C,  9.51m/s.  80%, 1021.32 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              17:00
+              <img src="http://openweathermap.org/img/w/01d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               15.2°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               15.2  15.2°C,  9.76m/s.  0%, 1023.37 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              20:00
+              <img src="http://openweathermap.org/img/w/01d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               15.1°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               15.1  15.1°C,  6.77m/s.  0%, 1024.96 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              23:00
+              <img src="http://openweathermap.org/img/w/01n.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               14.3°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               14.3  14.3°C,  4.71m/s.  0%, 1026.17 hpa
+              </p>
+             </td>
+            </tr>
+            <tr class="well">
+             <td colspan="2">
+              <b>
+               Sat Jun 11 2016
+              </b>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              02:00
+              <img src="http://openweathermap.org/img/w/01n.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               13.4°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               13.4  13.4°C,  4.85m/s.  0%, 1026.97 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              05:00
+              <img src="http://openweathermap.org/img/w/01d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               12.7°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               12.7  12.7°C,  4.29m/s.  0%, 1027.11 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              08:00
+              <img src="http://openweathermap.org/img/w/01d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               13.9°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               13.9  13.9°C,  4.13m/s.  0%, 1027.93 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              11:00
+              <img src="http://openweathermap.org/img/w/01d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               14.8°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               14.8  14.8°C,  1.96m/s.  0%, 1028.35 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              14:00
+              <img src="http://openweathermap.org/img/w/01d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               15.7°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               15.7  15.7°C,  1.56m/s.  0%, 1028.15 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              17:00
+              <img src="http://openweathermap.org/img/w/01d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               16.1°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               16.1  16.1°C,  1.66m/s.  0%, 1027.61 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              20:00
+              <img src="http://openweathermap.org/img/w/01d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               16.1°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               16.1  16.1°C,  1.56m/s.  0%, 1027.67 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              23:00
+              <img src="http://openweathermap.org/img/w/01n.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               14.6°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               14.6  14.6°C,  1.86m/s.  0%, 1028.26 hpa
+              </p>
+             </td>
+            </tr>
+            <tr class="well">
+             <td colspan="2">
+              <b>
+               Sun Jun 12 2016
+              </b>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              02:00
+              <img src="http://openweathermap.org/img/w/01n.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               13.7°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               13.7  13.7°C,  2.16m/s.  0%, 1028.28 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              05:00
+              <img src="http://openweathermap.org/img/w/01d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               13.1°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               13.1  13.1°C,  2.06m/s.  0%, 1027.88 hpa
+              </p>
+             </td>
+            </tr>
+            <tr>
+             <td>
+              08:00
+              <img src="http://openweathermap.org/img/w/01d.png"/>
+             </td>
+             <td>
+              <span class="badge badge-info">
+               15.2°C
+              </span>
+              <i>
+               clear sky
+              </i>
+              <p>
+               15.2  15.2°C,  2.51m/s.  0%, 1028.2 hpa
+              </p>
+             </td>
+            </tr>
+           </tbody>
+          </table>
+         </div>
+        </div>
+        <!--Charts-->
+        <div class="tab-pane" id="forecast-chart">
+         <ul class="nav nav-tabs">
+          <li class="">
+           <a href="javascript:showForcastChartVal('temp');" rel="tooltip" title="Temperature">
+            Temperature
+           </a>
+          </li>
+          <li class="">
+           <a href="javascript:showForcastChartVal('wind_ms');" rel="tooltip" title="Wind">
+            Wind
+           </a>
+          </li>
+          <li class="">
+           <a href="javascript:showForcastChartVal('pressure');" rel="tooltip" title="Pressure">
+            Pressure
+           </a>
+          </li>
+          <li class="">
+           <a href="javascript:showForcastChartVal('precipitation');" rel="tooltip" title="Precipitation">
+            Precipitation
+           </a>
+          </li>
+         </ul>
+         <div data-highcharts-chart="2" id="chart-forecast" style="width: 600px; height: 400px; margin: 0 auto">
+          <div class="highcharts-container" id="highcharts-9" style='position: relative; overflow: hidden; width: 600px; height: 400px; text-align: left; line-height: normal; z-index: 0; font-family: "Lucida Grande","Lucida Sans Unicode",Verdana,Arial,Helvetica,sans-serif; font-size: 12px; left: 0px; top: 0px;'>
+           <svg height="400" version="1.1" width="600" xmlns="http://www.w3.org/2000/svg">
+            <desc>
+             Created with Highcharts 3.0.1
+            </desc>
+            <defs>
+             <clippath id="highcharts-10">
+              <rect fill="none" height="400" rx="0" ry="0" width="9999" x="0" y="0">
+              </rect>
+             </clippath>
+             <clippath id="highcharts-11">
+              <rect fill="none" height="321" width="546" x="0" y="0">
+              </rect>
+             </clippath>
+            </defs>
+            <rect fill="#FFFFFF" height="400" rx="5" ry="5" width="600" x="0" y="0">
+            </rect>
+            <g class="highcharts-grid" zindex="1">
+            </g>
+            <g class="highcharts-grid" zindex="1">
+             <path d="M 44 286.5 L 590 286.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 44 240.5 L 590 240.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 44 194.5 L 590 194.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 44 148.5 L 590 148.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 44 102.5 L 590 102.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 44 56.5 L 590 56.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 44 10.5 L 590 10.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+             <path d="M 44 331.5 L 590 331.5" fill="none" opacity="1" stroke="#C0C0C0" stroke-width="1" zindex="1">
+             </path>
+            </g>
+            <g class="highcharts-axis" zindex="2">
+             <path d="M 125.5 332 L 125.5 337" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 193.5 332 L 193.5 337" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 261.5 332 L 261.5 337" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 330.5 332 L 330.5 337" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 398.5 332 L 398.5 337" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 466.5 332 L 466.5 337" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 534.5 332 L 534.5 337" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 57.5 332 L 57.5 337" fill="none" opacity="1" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 44.5 332 L 44.5 337" fill="none" stroke="#C0D0E0" stroke-width="1">
+             </path>
+             <path d="M 44 331.5 L 590 331.5" fill="none" stroke="#C0D0E0" stroke-width="1" visibility="visible" zindex="7">
+             </path>
+            </g>
+            <g class="highcharts-axis" zindex="2">
+            </g>
+            <g class="highcharts-series-group" zindex="3">
+             <g class="highcharts-series" clip-path="url(#highcharts-11)" transform="translate(44,10) scale(1 1)" visibility="visible" zindex="0.1">
+              <path d="M 6.825 19.9 C 6.825 19.9 15.015 27.120000000000005 20.475 41.2 C 25.935000000000002 55.28 28.665 68.75999999999999 34.125 90.3 C 39.585 111.84 42.315000000000005 130.72 47.775000000000006 148.9 C 53.235 167.07999999999998 55.96500000000001 181.2 61.425000000000004 181.2 C 66.885 181.2 69.61500000000001 181.2 75.075 171.1 C 80.53500000000001 161 83.26500000000001 137.64 88.72500000000001 118.5 C 94.185 99.35999999999999 96.915 75.4 102.375 75.4 C 107.835 75.4 110.56500000000001 75.5 116.025 77.1 C 121.48500000000001 78.7 124.215 77.1 129.675 83.4 C 135.135 89.70000000000002 137.865 117.20000000000006 143.325 132.8 C 148.785 148.40000000000006 151.515 148.28 156.975 161.4 C 162.435 174.51999999999998 165.16500000000002 198.4 170.625 198.4 C 176.08499999999998 198.4 178.815 198.4 184.275 196.7 C 189.73499999999999 194.99999999999997 192.465 192.14 197.92499999999998 187.1 C 203.385 182.05999999999997 206.11499999999995 175.4 211.575 171.5 C 217.035 167.6 219.76499999999996 167.6 225.225 167.6 C 230.685 167.6 233.41500000000002 167.6 238.875 177.4 C 244.33499999999998 187.20000000000002 247.065 219.38000000000002 252.525 237.4 C 257.985 255.42000000000002 260.71500000000003 259.04 266.175 267.5 C 271.63500000000005 275.96000000000004 274.36499999999995 279.7 279.825 279.7 C 285.28499999999997 279.7 288.015 273.20000000000005 293.475 262 C 298.93500000000006 250.79999999999998 301.665 235.95999999999998 307.125 223.7 C 312.585 211.44 315.31499999999994 200.7 320.775 200.7 C 326.235 200.7 328.96500000000003 225.79999999999998 334.425 226.7 C 339.88500000000005 227.6 342.61499999999995 226.7 348.075 227.6 C 353.53499999999997 228.5 356.26500000000004 235.98000000000005 361.725 242.5 C 367.18500000000006 249.02000000000004 369.915 254.11999999999998 375.375 260.2 C 380.835 266.28 383.56499999999994 272.9 389.025 272.9 C 394.48499999999996 272.9 397.21500000000003 258.05999999999995 402.675 250.1 C 408.13500000000005 242.14 410.86499999999995 239.51999999999998 416.325 233.1 C 421.785 226.67999999999998 424.51500000000004 222.7 429.975 218 C 435.43500000000006 213.29999999999998 438.16499999999996 209.6 443.625 209.6 C 449.08500000000004 209.6 451.81499999999994 209.6 457.275 210.1 C 462.73499999999996 210.6 465.465 228.35999999999999 470.925 237.2 C 476.38500000000005 246.03999999999996 479.11499999999995 248.82 484.575 254.3 C 490.035 259.78 492.76500000000004 264.6 498.225 264.6 C 503.68500000000006 264.6 506.41499999999996 239.1 511.875 226.3 C 517.335 213.5 520.065 209.1000000000001 525.5250000000001 200.6 C 530.985 192.10000000000008 539.1750000000001 183.8 539.1750000000001 183.8" fill="none" stroke="#2f7ed8" stroke-width="2" zindex="1">
+              </path>
+             </g>
+             <g class="highcharts-markers" clip-path="none" transform="translate(44,10) scale(1 1)" visibility="visible" zindex="0.1">
+              <path d="M 539.1750000000001 179.8 C 544.503 179.8 544.503 187.8 539.1750000000001 187.8 C 533.8470000000001 187.8 533.8470000000001 179.8 539.1750000000001 179.8 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 525.5250000000001 196.6 C 530.8530000000001 196.6 530.8530000000001 204.6 525.5250000000001 204.6 C 520.1970000000001 204.6 520.1970000000001 196.6 525.5250000000001 196.6 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 511.875 222.3 C 517.203 222.3 517.203 230.3 511.875 230.3 C 506.547 230.3 506.547 222.3 511.875 222.3 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 498.225 260.6 C 503.553 260.6 503.553 268.6 498.225 268.6 C 492.89700000000005 268.6 492.89700000000005 260.6 498.225 260.6 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 484.575 250.3 C 489.90299999999996 250.3 489.90299999999996 258.3 484.575 258.3 C 479.247 258.3 479.247 250.3 484.575 250.3 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 470.925 233.2 C 476.253 233.2 476.253 241.2 470.925 241.2 C 465.59700000000004 241.2 465.59700000000004 233.2 470.925 233.2 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 457.275 206.1 C 462.60299999999995 206.1 462.60299999999995 214.1 457.275 214.1 C 451.947 214.1 451.947 206.1 457.275 206.1 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 443.625 205.6 C 448.953 205.6 448.953 213.6 443.625 213.6 C 438.297 213.6 438.297 205.6 443.625 205.6 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 429.975 214 C 435.303 214 435.303 222 429.975 222 C 424.64700000000005 222 424.64700000000005 214 429.975 214 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 416.325 229.1 C 421.65299999999996 229.1 421.65299999999996 237.1 416.325 237.1 C 410.997 237.1 410.997 229.1 416.325 229.1 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 402.675 246.1 C 408.003 246.1 408.003 254.1 402.675 254.1 C 397.34700000000004 254.1 397.34700000000004 246.1 402.675 246.1 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 389.025 268.9 C 394.35299999999995 268.9 394.35299999999995 276.9 389.025 276.9 C 383.697 276.9 383.697 268.9 389.025 268.9 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 375.375 256.2 C 380.703 256.2 380.703 264.2 375.375 264.2 C 370.047 264.2 370.047 256.2 375.375 256.2 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 361.725 238.5 C 367.053 238.5 367.053 246.5 361.725 246.5 C 356.39700000000005 246.5 356.39700000000005 238.5 361.725 238.5 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 348.075 223.6 C 353.40299999999996 223.6 353.40299999999996 231.6 348.075 231.6 C 342.747 231.6 342.747 223.6 348.075 223.6 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 334.425 222.7 C 339.753 222.7 339.753 230.7 334.425 230.7 C 329.09700000000004 230.7 329.09700000000004 222.7 334.425 222.7 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 320.775 196.7 C 326.10299999999995 196.7 326.10299999999995 204.7 320.775 204.7 C 315.447 204.7 315.447 196.7 320.775 196.7 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 307.125 219.7 C 312.453 219.7 312.453 227.7 307.125 227.7 C 301.797 227.7 301.797 219.7 307.125 219.7 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 293.475 258 C 298.803 258 298.803 266 293.475 266 C 288.14700000000005 266 288.14700000000005 258 293.475 258 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 279.825 275.7 C 285.15299999999996 275.7 285.15299999999996 283.7 279.825 283.7 C 274.497 283.7 274.497 275.7 279.825 275.7 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 266.175 263.5 C 271.503 263.5 271.503 271.5 266.175 271.5 C 260.84700000000004 271.5 260.84700000000004 263.5 266.175 263.5 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 252.525 233.4 C 257.85299999999995 233.4 257.85299999999995 241.4 252.525 241.4 C 247.197 241.4 247.197 233.4 252.525 233.4 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 238.875 173.4 C 244.203 173.4 244.203 181.4 238.875 181.4 C 233.547 181.4 233.547 173.4 238.875 173.4 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 225.225 163.6 C 230.553 163.6 230.553 171.6 225.225 171.6 C 219.897 171.6 219.897 163.6 225.225 163.6 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 211.575 167.5 C 216.903 167.5 216.903 175.5 211.575 175.5 C 206.24699999999999 175.5 206.24699999999999 167.5 211.575 167.5 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 197.92499999999998 183.1 C 203.253 183.1 203.253 191.1 197.92499999999998 191.1 C 192.59699999999998 191.1 192.59699999999998 183.1 197.92499999999998 183.1 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 184.275 192.7 C 189.603 192.7 189.603 200.7 184.275 200.7 C 178.947 200.7 178.947 192.7 184.275 192.7 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 170.625 194.4 C 175.953 194.4 175.953 202.4 170.625 202.4 C 165.297 202.4 165.297 194.4 170.625 194.4 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 156.975 157.4 C 162.303 157.4 162.303 165.4 156.975 165.4 C 151.647 165.4 151.647 157.4 156.975 157.4 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 143.325 128.8 C 148.653 128.8 148.653 136.8 143.325 136.8 C 137.99699999999999 136.8 137.99699999999999 128.8 143.325 128.8 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 129.675 79.4 C 135.00300000000001 79.4 135.00300000000001 87.4 129.675 87.4 C 124.34700000000001 87.4 124.34700000000001 79.4 129.675 79.4 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 116.025 73.1 C 121.35300000000001 73.1 121.35300000000001 81.1 116.025 81.1 C 110.697 81.1 110.697 73.1 116.025 73.1 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 102.375 71.4 C 107.703 71.4 107.703 79.4 102.375 79.4 C 97.047 79.4 97.047 71.4 102.375 71.4 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 88.72500000000001 114.5 C 94.05300000000001 114.5 94.05300000000001 122.5 88.72500000000001 122.5 C 83.397 122.5 83.397 114.5 88.72500000000001 114.5 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 75.075 167.1 C 80.403 167.1 80.403 175.1 75.075 175.1 C 69.747 175.1 69.747 167.1 75.075 167.1 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 61.425000000000004 177.2 C 66.75300000000001 177.2 66.75300000000001 185.2 61.425000000000004 185.2 C 56.097 185.2 56.097 177.2 61.425000000000004 177.2 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 47.775000000000006 144.9 C 53.10300000000001 144.9 53.10300000000001 152.9 47.775000000000006 152.9 C 42.447 152.9 42.447 144.9 47.775000000000006 144.9 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 34.125 86.3 C 39.453 86.3 39.453 94.3 34.125 94.3 C 28.797 94.3 28.797 86.3 34.125 86.3 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 20.475 37.2 C 25.803 37.2 25.803 45.2 20.475 45.2 C 15.147000000000002 45.2 15.147000000000002 37.2 20.475 37.2 Z" fill="#2f7ed8">
+              </path>
+              <path d="M 6.825 15.899999999999999 C 12.152999999999999 15.899999999999999 12.152999999999999 23.9 6.825 23.9 C 1.497 23.9 1.497 15.899999999999999 6.825 15.899999999999999 Z" fill="#2f7ed8">
+              </path>
+              <path class="highcharts-tracker highcharts-tracker" d="M -3.175 19.9 L 6.825 19.9 C 6.825 19.9 15.015 27.120000000000005 20.475 41.2 C 25.935000000000002 55.28 28.665 68.75999999999999 34.125 90.3 C 39.585 111.84 42.315000000000005 130.72 47.775000000000006 148.9 C 53.235 167.07999999999998 55.96500000000001 181.2 61.425000000000004 181.2 C 66.885 181.2 69.61500000000001 181.2 75.075 171.1 C 80.53500000000001 161 83.26500000000001 137.64 88.72500000000001 118.5 C 94.185 99.35999999999999 96.915 75.4 102.375 75.4 C 107.835 75.4 110.56500000000001 75.5 116.025 77.1 C 121.48500000000001 78.7 124.215 77.1 129.675 83.4 C 135.135 89.70000000000002 137.865 117.20000000000006 143.325 132.8 C 148.785 148.40000000000006 151.515 148.28 156.975 161.4 C 162.435 174.51999999999998 165.16500000000002 198.4 170.625 198.4 C 176.08499999999998 198.4 178.815 198.4 184.275 196.7 C 189.73499999999999 194.99999999999997 192.465 192.14 197.92499999999998 187.1 C 203.385 182.05999999999997 206.11499999999995 175.4 211.575 171.5 C 217.035 167.6 219.76499999999996 167.6 225.225 167.6 C 230.685 167.6 233.41500000000002 167.6 238.875 177.4 C 244.33499999999998 187.20000000000002 247.065 219.38000000000002 252.525 237.4 C 257.985 255.42000000000002 260.71500000000003 259.04 266.175 267.5 C 271.63500000000005 275.96000000000004 274.36499999999995 279.7 279.825 279.7 C 285.28499999999997 279.7 288.015 273.20000000000005 293.475 262 C 298.93500000000006 250.79999999999998 301.665 235.95999999999998 307.125 223.7 C 312.585 211.44 315.31499999999994 200.7 320.775 200.7 C 326.235 200.7 328.96500000000003 225.79999999999998 334.425 226.7 C 339.88500000000005 227.6 342.61499999999995 226.7 348.075 227.6 C 353.53499999999997 228.5 356.26500000000004 235.98000000000005 361.725 242.5 C 367.18500000000006 249.02000000000004 369.915 254.11999999999998 375.375 260.2 C 380.835 266.28 383.56499999999994 272.9 389.025 272.9 C 394.48499999999996 272.9 397.21500000000003 258.05999999999995 402.675 250.1 C 408.13500000000005 242.14 410.86499999999995 239.51999999999998 416.325 233.1 C 421.785 226.67999999999998 424.51500000000004 222.7 429.975 218 C 435.43500000000006 213.29999999999998 438.16499999999996 209.6 443.625 209.6 C 449.08500000000004 209.6 451.81499999999994 209.6 457.275 210.1 C 462.73499999999996 210.6 465.465 228.35999999999999 470.925 237.2 C 476.38500000000005 246.03999999999996 479.11499999999995 248.82 484.575 254.3 C 490.035 259.78 492.76500000000004 264.6 498.225 264.6 C 503.68500000000006 264.6 506.41499999999996 239.1 511.875 226.3 C 517.335 213.5 520.065 209.1000000000001 525.5250000000001 200.6 C 530.985 192.10000000000008 539.1750000000001 183.8 539.1750000000001 183.8 L 549.1750000000001 183.8" fill="none" stroke="rgb(192,192,192)" stroke-linejoin="round" stroke-opacity="0.0001" stroke-width="22" style="" visibility="visible" zindex="2">
+              </path>
+             </g>
+            </g>
+            <g class="highcharts-legend" transform="translate(266,359)" zindex="7">
+             <rect fill="none" height="25" rx="5" ry="5" stroke="#909090" stroke-width="1" visibility="visible" width="67" x="0.5" y="0.5">
+             </rect>
+             <g clip-path="url(#highcharts-10)" zindex="1">
+              <g>
+               <g class="highcharts-legend-item" transform="translate(8,3)" zindex="1">
+                <path d="M 0 11 L 16 11" fill="none" stroke="#2f7ed8" stroke-width="2">
+                </path>
+                <path d="M 8 7 C 13.328 7 13.328 15 8 15 C 2.6719999999999997 15 2.6719999999999997 7 8 7 Z" fill="#2f7ed8">
+                </path>
+                <text style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:12px;cursor:pointer;color:#274b6d;fill:#274b6d;' text-anchor="start" x="21" y="15" zindex="2">
+                 <tspan x="21">
+                  temp
+                 </tspan>
+                </text>
+               </g>
+              </g>
+             </g>
+            </g>
+            <g class="highcharts-axis-labels" zindex="7">
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:48px;color:#666;cursor:default;line-height:14px;font:normal 13px Verdana, sans-serif;fill:#666;' text-anchor="end" x="50.824999999999996" y="346">
+              <tspan x="50.824999999999996">
+               07
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:48px;color:#666;cursor:default;line-height:14px;font:normal 13px Verdana, sans-serif;fill:#666;' text-anchor="end" x="119.075" y="346">
+              <tspan x="119.075">
+               08
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:48px;color:#666;cursor:default;line-height:14px;font:normal 13px Verdana, sans-serif;fill:#666;' text-anchor="end" x="187.32500000000002" y="346">
+              <tspan x="187.32500000000002">
+               08
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:48px;color:#666;cursor:default;line-height:14px;font:normal 13px Verdana, sans-serif;fill:#666;' text-anchor="end" x="255.575" y="346">
+              <tspan x="255.575">
+               09
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:48px;color:#666;cursor:default;line-height:14px;font:normal 13px Verdana, sans-serif;fill:#666;' text-anchor="end" x="323.825" y="346">
+              <tspan x="323.825">
+               10
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:48px;color:#666;cursor:default;line-height:14px;font:normal 13px Verdana, sans-serif;fill:#666;' text-anchor="end" x="392.075" y="346">
+              <tspan x="392.075">
+               10
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:48px;color:#666;cursor:default;line-height:14px;font:normal 13px Verdana, sans-serif;fill:#666;' text-anchor="end" x="460.325" y="346">
+              <tspan x="460.325">
+               11
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:48px;color:#666;cursor:default;line-height:14px;font:normal 13px Verdana, sans-serif;fill:#666;' text-anchor="end" x="528.5749999999999" y="346">
+              <tspan x="528.5749999999999">
+               12
+              </tspan>
+             </text>
+            </g>
+            <g class="highcharts-axis-labels" zindex="7">
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:253px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="end" x="36" y="337.6">
+              <tspan x="36">
+               10
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:253px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="end" x="36" y="291.6">
+              <tspan x="36">
+               12.5
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:253px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="end" x="36" y="245.6">
+              <tspan x="36">
+               15
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:253px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="end" x="36" y="199.6">
+              <tspan x="36">
+               17.5
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:253px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="end" x="36" y="153.6">
+              <tspan x="36">
+               20
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:253px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="end" x="36" y="107.60000000000002">
+              <tspan x="36">
+               22.5
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:253px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="end" x="36" y="61.6">
+              <tspan x="36">
+               25
+              </tspan>
+             </text>
+             <text opacity="1" style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:11px;width:253px;color:#666;cursor:default;line-height:14px;fill:#666;' text-anchor="end" x="36" y="15.6">
+              <tspan x="36">
+               27.5
+              </tspan>
+             </text>
+            </g>
+            <g class="highcharts-tooltip" style="cursor:default;padding:0;white-space:nowrap;" visibility="hidden" zindex="8">
+             <rect fill="none" fill-opacity="0.85" height="16" isshadow="true" rx="3" ry="3" stroke="black" stroke-opacity="0.049999999999999996" stroke-width="5" transform="translate(1, 1)" width="16" x="0.5" y="0.5">
+             </rect>
+             <rect fill="none" fill-opacity="0.85" height="16" isshadow="true" rx="3" ry="3" stroke="black" stroke-opacity="0.09999999999999999" stroke-width="3" transform="translate(1, 1)" width="16" x="0.5" y="0.5">
+             </rect>
+             <rect fill="none" fill-opacity="0.85" height="16" isshadow="true" rx="3" ry="3" stroke="black" stroke-opacity="0.15" stroke-width="1" transform="translate(1, 1)" width="16" x="0.5" y="0.5">
+             </rect>
+             <rect fill="rgb(255,255,255)" fill-opacity="0.85" height="16" rx="3" ry="3" width="16" x="0.5" y="0.5">
+             </rect>
+             <text style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:12px;color:#333333;fill:#333333;' x="8" y="21" zindex="1">
+             </text>
+            </g>
+            <text style='font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;font-size:9px;cursor:pointer;color:#909090;fill:#909090;' text-anchor="end" x="590" y="395" zindex="8">
+             <tspan x="590">
+              Highcharts.com
+             </tspan>
+            </text>
+           </svg>
+          </div>
+         </div>
+        </div>
+        <!--Map-->
+        <div class="tab-pane" id="map">
+         <h4>
+          Precipitation
+         </h4>
+         <div id="map-container">
+          <div class="olMap" id="map_canvas" style="width: 610px; height: 400px;">
+           <div class="olMapViewport olControlDragPanActive olControlZoomBoxActive olControlPinchZoomActive olControlNavigationActive" id="OpenLayers_Map_2_OpenLayers_ViewPort" style="position: relative; overflow: hidden; width: 100%; height: 100%;">
+            <div id="OpenLayers_Map_2_OpenLayers_Container" style="position: absolute; z-index: 749; left: 0px; top: 0px;">
+             <div class="olLayerDiv olLayerGrid" dir="ltr" id="OpenLayers_Layer_OSM_18" style="position: absolute; width: 100%; height: 100%; z-index: 100;">
+              <img class="olTileImage" crossorigin="anonymous" src="http://b.tile.openstreetmap.org/4/8/5.png" style="visibility: inherit; opacity: 1; position: absolute; left: 190px; top: 171px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" crossorigin="anonymous" src="http://a.tile.openstreetmap.org/4/8/4.png" style="visibility: inherit; opacity: 1; position: absolute; left: 190px; top: -85px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" crossorigin="anonymous" src="http://c.tile.openstreetmap.org/4/7/5.png" style="visibility: inherit; opacity: 1; position: absolute; left: -66px; top: 171px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" crossorigin="anonymous" src="http://c.tile.openstreetmap.org/4/9/5.png" style="visibility: inherit; opacity: 1; position: absolute; left: 446px; top: 171px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" crossorigin="anonymous" src="http://a.tile.openstreetmap.org/4/7/4.png" style="visibility: inherit; opacity: 1; position: absolute; left: -66px; top: -85px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" crossorigin="anonymous" src="http://b.tile.openstreetmap.org/4/9/4.png" style="visibility: inherit; opacity: 1; position: absolute; left: 446px; top: -85px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" crossorigin="anonymous" src="http://b.tile.openstreetmap.org/4/8/6.png" style="visibility: inherit; opacity: 1; position: absolute; left: 190px; top: 427px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" crossorigin="anonymous" src="http://a.tile.openstreetmap.org/4/7/6.png" style="visibility: inherit; opacity: 1; position: absolute; left: -66px; top: 427px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" crossorigin="anonymous" src="http://b.tile.openstreetmap.org/4/9/6.png" style="visibility: inherit; opacity: 1; position: absolute; left: 446px; top: 427px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" crossorigin="anonymous" src="http://a.tile.openstreetmap.org/4/10/5.png" style="visibility: inherit; opacity: 1; position: absolute; left: 702px; top: 171px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" crossorigin="anonymous" src="http://c.tile.openstreetmap.org/4/10/4.png" style="visibility: inherit; opacity: 1; position: absolute; left: 702px; top: -85px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" crossorigin="anonymous" src="http://b.tile.openstreetmap.org/4/10/6.png" style="visibility: inherit; opacity: 1; position: absolute; left: 702px; top: 427px; width: 256px; height: 256px;"/>
+             </div>
+             <div class="olLayerDiv olLayerGrid" dir="ltr" id="OpenLayers_Layer_XYZ_20" style="position: absolute; width: 100%; height: 100%; z-index: 330;">
+              <img class="olTileImage" src="http://b.maps.owm.io/weather/precipitation/4/8/5.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.7; position: absolute; left: 190px; top: 171px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" src="http://b.maps.owm.io/weather/precipitation/4/8/4.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.7; position: absolute; left: 190px; top: -85px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" src="http://c.maps.owm.io/weather/precipitation/4/7/5.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.7; position: absolute; left: -66px; top: 171px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" src="http://d.maps.owm.io/weather/precipitation/4/9/5.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.7; position: absolute; left: 446px; top: 171px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" src="http://a.maps.owm.io/weather/precipitation/4/7/4.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.7; position: absolute; left: -66px; top: -85px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" src="http://b.maps.owm.io/weather/precipitation/4/9/4.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.7; position: absolute; left: 446px; top: -85px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" src="http://b.maps.owm.io/weather/precipitation/4/8/6.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.7; position: absolute; left: 190px; top: 427px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" src="http://b.maps.owm.io/weather/precipitation/4/7/6.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.7; position: absolute; left: -66px; top: 427px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" src="http://c.maps.owm.io/weather/precipitation/4/9/6.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.7; position: absolute; left: 446px; top: 427px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" src="http://a.maps.owm.io/weather/precipitation/4/10/5.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.7; position: absolute; left: 702px; top: 171px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" src="http://d.maps.owm.io/weather/precipitation/4/10/4.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.7; position: absolute; left: 702px; top: -85px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" src="http://b.maps.owm.io/weather/precipitation/4/10/6.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.7; position: absolute; left: 702px; top: 427px; width: 256px; height: 256px;"/>
+             </div>
+             <div class="olLayerDiv olLayerGrid" dir="ltr" id="OpenLayers_Layer_XYZ_22" style="position: absolute; width: 100%; height: 100%; z-index: 335;">
+              <img class="olTileImage" src="http://b.maps.owm.io/weather/pressure_cntr/4/8/5.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.4; position: absolute; left: 190px; top: 171px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" src="http://b.maps.owm.io/weather/pressure_cntr/4/8/4.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.4; position: absolute; left: 190px; top: -85px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" src="http://c.maps.owm.io/weather/pressure_cntr/4/7/5.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.4; position: absolute; left: -66px; top: 171px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" src="http://d.maps.owm.io/weather/pressure_cntr/4/9/5.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.4; position: absolute; left: 446px; top: 171px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" src="http://a.maps.owm.io/weather/pressure_cntr/4/7/4.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.4; position: absolute; left: -66px; top: -85px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" src="http://b.maps.owm.io/weather/pressure_cntr/4/9/4.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.4; position: absolute; left: 446px; top: -85px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" src="http://b.maps.owm.io/weather/pressure_cntr/4/8/6.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.4; position: absolute; left: 190px; top: 427px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" src="http://b.maps.owm.io/weather/pressure_cntr/4/7/6.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.4; position: absolute; left: -66px; top: 427px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" src="http://c.maps.owm.io/weather/pressure_cntr/4/9/6.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.4; position: absolute; left: 446px; top: 427px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" src="http://a.maps.owm.io/weather/pressure_cntr/4/10/5.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.4; position: absolute; left: 702px; top: 171px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" src="http://d.maps.owm.io/weather/pressure_cntr/4/10/4.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.4; position: absolute; left: 702px; top: -85px; width: 256px; height: 256px;"/>
+              <img class="olTileImage" src="http://b.maps.owm.io/weather/pressure_cntr/4/10/6.png?appid=b1b15e88fa797225412429c1c50c122a" style="visibility: inherit; opacity: 0.4; position: absolute; left: 702px; top: 427px; width: 256px; height: 256px;"/>
+             </div>
+            </div>
+            <div class="olControlZoom olControlNoSelect" id="OpenLayers_Control_Zoom_5" style="position: absolute; z-index: 1004;" unselectable="on">
+             <a class="olControlZoomIn olButton" href="#zoomIn">
+              +
+             </a>
+             <a class="olControlZoomOut olButton" href="#zoomOut">
+              −
+             </a>
+            </div>
+            <div class="olControlArgParser olControlNoSelect" id="OpenLayers_Control_ArgParser_6" style="position: absolute; z-index: 1004;" unselectable="on">
+            </div>
+            <div class="olControlAttribution olControlNoSelect" id="OpenLayers_Control_Attribution_7" style="position: absolute; z-index: 1004;" unselectable="on">
+             ©
+             <a href="http://www.openstreetmap.org/copyright">
+              OpenStreetMap
+             </a>
+             contributors
+            </div>
+            <div class="olControlLayerSwitcher olControlNoSelect" id="OpenLayers_Control_LayerSwitcher_60" style="position: absolute; width: 0px; height: 0px; z-index: 1005;" unselectable="on">
+             <div class="layersDiv" id="OpenLayers_Control_LayerSwitcher_60_layersDiv" style="display: none;">
+              <div class="dataLbl">
+               Overlays
+              </div>
+              <div class="dataLayersDiv">
+               <input checked="checked" class="olButton" id="OpenLayers_Control_LayerSwitcher_60_input_65" name="pressure" type="checkbox" value="pressure"/>
+               <label class="labelSpan olButton" style="vertical-align: baseline;">
+                pressure
+               </label>
+               <br/>
+               <input checked="checked" class="olButton" id="OpenLayers_Control_LayerSwitcher_60_input_66" name="precipitation" type="checkbox" value="precipitation"/>
+               <label class="labelSpan olButton" style="vertical-align: baseline;">
+                precipitation
+               </label>
+               <br/>
+              </div>
+              <div class="baseLbl">
+               Base Layer
+              </div>
+              <div class="baseLayersDiv">
+               <input checked="checked" class="olButton" id="OpenLayers_Control_LayerSwitcher_60_input_67" name="OpenLayers_Control_LayerSwitcher_60_baseLayers" type="radio" value="OpenStreetMap"/>
+               <label class="labelSpan olButton" style="vertical-align: bottom;">
+                OpenStreetMap
+               </label>
+               <br/>
+              </div>
+             </div>
+             <div class="maximizeDiv olButton" id="OpenLayers_Control_MaximizeDiv" style="position: absolute;">
+              <img class="olAlphaImg" id="OpenLayers_Control_MaximizeDiv_innerImage" src="img/layer-switcher-maximize.png" style="position: relative;"/>
+             </div>
+             <div class="minimizeDiv olButton" id="OpenLayers_Control_MinimizeDiv" style="position: absolute; display: none;">
+              <img class="olAlphaImg" id="OpenLayers_Control_MinimizeDiv_innerImage" src="img/layer-switcher-minimize.png" style="position: relative;"/>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <!--satellite-->
+        <div class="tab-pane" id="satellite">
+         <h4 id="stations_title">
+          Satellite imagery
+         </h4>
+         <div id="scenes_list">
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+    <!-- / .container -->
+    <br/>
+    <br/>
+    <div class="container">
+     <div class="row">
+      <div class="col-sm-12">
+       <script async="" src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+       </script>
+       <!-- OWM long bottom -->
+       <ins class="adsbygoogle" data-ad-client="ca-pub-9649553505534207" data-ad-slot="1070308379" data-adsbygoogle-status="done" style="display:inline-block;width:728px;height:90px">
+        <ins id="aswift_2_expand" style="display:inline-table;border:none;height:90px;margin:0;padding:0;position:relative;visibility:visible;width:728px;background-color:transparent">
+         <ins id="aswift_2_anchor" style="display:block;border:none;height:90px;margin:0;padding:0;position:relative;visibility:visible;width:728px;background-color:transparent">
+          <iframe allowfullscreen="true" allowtransparency="true" frameborder="0" height="90" hspace="0" id="aswift_2" marginheight="0" marginwidth="0" name="aswift_2" onload="var i=this.id,s=window.google_iframe_oncopy,H=s&amp;&amp;s.handlers,h=H&amp;&amp;H[i],w=this.contentWindow,d;try{d=w.document}catch(e){}if(h&amp;&amp;d&amp;&amp;(!d.body||!d.body.firstChild)){if(h.call){setTimeout(h,0)}else if(h.match){try{h=s.upd(h,i)}catch(e){}w.location.replace(h)}}" scrolling="no" style="left:0;position:absolute;top:0;" vspace="0" width="728">
+          </iframe>
+         </ins>
+        </ins>
+       </ins>
+       <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+       </script>
+      </div>
+     </div>
+    </div>
+   </div>
+   <!-- / .wrapper -->
+   <!-- Footer -->
+   <footer class="footer-dark">
+    <div class="container">
+     <div class="row">
+      <!-- API -->
+      <div class="col-sm-4">
+       <h3 class="text-color">
+        Weather in your city
+       </h3>
+       <ul>
+        <li>
+         <a href="/find?q=">
+          Find your city
+         </a>
+        </li>
+        <li>
+         <a href="/weathermap">
+          Weather maps
+         </a>
+        </li>
+       </ul>
+       <h3 class="text-color">
+        Weather APIs
+       </h3>
+       <div class="content">
+        <ul>
+         <li>
+          <a href="/appid">
+           How to start
+          </a>
+         </li>
+         <li>
+          <a href="/API">
+           Weather APIs for developers
+          </a>
+         </li>
+         <li>
+          <a href="/current">
+           Current weather
+          </a>
+         </li>
+         <li>
+          <a href="/forecast5">
+           5 day / 3 hour weather forecast
+          </a>
+         </li>
+         <li>
+          <a href="/forecast16">
+           16 day / daily weather forecast
+          </a>
+         </li>
+         <li>
+          <a href="/current">
+           Hourly historical data
+          </a>
+         </li>
+         <li>
+          <a href="/api_station">
+           Data from weather stations
+          </a>
+         </li>
+         <li>
+          <a href="/examples">
+           Examples of API use
+          </a>
+         </li>
+        </ul>
+       </div>
+      </div>
+      <!-- Map layers -->
+      <div class="col-sm-4">
+       <h3 class="text-color">
+        Map layers
+       </h3>
+       <div class="content">
+        <ul>
+         <li>
+          <a href="/hugemaps">
+           Examples of weather map layers
+          </a>
+         </li>
+         <li>
+          <a href="map_array">
+           Embed weather maps with array of data
+          </a>
+         </li>
+         <li>
+          <a href="tile_map">
+           Embed weather maps with tile server
+          </a>
+         </li>
+        </ul>
+        <h3 class="text-color">
+         How to subscribe
+        </h3>
+        <ul>
+         <li>
+          <a href="/price">
+           Price-list
+          </a>
+         </li>
+         <li>
+          <a href="//price_subscribe">
+           Subscribe to APIs
+          </a>
+         </li>
+        </ul>
+        <div class="alert alert-info">
+         Found a bug? Have a question or idea? Welcome to
+         <a class="alert-link" href="https://openweathermap.desk.com/customer/portal/emails/new" target="_blank">
+          Support center
+         </a>
+        </div>
+        <div class="clearfix">
+        </div>
+       </div>
+      </div>
+      <!-- Column 3 -->
+      <div class="col-sm-4">
+       <h3 class="text-color">
+        Weather station network
+       </h3>
+       <ul>
+        <li>
+         <a href="/stations">
+          How to connect your weather station
+         </a>
+        </li>
+        <li>
+         <a href="/stationmap">
+          Network of weather stations in real time
+         </a>
+        </li>
+        <li>
+         <a href="/stations#DIY">
+          DIY weather station projects
+         </a>
+        </li>
+       </ul>
+       <h3 class="text-color">
+        About
+       </h3>
+       <ul>
+        <li>
+         <a href="/technology">
+          OpenWeatherMap technology
+         </a>
+        </li>
+        <li>
+         <a href="/models">
+          Meteorological models
+         </a>
+        </li>
+        <li>
+         <a href="/datasource">
+          Data sources
+         </a>
+        </li>
+       </ul>
+       <h3 class="text-color">
+        Go Social
+       </h3>
+       <div class="content social">
+        <p>
+         Follow OpenWeatherMap on
+         <a href="https://twitter.com/OpenWeatherMap" target="_blank">
+          Twitter
+         </a>
+         ,
+         <a href="https://www.facebook.com/groups/270748973021342" target="_blank">
+          Facebook
+         </a>
+         ,
+         <a href="https://plus.google.com/u/0/communities/101265402580965077532" target="_blank">
+          Google+
+         </a>
+         and
+         <a href="https://github.com/search?q=openweathermap&amp;ref=cmdform" target="_blank">
+          GitHub.
+         </a>
+        </p>
+       </div>
+      </div>
+     </div>
+     <div class="row">
+      <div class="col-sm-12">
+       <hr/>
+      </div>
+     </div>
+     <!-- Copyrights -->
+     <div class="row">
+      <div class="col-sm-12">
+       <p>
+        © 2012-2016 OpenWeatherMap, Inc.
+        <a href="/about">
+         About company
+        </a>
+        |
+        <a href="/privacy-policy">
+         Privacy Policy
+        </a>
+        |
+        <a href="/terms">
+         Terms of Service
+        </a>
+       </p>
+      </div>
+     </div>
+    </div>
+   </footer>
+   <script src="/combine/cd70f72c4911208557ac5aa4ffda7623-1393649958">
+   </script>
+   <script src="/combine/1f267b7d68c9a2b5e545f6efaa3d1821-1391751372">
+   </script>
+   <script type="text/javascript">
+    //document.addEventListener("DOMContentLoader", function() {
+
+  var units = 'metric';
+  if( get_cookie('units') ) units = get_cookie('units');
+  if( units == 'metric') {
+      document.getElementById("units_check").checked = true;
+  } else {
+      document.getElementById("units_check").checked = false;
+  }
+//});
+   </script>
+  </div>
+  <div id="topcontrol" style="position: fixed; bottom: 5px; right: 5px; opacity: 0; cursor: pointer;" title="">
+   <i class="fa fa-angle-up backtotop">
+   </i>
+  </div>
+ </body>
+</html>
