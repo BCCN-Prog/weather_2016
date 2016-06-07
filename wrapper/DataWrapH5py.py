@@ -39,7 +39,7 @@ class DataBase:
 
                 # initialize row pointer and intial write time
                 self.f["metadata"][0] = 0
-                self.f["metadata"][1] = self.get_cur_datetime_int() 
+                self.f["metadata"][1] = self.get_cur_datetime_int()
         else:
                 self.f = h5py.File(file_name, "w")
                 self.f.create_dataset("weather_data",
@@ -83,7 +83,7 @@ class DataBase:
 
     def get_sort_indices(self, param):
         '''
-        Gets indices for dataset sorted along the param-entry. This can and should be used 
+        Gets indices for dataset sorted along the param-entry. This can and should be used
         for presorting- and slicing the matrix ahead of time in order to increase performance.
         '''
         assert(param < self.f["weather_data"].shape[1])
@@ -92,7 +92,7 @@ class DataBase:
 
     def create_presorted(self, params):
         '''
-        Creates presorted datasets in f, corresponding to params (a list). 
+        Creates presorted datasets in f, corresponding to params (a list).
         If, for example params=['date', 'high'], we will get 2 new datasets named
         "date_indices" and "high_indices" which contain the sorted indices wrt to
         date and high.
@@ -108,8 +108,8 @@ class DataBase:
 
 class Daily_DataBase(DataBase):
     def __init__(self, db_name="daily_database.hdf5", make_new=False):
-        daily_categories = ['date', 'site', 'geolocation', 'high', 'low', 'midday',
-                            'rain_chance', 'rain_amt', 'cloud_cover', 'city_ID']
+        daily_categories = ['date', 'site', 'station_id', 'high', 'low', 'midday',
+                            'rain_chance', 'rain_amt', 'cloud_cover', 'city_ID', 'day']
 
         DataBase.__init__(self,
                           file_name=db_name,
@@ -121,11 +121,12 @@ class Daily_DataBase(DataBase):
                           )
 
     params_dict = {0:'date', 1:'site', 2:'station_id', 3:'high', 4:'low', 5:'midday', \
-            6:'rain_chance', 7:'rain_amt', 8:'cloud_cover', 9:'city_ID'}
+                   6:'rain_chance', 7:'rain_amt', 8:'cloud_cover', 9:'city_ID', 10:'day'}
     categories_dict = {'date':0, 'site':1, 'station_id':2,'high':3, 'low':4, 'midday':5, \
-            'rain_chance':6, 'rain_amt':7, 'cloud_cover':8, 'city_ID':9}
+                       'rain_chance':6, 'rain_amt':7, 'cloud_cover':8, 'city_ID':9, 'day':10}
 
-    def add_data_point(self, date, site, station_id, high, low, midday, rain_chance, rain_amt, cloud_cover, city_ID):
+    def add_data_point(self, date, site, day, station_id, high, low, midday,
+                       rain_chance, rain_amt, cloud_cover, city_ID):
         '''
         Adds a data point to the first empty row of the matrix pointed to by
         self.f['metadata'][0] then advances it and updates f["metadata"][1].
@@ -145,6 +146,8 @@ class Daily_DataBase(DataBase):
         self.f["weather_data"][self.f["metadata"][0], 7] = rain_amt
         self.f["weather_data"][self.f["metadata"][0], 8] = cloud_cover
         self.f["weather_data"][self.f["metadata"][0], 9] = city_ID  # city
+        self.f["weather_data"][self.f["metadata"][0], 10] = day  # how many days in future forecasted
+
 
         self.f["metadata"][1] = self.get_cur_datetime_int()
         self.f["metadata"][0] += 1
@@ -189,8 +192,8 @@ class Daily_DataBase(DataBase):
 
         data = daily_dict['daily']
 
-        for hour_key, _d in data.items():
-            arg_dict = {'date': date, 'site': website, 'day': int(hour_key),
+        for day_key, _d in data.items():
+            arg_dict = {'date': date, 'site': website, 'day': int(day_key),
                         'city_ID': self.cities[_d['city']]}
 
             for param in params:
@@ -263,7 +266,7 @@ class Hourly_DataBase(DataBase):
         self.f["metadata"][0] += 1
 
     def save_dict(self, hourly_dict):
-        params = ['geolocation', 'temperature', 'humidity', 'wind_speed',
+        params = ['station_id', 'temperature', 'humidity', 'wind_speed',
                   'rain_chance', 'rain_amt', 'cloud_cover']
 
         try:
