@@ -54,12 +54,13 @@ class QueryEngine:
 
     def smart_slice(self, dset, params, lower, upper, return_matrix=True):
         '''
-        Slices utilizing the presorted indices. After solving the nan issue, all categories will be
-        presorted, such that this function takes care of everything.
+        Slices utilizing the presorted indices. By default, all categories are presorted.
         dset string "hourly" or "daily" specifies the dataset, params is the list of categories involved
         in the slicing, lower and upper the lists of lower and upper limits corresponding to params.
         By default returns a matrix sliced according to the above criteria. If return_matrix==False,
         returns just the indices to be sliced by.
+        There is still a bug wrt to nan handling and wrt to all numbers being outside the boundaries.
+
         '''
         assert(len(params) == len(lower) and len(lower) == len(upper))
 
@@ -82,8 +83,6 @@ class QueryEngine:
         #modify this to support aliases of params by having dictionary of string to strings
         
         dset_names = ["{}_indices".format(params_intersect[i]) for i in range(len(params_intersect))]
-        print("params_intersect:", params_intersect, "params_intersect_int: ", params_intersect_int, "hi_lo_indices:",
-                hi_lo_indices, hi_intersect, lo_intersect)
         
         lo_ind = []
         hi_ind = []
