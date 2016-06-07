@@ -59,7 +59,9 @@ class QueryEngine:
         dset string "hourly" or "daily" specifies the dataset, params is the list of categories involved
         in the slicing, lower and upper the lists of lower and upper limits corresponding to params.
         By default returns a matrix sliced according to the above criteria. If return_matrix==False,
-        returns just the indices to be sliced by.
+        returns just the indices to be sliced by. This can be used to increase performance if the matrix
+        is very large.
+
         Nan handling: Nans always considered outside the bounds. This means that slicing wrt to a
         category whose corresponding column contains only nans will always return an empty array.
         '''
@@ -72,15 +74,15 @@ class QueryEngine:
 
         dset = self.dset_dict[dset]
         
-        param_order = list(np.sort([dset.categories_dict[params[i]] for i in range(len(params))]))
+        param_order = np.sort([dset.categories_dict[params[i]] for i in range(len(params))])
         params = [dset.params_dict[param_order[i]] for i in range(len(param_order))]
         #here we order the param list according to the dset.params_dict in order to make things easier down the path
 
         params_intersect = [p for p in params if p in sorted_params]
         params_intersect_int = [dset.categories_dict[params_intersect[i]] for i in range(len(params_intersect))]
         hi_lo_indices = [params.index(params_intersect[i]) for i in range(len(params_intersect))]
-        hi_intersect = list(np.array(upper)[hi_lo_indices])
-        lo_intersect = list(np.array(lower)[hi_lo_indices])
+        hi_intersect = np.array(upper)[hi_lo_indices]
+        lo_intersect = np.array(lower)[hi_lo_indices]
         #modify this to support aliases of params by having dictionary of string to strings
         
         dset_names = ["{}_indices".format(params_intersect[i]) for i in range(len(params_intersect))]
@@ -89,8 +91,9 @@ class QueryEngine:
         hi_ind = []
         for i in range(len(params_intersect)):
             s = dset.f["weather_data"][:,params_intersect_int[i]][dset.f[dset_names[i]]]
-            s = s[:np.argmin(s)]
-            #above line removes the nans
+            if(np.isnan(np.sum(s))):
+                s = s[:np.argmin(s)]
+            #above line removes the nans if they exist in the array.
 
             lo_ind.append(bisect.bisect_left(s, lo_intersect[i]))
             hi_ind.append(bisect.bisect_right(s, hi_intersect[i]))
@@ -100,17 +103,16 @@ class QueryEngine:
         #make a list of sets of indices. I hope this step is not too computation intensive, I do not know how
         #to do it differently
 
-        ind = list(set.intersection(*set_list))
-        ind = list(np.sort(ind))
+        ind = np.sort(list(set.intersection(*set_list)))
         #sorting in oder to better comply with h5py.
 
 
-        if not ind:
+        if not ind.size:
             print("No matching entries.")
             return np.array([])
 
         if return_matrix == True:
-            return dset.f["weather_data"][ind,:]
+            return dset.f["weather_data"][:][ind]
         else:
             return ind
         #is there a way to return a view here? If the matrix is large, passing by value takes
