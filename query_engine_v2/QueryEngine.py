@@ -38,7 +38,7 @@ class QueryEngine:
         ind = dset.get_sort_indices(param_int)
         
         lo_ind = np.argmax(dset.f["weather_data"][:,param_int][ind] >= lower)
-        hi_ind = np.argmin(dset.f["weather_data"][:,param_int][ind] <= upper)
+        hi_ind = np.argmin(dset.f["weather_data"][:,param_int][ind] <= upper) + 1
         
         #nan handling!
 
@@ -82,12 +82,17 @@ class QueryEngine:
         #modify this to support aliases of params by having dictionary of string to strings
         
         dset_names = ["{}_indices".format(params_intersect[i]) for i in range(len(params_intersect))]
+        print("params_intersect:", params_intersect, "params_intersect_int: ", params_intersect_int, "hi_lo_indices:",
+                hi_lo_indices, hi_intersect, lo_intersect)
         
         lo_ind = []
         hi_ind = []
         for i in range(len(params_intersect)):
-            lo_ind.append(np.argmax(dset.f["weather_data"][:,params_intersect_int[i]][dset.f[dset_names[i]]]>=lo_intersect[i]))
-            hi_ind.append(np.argmin(dset.f["weather_data"][:,params_intersect_int[i]][dset.f[dset_names[i]]]<=hi_intersect[i]))
+            s = dset.f["weather_data"][:,params_intersect_int[i]][dset.f[dset_names[i]]]
+            lo_ind.append(np.argmax(s >= lo_intersect[i]))
+            hi_ind.append(len(s) - np.argmax(s[::-1] <= hi_intersect[i]))
+            #lo_ind.append(np.argmax(dset.f["weather_data"][:,params_intersect_int[i]][dset.f[dset_names[i]]]>=lo_intersect[i]))
+            #hi_ind.append(np.argmin(dset.f["weather_data"][:,params_intersect_int[i]][dset.f[dset_names[i]]]<=hi_intersect[i]))
         #getting the slicing indices wrt to all parameters in params_intersect
 
         set_list = [set(dset.f[dset_names[i]][lo_ind[i]:hi_ind[i]]) for i in range(len(params_intersect))]
@@ -99,7 +104,8 @@ class QueryEngine:
         #sorting in oder to better comply with h5py.
 
         if not ind:
-            return "No matching enrties."
+            print("No matching entries.")
+            return np.array([])
 
         if return_matrix == True:
             return dset.f["weather_data"][ind,:]
