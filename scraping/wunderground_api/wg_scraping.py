@@ -3,11 +3,31 @@ import numpy as np
 import datetime
 
 
+def get_data_from_fn (fn):
+    '''extracts data from the filename for chacking
+    date in format YYYYMMDD
+    loc3 are the first 3 letters of the location'''
+    # first step: if the filename is a path, remove everything from the path
+    gr =  [pos for pos, char in enumerate(fn) if char == '/']
+    gr.append(0)
+    os = max(gr)
+    fn = fn[os+1:]
+    #get date data
+    day = fn[13:15]
+    month = fn[16:18]
+    year = fn[19:23]
+    try:
+        date = int('{}{}{}'.format(year, month, day))
+    except ValueError: print ('Filename must have changed, should start with wunderground_dd_mm_yyyy') 
+    loc3 = fn[30:33] #first 3 location letters
+    return date,loc3
+    
+
 def scrape (filename):
     with open(filename, 'rb') as f:
         dat = pickle.load(f)
         f.close()
-        fnd, fl3 = get_date_from_fn (filename)
+        fnd, fl3 = get_data_from_fn (filename)
         print (fnd)
         print (fl3)
     if ('hourly_forecast' in dat.keys()):
@@ -17,13 +37,7 @@ def scrape (filename):
     else: raise Exception ('File data cannot be recognized')
     return res
     
-def get_date_from_fn (fn):
-    day = fn[13:15]
-    month = fn[16:18]
-    year = fn[19:23]
-    date = int('{}{}{}'.format(year, month, day))
-    loc3 = fn[30:33] #first 3 location letters
-    return date,loc3
+
     
     
 def scrape_daily (dat):
@@ -37,7 +51,6 @@ def scrape_daily (dat):
     date = '{}{}{}'.format(year, month, day)
     res['date'] = int(date) #check for sanity here!
     res['daily'] = {} #day 0 is the forecast for the day the prediction is made. Might be good to check though.
-    
     for i in range(len(datf)):
         dr = {}
         dr['high'] = float(datf[0]['high']['celsius'])
@@ -47,8 +60,9 @@ def scrape_daily (dat):
         dr['pressure'] = np.NaN
         dr['cloud_cover']  = np.NaN
         res['daily']["{}".format(str(i))] = dr
-        
     return res
+    
+    
 
 def scrape_hourly (dat):
     res = {}
@@ -74,7 +88,7 @@ def scrape_hourly (dat):
     return res
 
 if __name__ == '__main__':
-    d = scrape('wunderground_08_06_2016_10_36_Berlin_10days.pkl')
+    d = scrape('./ex_data/wunderground_08_06_2016_10_36_Berlin_10days.pkl')
     print ('done')
     #print (d)
         
