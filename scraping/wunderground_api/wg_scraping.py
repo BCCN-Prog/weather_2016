@@ -7,12 +7,24 @@ def scrape (filename):
     with open(filename, 'rb') as f:
         dat = pickle.load(f)
         f.close()
+        fnd, fl3 = get_date_from_fn (filename)
+        print (fnd)
+        print (fl3)
     if ('hourly_forecast' in dat.keys()):
         res = scrape_hourly (dat)
     elif ('forecast' in dat.keys()):
         res = scrape_daily (dat)
     else: raise Exception ('File data cannot be recognized')
     return res
+    
+def get_date_from_fn (fn):
+    day = fn[13:15]
+    month = fn[16:18]
+    year = fn[19:23]
+    date = int('{}{}{}'.format(year, month, day))
+    loc3 = fn[30:33] #first 3 location letters
+    return date,loc3
+    
     
 def scrape_daily (dat):
     res = {}
@@ -62,8 +74,9 @@ def scrape_hourly (dat):
     return res
 
 if __name__ == '__main__':
-    d = scrape('test_10days.pkl')
-    print (d)
+    d = scrape('wunderground_08_06_2016_10_36_Berlin_10days.pkl')
+    print ('done')
+    #print (d)
         
     
     

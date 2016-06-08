@@ -41,6 +41,7 @@ def download(datafolder):
 def main():
     print('entered main')
     download('./test/')
+    #download('./ex_data/')
     print("done")
 
 
