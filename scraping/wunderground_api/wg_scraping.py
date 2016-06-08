@@ -46,17 +46,25 @@ def scrape_daily (dat):
     res['site'] = 'weather underground' #!add right number once it is  assigned
     res['city'] = dat['location']['city']
     datf = dat['forecast']['simpleforecast']['forecastday']
-    month = datf[0]['date']['month']
-    day = datf[0]['date']['day']
+    month = str(datf[0]['date']['month'])
+    if len (month)<2: month = '0' + month
+    day = str(datf[0]['date']['day'])
+    if len(day)<2: day = '0' + day
     year = datf[0]['date']['year']
     date = '{}{}{}'.format(year, month, day)
     res['date'] = int(date) #check for sanity here!
     res['daily'] = {} #day 0 is the forecast for the day the prediction is made. Might be good to check though.
     for i in range(len(datf)):
         dr = {}
+        
         dr['high'] = float(datf[0]['high']['celsius'])
+        if dr['high'] > 50. or dr['high'] < -20. : raise Exception ('High temp does not seem realistic')
+        
         dr['low'] = float(datf[0]['low']['celsius'])
+        if dr['low'] > 50. or dr['low'] < -20. : raise Exception ('Low temp does not seem realistic')
+        
         dr['rain_chance']= float(datf[0]['pop'])
+        if dr['rain_chance'] > 101. or dr['rain_chance'] < -1. : raise Exception ('Rain chance (daily) does not seem realistic')
         dr['rain_amt'] = float(datf[0]['qpf_allday']['mm'])
         dr['pressure'] = np.NaN
         dr['cloud_cover']  = np.NaN
@@ -79,18 +87,28 @@ def scrape_hourly (dat):
     for i in range(maxp):
         hr = {}
         hr['temp'] = float(dat['hourly_forecast'][i]['temp']['metric'])
+        if hr['temp'] > 50. or hr['temp'] < -20. : raise Exception ('temp (hourly) does not seem realistic')
+        
         hr['humidity'] = float(dat['hourly_forecast'][i]['humidity'])
+        if hr['humidity'] > 101. or hr['humidity'] < -1. : raise Exception ('Humidity (hourly) does not seem realistic')
+        
         hr['pressure'] = float(dat['hourly_forecast'][i]['mslp']['metric'])
+        if hr['pressure'] > 1100. or hr['pressure'] < -900. : raise Exception ('Humidity (hourly) does not seem realistic')
+        
         hr['wind_speed'] = float(dat['hourly_forecast'][i]['wspd']['metric'])
         hr['rain_amt'] = float(dat['hourly_forecast'][i]['qpf']['metric'])
+        
         hr['rain_chance'] = float(dat['hourly_forecast'][i]['pop'])
+        if hr['rain_chance'] > 101. or hr['rain_chance'] < -1. : raise Exception ('Rain chance (hourly) does not seem realistic')
         hr['cloud_cover'] = float(dat['hourly_forecast'][i]['sky'])
         res['hourly']["{}".format(str(i))] = hr
     return res
 
 if __name__ == '__main__':
     d = scrape('./ex_data/wunderground_08_06_2016_10_36_Berlin_10days.pkl')
-    print ('done')
+    print ('done daily')
+    h = scrape('./ex_data/wunderground_08_06_2016_10_36_Berlin_hourly.pkl')
+    print ('done daily')
     #print (d)
         
     
