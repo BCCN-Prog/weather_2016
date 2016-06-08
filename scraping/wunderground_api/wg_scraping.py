@@ -34,10 +34,8 @@ def scrape (filename):
     else: raise Exception ('File data cannot be recognized')
     
     fnd, fl3 = get_data_from_fn (filename)
-    if not (res['date'] == fnd): print ('Np')
-    
-    l3f = res['city'][:3]
-    print (l3f)
+    if not (res['date'] == fnd): raise Exception ('File name date and date of data not coherent')
+    if not (res['city'][:3] == fl3): raise Exception ('File name locaction and location in data not coherent')
     return res
     
 
