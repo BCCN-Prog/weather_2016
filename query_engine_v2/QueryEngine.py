@@ -53,7 +53,7 @@ class QueryEngine:
 
         return ind[lo_ind: hi_ind]
 
-    def smart_slice(self, dset, params, lower, upper, return_matrix=True):
+    def smart_slice(self, dset, params, lower, upper, return_matrix=True, sort=None):
         '''
         Slices utilizing the presorted indices. By default, all categories are presorted.
         dset string "hourly" or "daily" specifies the dataset, params is the list of categories involved
@@ -74,6 +74,9 @@ class QueryEngine:
         else:
             assert(len(params) == len(lower) and len(lower) == len(upper))
         #Accomodation for non-list arguments, checking if they are of the same length if the are lists
+        
+        assert(sort == None or type(sort) == str or type(sort) == list)
+
         if dset == "daily":
             sorted_params = self.daily_params
         else:
@@ -113,18 +116,34 @@ class QueryEngine:
         ind = np.sort(list(set.intersection(*set_list)))
         #sorting in oder to better comply with h5py.
 
-
         if not ind.size:
             print("No matching entries.")
             return np.array([])
+        
+        output = dset.f["weather_data"][:][ind]
 
+        if sort:
+            if type(sort) == str:
+                s_ind = np.argsort(output[:][:,dset.categories_dict[sort]])
+                output = output[:][s_ind]
+            else:
+                temp = output
+                output = []
+                s_ind = []
+                for i in range(len(sort)):
+                    indices = np.argsort(temp[:][:,dset.categories_dict[sort[i]]])
+                    output.append(temp[:][indices])
+                    s_ind.append(indices)
+                output = tuple(output)
+                s_ind = tuple(s_ind)
+                
         if return_matrix == True:
-            return dset.f["weather_data"][:][ind]
-        else:
+            return output
+        elif not sort:
             return ind
-        #is there a way to return a view here? If the matrix is large, passing by value takes
-        #quite a bit of time here. Maybe issue a warning or something if the matrix is too large.
-        #Can get problematic for hourly data.
+        else:
+            print("return_matrix=False and sorting are not compatible.")
+            return None
 
     def get_sorted_indices(self, param, data_matrix, dset=None):
         if type(param) == int:
