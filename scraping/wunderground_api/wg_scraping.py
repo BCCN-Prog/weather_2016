@@ -24,14 +24,19 @@ def scrape_daily (dat):
     year = datf[0]['date']['year']
     date = '{}{}{}'.format(year, month, day)
     res['date'] = int(date) #check for sanity here!
-    res['daily'] = {} #what is day 0?
+    res['daily'] = {} #day 0 is the forecast for the day the prediction is made. Might be good to check though.
     
-
-# you are here and wanted to convert a yeaday to a date. datetime.datetime(year, 1, 1) + datetime.timedelta(days - 1)
-
-
-    for i 
-    
+    for i in range(len(datf)):
+        dr = {}
+        dr['high'] = float(datf[0]['high']['celsius'])
+        dr['low'] = float(datf[0]['low']['celsius'])
+        dr['rain_chance']= float(datf[0]['pop'])
+        dr['rain_amt'] = float(datf[0]['qpf_allday']['mm'])
+        dr['pressure'] = np.NaN
+        dr['cloud_cover']  = np.NaN
+        res['daily']["{}".format(str(i))] = dr
+        
+    return res
 
 def scrape_hourly (dat):
     res = {}
@@ -57,7 +62,7 @@ def scrape_hourly (dat):
     return res
 
 if __name__ == '__main__':
-    d = scrape('test_hourly.pkl')
+    d = scrape('test_10days.pkl')
     print (d)
         
     
