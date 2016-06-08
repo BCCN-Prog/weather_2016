@@ -27,14 +27,17 @@ def scrape (filename):
     with open(filename, 'rb') as f:
         dat = pickle.load(f)
         f.close()
-        fnd, fl3 = get_data_from_fn (filename)
-        print (fnd)
-        print (fl3)
     if ('hourly_forecast' in dat.keys()):
         res = scrape_hourly (dat)
     elif ('forecast' in dat.keys()):
         res = scrape_daily (dat)
     else: raise Exception ('File data cannot be recognized')
+    
+    fnd, fl3 = get_data_from_fn (filename)
+    if not (res['date'] == fnd): print ('Np')
+    
+    l3f = res['city'][:3]
+    print (l3f)
     return res
     
 
