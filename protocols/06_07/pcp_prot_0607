@@ -1,0 +1,32 @@
+Protocol 07.06.2016
+
+Topics and goals to focus on for phase 2, started this session:
+
+Query engine, functional side: (Georg)
+    Basic database slicing algorithm works
+    Issues: Performance, NaN handling, hourly data
+    
+Query engine GUI: (Wolfi, Rahul)
+    Basic version works, looks good
+    Can take parameter and pass on to query engine
+
+Visualization: (Denis, Filip)
+    Smoother and more beautiful interpolation of data points (ongoing)
+    Animation: e.g. change of a parameter over time (not yet  started)
+    
+Report: (Claus, but only a little bit)
+    PDF report for queries (first research done, existing package seems      complicated, idea: first render html page, then convert to pdf)
+    
+Scraping: 
+    Debugging scrapers (Eren, Alicja)
+    Improving/Finishing particular scraping scripts (Claus, Ines)
+    
+Testing database: Provided by Greg for Visualization and Report Group
+
+
+    
+Notes for next session:
+    Query engine should have high priority, Georg should receive help
+    Tackle and define some more complex questions in order to have a guideline for the improvisation of the code of other groups?
+    Natural language processing of queries as a nice but not obligatory feature? (--> Denis)
+    
