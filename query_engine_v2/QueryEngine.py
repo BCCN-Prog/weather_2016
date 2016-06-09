@@ -182,9 +182,29 @@ class QueryEngine:
             sort_ind = np.argsort(data_matrix[:][:endpoint][:,param])
             return data_matrix[:][sort_ind]
 
-
-
-
-            
-    def sort(self):
+    def partition(self):
+        '''
+        Partitions dataset wrt to a category. Maybe added functionality for any matrix?
+        '''
         pass
+
+    def get_val_range(self):
+        '''
+        Gets the range of values in one category given that the values of a list of categories
+        lie within specified boundaries.
+        '''
+
+    def get_dataset(self):
+        '''
+        Returns the specified dataset taking into account its endpoint.
+        '''
+
+    def get_category(self):
+        '''
+        Gets the column for the specified category.
+        '''
+            
+    def get_weekday(self):
+        '''
+        Returns the weekday for specified date.
+        '''
