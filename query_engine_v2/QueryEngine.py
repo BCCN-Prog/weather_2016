@@ -3,6 +3,7 @@ sys.path.append('../wrapper/')
 import DataWrapH5py
 import numpy as np
 import bisect
+from functools import reduce
 
 class QueryEngine:
     daily_params = ['date', 'site', 'station_id', 'high', 'low', 'midday', 'rain_chance', 'rain_amt',
@@ -84,9 +85,13 @@ class QueryEngine:
 
         dset = self.dset_dict[dset]
         
-        param_order = np.sort([dset.categories_dict[params[i]] for i in range(len(params))])
-        params = [dset.params_dict[param_order[i]] for i in range(len(param_order))]
-        #here we order the param list according to the dset.params_dict in order to make things easier down the path
+        p_unordered = [dset.categories_dict[params[i]] for i in range(len(params))]
+        p_ordered = np.argsort(p_unordered)
+        params = list(np.array(params)[p_ordered])
+        lower = list(np.array(lower)[p_ordered])
+        upper = list(np.array(upper)[p_ordered])
+        #here we order the param and upper and lower lists according to the dset.params_dict
+        #in order to allow for these to be passed to the function in any order.
 
         params_intersect = [p for p in params if p in sorted_params]
         params_intersect_int = [dset.categories_dict[params_intersect[i]] for i in range(len(params_intersect))]
@@ -109,11 +114,12 @@ class QueryEngine:
             hi_ind.append(bisect.bisect_right(s, hi_intersect[i]))
             #getting the slicing indices wrt to all parameters in params_intersect
 
-        set_list = [set(dset.f[dset_names[i]][lo_ind[i]:hi_ind[i]]) for i in range(len(params_intersect))]
-        #make a list of sets of indices. I hope this step is not too computation intensive, I do not know how
-        #to do it differently
+        set_list = [dset.f[dset_names[i]][:][lo_ind[i]:hi_ind[i]] for i in range(len(params_intersect))]
+        #make a list of array of indices. This is faster then to use sets, because although
+        #set.intersection is a lot faster then np.intersect1d, converting arrays to sets takes
+        #a lot more time.
 
-        ind = np.sort(list(set.intersection(*set_list)))
+        ind = np.sort(reduce(np.intersect1d, set_list))
         #sorting in oder to better comply with h5py.
 
         if not ind.size:
