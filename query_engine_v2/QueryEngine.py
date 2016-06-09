@@ -27,12 +27,7 @@ class QueryEngine:
 
     def slice(self, dset, param, lower, upper):
         '''
-        Takes dset: "daily" or "hourly", indicates dataset, param: string indicating the 
-        category ("date", "high", "low"...), and an upper and lower bound for the values.
-        Returns not a true slice (so save resources) but rather just the indices of the 
-        original matrix fulfilling these criteria. If we go
-        queryObject.daily[slice("daily", "high", 10, 15)], we get the rows of the original
-        matrix where the (high) temperature lies between 10 and 15 degrees.
+        Function deprecated (nan handling), use smart_slice instead!
         '''
         dset = self.dset_dict[dset]
         param_int = dset.categories_dict[param]
@@ -105,7 +100,7 @@ class QueryEngine:
         lo_ind = []
         hi_ind = []
         for i in range(len(params_intersect)):
-            s = dset.f["weather_data"][:,params_intersect_int[i]][dset.f[dset_names[i]]]
+            s = dset.f["weather_data"][:][:,params_intersect_int[i]][dset.f[dset_names[i]]]
             if(np.isnan(np.sum(s))):
                 s = s[:np.argmin(s)]
             #above line removes the nans if they exist in the array.
@@ -151,15 +146,45 @@ class QueryEngine:
             print("return_matrix=False and sorting are not compatible.")
             return None
 
-    def get_sorted_indices(self, param, data_matrix, dset=None):
+    def sort(self, param, data_matrix, dset=None):
+        '''
+        Sorts any matrix wrt to one column.
+
+        param: int or str, designates either the index of the column to be sorted by,
+            or (if str) the category of the respective dataset. In the latter case
+            dset must be specified.
+        data_matrix: numpy array or h5py dataset. The matrix to be sorted.
+        dset: "daily" or "hourly", designates the datased to wich the data belongs.
+
+        returns: numpy array that is data_matrix sorted wrt to the column designated by
+            param.
+        '''
         if type(param) == int:
             assert(param < data_matrix.shape[1])
+
+            if dset:
+                dset = self.dset_dict[dset]
+                endpoint = np.minimum(np.int64(dset.f["metadata"][0]), data_matrix.shape[0])
+            else:
+                endpoint = data_matrix.shape[0]
+
+            sort_ind = np.argsort(data_matrix[:][:endpoint][:,param])
+            return data_matrix[:][sort_ind]
+
         else:
             assert(type(param) == str)
             assert(dset != None)
             dset = self.dset_dict[dset]
             assert(data_matrix.shape[1] == len(dset.params_dict))
             param = dset.categories_dict[param]
+            endpoint = np.minimum(np.int64(dset.f["metadata"][0]), data_matrix.shape[0])
+
+            sort_ind = np.argsort(data_matrix[:][:endpoint][:,param])
+            return data_matrix[:][sort_ind]
+
+
+
+
             
     def sort(self):
         pass
