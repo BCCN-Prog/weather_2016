@@ -193,18 +193,31 @@ class QueryEngine:
         Gets the range of values in one category given that the values of a list of categories
         lie within specified boundaries.
         '''
+        pass
 
     def get_dataset(self):
         '''
         Returns the specified dataset taking into account its endpoint.
         '''
+        pass
 
-    def get_category(self):
+    def get_category(self, dset, data, category):
         '''
         Gets the column for the specified category.
         '''
-            
+        dset = self.dset_dict[dset]
+        assert(type(category) == str or type(category) == int)
+        if type(category) == str:
+            category = dset.categories_dict[category]
+        assert(data.shape[1] == len(dset.params_dict))
+        assert(category < data.shape[1])
+
+        endpoint = np.minimum(np.int64(dset.f["metadata"][0]), data.shape[0])
+
+        return data[:][:endpoint][:,category]        
+
     def get_weekday(self):
         '''
         Returns the weekday for specified date.
         '''
+        pass
