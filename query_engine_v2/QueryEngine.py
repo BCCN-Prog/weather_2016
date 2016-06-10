@@ -1,9 +1,22 @@
 import sys
+import os
 sys.path.append('../wrapper/')
 import DataWrapH5py
 import numpy as np
 import bisect
 from functools import reduce
+
+def block_print():
+    '''
+    Blocks all print output.
+    '''
+    sys.stdout = open(os.devnull, 'w')
+
+def enable_print():
+    '''
+    Reenables print output.
+    '''
+    sys.stdout = sys.__stdout__
 
 class QueryEngine:
     daily_params = ['date', 'site', 'station_id', 'high', 'low', 'midday', 'rain_chance', 'rain_amt',
@@ -63,7 +76,7 @@ class QueryEngine:
         category whose corresponding column contains only nans will always return an empty array.
         '''
         if(type(params) != list and type(lower) != list and type(upper) != list):
-            assert(type(params) == str and isinstance(lower, (int, float)) and isinstance(upper, (int, float)))
+            assert(type(params) == str and isinstance(lower, (int, float, np.int64)) and isinstance(upper, (int, float,np.int64)))
             params = [params]
             lower = [lower]
             upper = [upper]
@@ -182,12 +195,85 @@ class QueryEngine:
             sort_ind = np.argsort(data_matrix[:][:endpoint][:,param])
             return data_matrix[:][sort_ind]
 
-    def partition(self):
+    def partition(self, dset, param, lo, hi, interval=0, slicing_params=[], lower_slice=[], upper_slice=[], sort=None):
         '''
-        Partitions dataset wrt to a category. Maybe added functionality for any matrix?
-        '''
-        pass
+        Partitions the dataset wrt. to a category, i.e. 
+        q.partition("daily", "site", 0, 4) returns five matrices, the first of which contains
+        all data that has 0 as its entry for station_id, the second 1 and so on. In other words,
+        this is all scraping data (as historical has index 5), partitioned by site index.
+        
+        Instead of getting a matrix for every value, by setting interval to something other than
+        0, it is possible partition the data with an interval of that size, i.e.
+        q.partition("daily", "high", -10, 40, interval=10) gives us five matrices the first of which
+        has all data where "high" is between -10 and 0 degrees, the second 0 and 10 and so on.
 
+        It is also possible to slice the partitions additionally.
+        q.partition("daily", "high", -10, 40, interval=10, 
+        slicing_params=["date"], lower_slice=[19900101], upper_slice=[20000101])
+        gives us again five matrices like in the previous example, but this time we only
+        take datapoints where the date lies between 01.01.1990 and 01.01.2000.
+
+        The matrices can also be returned sorted wrt. to one parameter.
+
+        dset: "daily" or "hourly", specifies used dataset.
+        param: str, parameter wrt. to wich we want to partition.
+        lo: int or float, lower boundary for the values of the category param over which we partition.
+        hi: int or float, upper boundary for the values of the category param over which we partition.
+        interval: int or float, If 0, a partition is created for each value within (lo,hi). 
+        If not 0, specifies the size of the intervals, into which (lo,hi) is divided. For each
+            of those, a partition is created then.
+        slicing_params: List of parameters (string-support is coming) by which each of the
+            partitions is sliced.
+        lower_slice: List of lower boundaries wrt. to which we slice using the corresponding
+        enry of slicing_params.
+        upper_slice: List of upper boundaries wrt. to which we slice using the corresponding
+            enry of slicing_params.
+        sort: None or str. If not None, we sort wrt. to the specified parameter.
+
+        '''
+
+        #add string/int support for slicing_params!!!
+        assert(type(lo) == int)
+        assert(type(hi) == int)
+        assert(interval >= 0)
+        dataset = self.dset_dict[dset]
+        assert(type(param) == str or type(param) == int)
+        if type(param) == int:
+            param = dataset.params_dict[param]
+        
+        output = []
+        slicing_params.append(param)
+        if param == "date":
+            print("Warning: Since not all integers correspond to a date, partitioning across them \
+                    can produce many empty arrays in the output! To be safe, make your boundaries \
+                    such that you know that within them, all integers correspond to a date.")
+
+        block_print()
+        #block print in order to evade "no matching entries" warnings.
+        if interval == 0:
+            for i in range(lo, hi+1):
+                upper_slice.append(i)
+                lower_slice.append(i)
+                output.append(self.smart_slice(dset, slicing_params, lower_slice, upper_slice, sort=sort))
+                del(upper_slice[-1])
+                del(lower_slice[-1])
+        else:
+            for i in range(lo, hi, interval):
+                lower_slice.append(i+0.0001)
+                upper_slice.append(np.minimum(i+interval, hi))
+                if i != lo:
+                    #output.append(self.smart_slice(dset, param, i+0.0001, np.minimum(i+interval, hi), sort=sort))
+                    output.append(self.smart_slice(dset, slicing_params, lower_slice, upper_slice, sort=sort))                    
+                else:
+                    #output.append(self.smart_slice(dset, param, i, i+interval, sort=sort))
+                    output.append(self.smart_slice(dset, slicing_params, lower_slice, upper_slice, sort=sort))
+                del(lower_slice[-1])
+                del(upper_slice[-1])
+
+        enable_print()
+
+        return output
+        
     def get_val_range(self):
         '''
         Gets the range of values in one category given that the values of a list of categories
@@ -195,15 +281,30 @@ class QueryEngine:
         '''
         pass
 
-    def get_dataset(self):
+    def get_dataset(self, dset):
         '''
-        Returns the specified dataset taking into account its endpoint.
+        Gets the specified dataset, discarding unwritten rows.
+
+        dset: "daily" or "hourly", specifies the dataset to be returned.
+
+        retuns: All written rows of the specified dataset, entry "weather_data".
         '''
-        pass
+        dset = self.dset_dict[dset]
+        return dset.f["weather_data"][:][:dset.f["metadata"][0]]
+        
 
     def get_category(self, dset, data, category):
         '''
-        Gets the column for the specified category.
+        Gets the column for the specified category from the specified matrix with
+        shape[1] the same as the dataset's, discarding yet unwritten rows.
+
+        dset: "daily" or "hourly", specifies database data is derived from.
+        data: numpy array, the data from which the category is selected. Must have
+            the same number of columns as the dataset as specified by dset.
+        category: int or str, specifies the category or just column number
+            that is to be extracted.
+
+        returns: One column of data, as specified by category.
         '''
         dset = self.dset_dict[dset]
         assert(type(category) == str or type(category) == int)
