@@ -195,6 +195,20 @@ class QueryEngine:
             sort_ind = np.argsort(data_matrix[:][:endpoint][:,param])
             return data_matrix[:][sort_ind]
 
+    def n_days_in_month_of_year(self, month, year):
+        '''
+        Computes the number of days in a month of a year.
+
+        month: int in (1,12), signifies the month.
+        year: int, signifies the year.
+
+        Returns: int, the number of days in specified month and year.
+        '''
+        assert(type(month) == int and month >= 1 and month <= 12)
+        assert(type(year) == int and year > 0)
+
+        return 28 + (month + int(month/8))%2 + 2%month + 2*int(1/month) + (1 - int(int(year%4)/4 + 0.75))
+
     def partition(self, dset, param, lo, hi, interval=0, slicing_params=[], lower_slice=[], upper_slice=[], sort=None):
         '''
         Partitions the dataset wrt. to a category, i.e. 
