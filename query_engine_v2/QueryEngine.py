@@ -22,7 +22,7 @@ class QueryEngine:
     daily_params = ['date', 'site', 'station_id', 'high', 'low', 'midday', 'rain_chance', 'rain_amt',
     'cloud_cover', 'city_ID'] #only for example
     hourly_params = ['date']
-    days_dict = {0:'Sunday', 1:'Monday', 2:'Tuesday', 3:'Wednesday', 4:'Thursdays', 5:'Friday', 6:'Saturday'}
+    days_dict = {0:'Sunday', 1:'Monday', 2:'Tuesday', 3:'Wednesday', 4:'Thursday', 5:'Friday', 6:'Saturday'}
 
     def __init__(self, make_new=False):
         self.daily = DataWrapH5py.Daily_DataBase(make_new=make_new)
@@ -421,7 +421,7 @@ class QueryEngine:
 
         endpoint = np.minimum(np.int64(dset.f["metadata"][0]), data.shape[0])
 
-        return data[:][:endpoint][:,category]        
+        return data[:][:endpoint][:,category]     
 
     def compute_weekday(self, date):
         '''
@@ -471,3 +471,11 @@ class QueryEngine:
                     c_day -= 7
                 
             return self.days_dict[(doomsday + (day - c_day) + 7)%7]
+    
+    def compute_weekday_vectorized(self, date):
+        '''
+        Vectorized version of compute_weekday. For dosumentation, see there.
+        '''
+        def f():
+            return np.vectorize(self.compute_weekday)
+        return f()(date)
