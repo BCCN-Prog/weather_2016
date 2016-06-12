@@ -435,17 +435,17 @@ class QueryEngine:
         month = int(str(date)[4:6])
         day = int(str(date)[6:])
     
-        last_two = int(str(year)[2:])
-        first_two = int(str(year)[:2])
+        year_ones = int(str(year)[2:])
+        year_hundreds = int(str(year)[:2])
     
-        n_1 = int(last_two/12)
-        n_2 = last_two - n_1*12
+        n_1 = int(year_ones/12)
+        n_2 = year_ones - n_1*12
         n_3 = int(n_2/4)
-        if first_two == 18:
+        if year_hundreds == 18:
             anchor = 5
-        if first_two == 19:
+        if year_hundreds == 19:
             anchor = 3
-        if first_two == 20:
+        if year_hundreds == 20:
             anchor = 2
         n_5 = n_1 + n_2 + n_3 + anchor
     
