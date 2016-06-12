@@ -22,6 +22,7 @@ class QueryEngine:
     daily_params = ['date', 'site', 'station_id', 'high', 'low', 'midday', 'rain_chance', 'rain_amt',
     'cloud_cover', 'city_ID'] #only for example
     hourly_params = ['date']
+    days_dict = {0:'Sunday', 1:'Monday', 2:'Tuesday', 3:'Wednesday', 4:'Thursdays', 5:'Friday', 6:'Saturday'}
 
     def __init__(self, make_new=False):
         self.daily = DataWrapH5py.Daily_DataBase(make_new=make_new)
@@ -422,8 +423,51 @@ class QueryEngine:
 
         return data[:][:endpoint][:,category]        
 
-    def get_weekday(self):
+    def compute_weekday(self, date):
         '''
-        Returns the weekday for specified date.
+        Implements the doomsday-algorithm to compute the weekday of any given date.
+
+        date: int of the format yearmonthday.
+
+        Returns: The weekday of specified day.
         '''
-        pass
+        year = int(str(date)[:4])
+        month = int(str(date)[4:6])
+        day = int(str(date)[6:])
+    
+        last_two = int(str(year)[2:])
+        first_two = int(str(year)[:2])
+    
+        n_1 = int(last_two/12)
+        n_2 = last_two - n_1*12
+        n_3 = int(n_2/4)
+        if first_two == 18:
+            anchor = 5
+        if first_two == 19:
+            anchor = 3
+        if first_two == 20:
+            anchor = 2
+        n_5 = n_1 + n_2 + n_3 + anchor
+    
+        doomsday = n_5 - (n_5%7)*7
+    
+        days_in_month = [self.n_days_in_month_of_year(i, year) for i in range(1,13)]
+    
+        if month == 12 and day == 12:
+            return self.days_dict[doomsday]
+        elif month == 12 and day >12:
+            count = 19
+            while abs(day-count) > 7:
+                count += 7
+            return self.days_dict[(day-count + doomsday)%7]
+        else:
+            c_day = 12
+            c_month = 12
+            while not (c_month == month and abs(day-c_day)<7):
+                if c_day <= 7:
+                    c_month -= 1
+                    c_day = days_in_month[c_month-1] + c_day - 7
+                else:
+                    c_day -= 7
+                
+            return self.days_dict[(doomsday + (day - c_day) + 7)%7]
