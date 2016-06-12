@@ -209,7 +209,59 @@ class QueryEngine:
 
         return 28 + (month + int(month/8))%2 + 2%month + 2*int(1/month) + (1 - int(int(year%4)/4 + 0.75))
 
-    def partition(self, dset, param, lo, hi, interval=0, slicing_params=[], lower_slice=[], upper_slice=[], sort=None):
+    def get_dates(self, lo_year, lo_month, lo_day, hi_year, hi_month, hi_day):
+        '''
+        Computes all existing dates in the given boundaries.
+
+        lo_year: int, lower bound of years.
+        lo_month: int, lower bound of months.
+        lo_day: int, lower bound of days.
+        hi_year: int, upper bound of years.
+        hi_month: int, upper bound of months.
+        hi_day: int, upper bound of days.
+
+        Returns: list of ints, all dates within specified boundaries.
+        '''
+        assert(type(lo_year) == int and type(lo_month) == int and type(lo_day) == int and type(hi_year) == int \
+                and type(hi_month) == int and type(hi_day) == int)
+
+        dates = []
+        for i in range(lo_year, hi_year+1):
+            if i == lo_year: 
+                l_month = lo_month
+            else:
+                l_month = 1
+            if i == hi_year:
+                h_month = hi_month
+            else:
+                h_month = 12
+            for j in range(l_month, h_month+1):
+                if i == lo_year and j == lo_month:
+                    l_day = lo_day
+                else:
+                    l_day = 1
+                if i == hi_year and j == hi_month:
+                    end = np.minimum(hi_day, self.n_days_in_month_of_year(j,i))
+                else:
+                    end = self.n_days_in_month_of_year(j, i)
+                    enable_print()
+                    print(j,i)
+                    block_print()
+                days = list(range(l_day,end+1))
+                                                                                                                                                                                                                                                        
+                if j/10 < 1:
+                    str_month = str(0)+str(j)
+                else:
+                    str_month = str(j)
+                str_year = str(i)
+                                                                                                                                                                                                                                                                                                                                                
+                str_days = [str(0)+str(day) if day/10<1 else str(day) for day in days]
+                                                                                                                                                                                                                                                                                                                                                                        
+                dates += [int(str_year+str_month+str(str_days[i])) for i in range(len(days))]
+
+        return dates
+
+    def partition(self, dset, param, lo, hi, interval=0, slicing_params=None, lower_slice=None, upper_slice=None, sort=None):
         '''
         Partitions the dataset wrt. to a category, i.e. 
         q.partition("daily", "site", 0, 4) returns five matrices, the first of which contains
@@ -236,7 +288,7 @@ class QueryEngine:
         interval: int or float, If 0, a partition is created for each value within (lo,hi). 
         If not 0, specifies the size of the intervals, into which (lo,hi) is divided. For each
             of those, a partition is created then.
-        slicing_params: List of parameters (string-support is coming) by which each of the
+        slicing_params: List of strings which represent the parameters by which each of the
             partitions is sliced.
         lower_slice: List of lower boundaries wrt. to which we slice using the corresponding
         enry of slicing_params.
@@ -254,33 +306,57 @@ class QueryEngine:
         assert(type(param) == str or type(param) == int)
         if type(param) == int:
             param = dataset.params_dict[param]
+
+        if not slicing_params:
+            slicing_params = []
+        if not upper_slice:
+            upper_slice = []
+        if not lower_slice:
+            lower_slice = []
         
+        if type(slicing_params) == list:
+            assert(len(slicing_params) == len(upper_slice) and len(upper_slice) == len(lower_slice))
+        else:
+            slicing_params = [slicing_params]
+            upper_slice = [upper_slice]
+            lower_slice = [lower_slice]
+
         output = []
         slicing_params.append(param)
+
         if param == "date":
-            print("Warning: Since not all integers correspond to a date, partitioning across them \
-                    can produce many empty arrays in the output! To be safe, make your boundaries \
-                    such that you know that within them, all integers correspond to a date.")
+            lo_year = int(str(lo)[:4])
+            lo_month = int(str(lo)[4:6])
+            hi_year = int(str(hi)[:4])
+            hi_month = int(str(hi)[4:6])
+            if lo_year != hi_year or lo_month != hi_month:
+                print('''
+                        Partitioning over multiple years or months is not supported yet
+                        (and not a great idea from a performance standpoint). If you really
+                        need to, use n_days_in_month to compute the numbers of days in 
+                        the months and use multiple function calls. Support for this feature
+                        may be implemented in the future. An empty list will be returned now.
+                        ''' )
+                return []
 
         block_print()
         #block print in order to evade "no matching entries" warnings.
+        iter_ind = range(lo, hi+1)
         if interval == 0:
-            for i in range(lo, hi+1):
+            for i in iter_ind:
                 upper_slice.append(i)
                 lower_slice.append(i)
                 output.append(self.smart_slice(dset, slicing_params, lower_slice, upper_slice, sort=sort))
                 del(upper_slice[-1])
                 del(lower_slice[-1])
         else:
-            for i in range(lo, hi, interval):
-                lower_slice.append(i+0.0001)
+            for i in iter_ind[:-1:interval]:
                 upper_slice.append(np.minimum(i+interval, hi))
-                if i != lo:
-                    #output.append(self.smart_slice(dset, param, i+0.0001, np.minimum(i+interval, hi), sort=sort))
-                    output.append(self.smart_slice(dset, slicing_params, lower_slice, upper_slice, sort=sort))                    
+                if i != iter_ind[0]:
+                    lower_slice.append(i+0.0001)
                 else:
-                    #output.append(self.smart_slice(dset, param, i, i+interval, sort=sort))
-                    output.append(self.smart_slice(dset, slicing_params, lower_slice, upper_slice, sort=sort))
+                    lower_slice.append(i)
+                output.append(self.smart_slice(dset, slicing_params, lower_slice, upper_slice, sort=sort))                    
                 del(lower_slice[-1])
                 del(upper_slice[-1])
 
@@ -288,11 +364,26 @@ class QueryEngine:
 
         return output
         
-    def get_val_range(self):
+    def get_val_range(self, dset, param, data_matrix):
         '''
-        Gets the range of values in one category given that the values of a list of categories
-        lie within specified boundaries.
+        Computes the range of values in one category of a dataset-shaped matrix.
+
+        dset: "daily" or "hourly", specifies dataset dat_matrix was derived from.
+        param: int or str, specifies category for which to get the range.
+        data_matrix: numpy array, the data matrix for which the range is computed.
+
+        Returns: Tuple, first value being the lowest value encountered in specified category,
+            second the highest.
         '''
+        assert(type(param) == int or type(param) == str)
+        dset = self.dset_dict[dset]
+        if type(param) == str:
+            param = dset.categories_dict[param]
+        assert(data_matrix.shape[1] == len(dset.params_dict))
+        assert(param < data_matrix.shape[1])
+
+        return np.amin(data_matrix[:][:,param]), np.amax(data_matrix[:][:,param])
+ 
         pass
 
     def get_dataset(self, dset):
