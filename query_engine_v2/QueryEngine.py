@@ -23,6 +23,8 @@ class QueryEngine:
     'cloud_cover', 'city_ID'] #only for example
     hourly_params = ['date']
     days_dict = {0:'Sunday', 1:'Monday', 2:'Tuesday', 3:'Wednesday', 4:'Thursday', 5:'Friday', 6:'Saturday'}
+    days_backdict = {'Sunday':0, 'Monday':1, 'Tuesday':2, 'Wednesday':3, 'Thursday':4, 'Friday':5, 'Saturday':6}
+
 
     def __init__(self, make_new=False):
         self.daily = DataWrapH5py.Daily_DataBase(make_new=make_new)
@@ -423,19 +425,21 @@ class QueryEngine:
 
         return data[:][:endpoint][:,category]     
 
-    def compute_weekday(self, date):
+    def compute_weekday(self, date, return_int=False):
         '''
         Implements the doomsday-algorithm to compute the weekday of any given date.
 
         date: int of the format yearmonthday.
+        return_int: boolean. If true, instead of a string, the function will return an int,
+            where 0 corresponds to Sunday, 1 to Monday and so on.
 
-        Returns: The weekday of specified day.
+        Returns: Str or int, the weekday of specified day.
         '''
         year = int(str(date)[:4])
         month = int(str(date)[4:6])
-        day = int(str(date)[6:])
+        day = int(str(date)[6:8])
     
-        year_ones = int(str(year)[2:])
+        year_ones = int(str(year)[2:4])
         year_hundreds = int(str(year)[:2])
     
         n_1 = int(year_ones/12)
@@ -454,12 +458,18 @@ class QueryEngine:
         days_in_month = [self.n_days_in_month_of_year(i, year) for i in range(1,13)]
     
         if month == 12 and day == 12:
-            return self.days_dict[doomsday]
+            if not return_int:
+                return self.days_dict[doomsday]
+            else:
+                return doomsday
         elif month == 12 and day >12:
             count = 19
             while abs(day-count) > 7:
                 count += 7
-            return self.days_dict[(day-count + doomsday)%7]
+            if not return_int:
+                return self.days_dict[(day-count + doomsday)%7]
+            else:
+                return (day-count + doomsday)%7
         else:
             c_day = 12
             c_month = 12
@@ -469,13 +479,48 @@ class QueryEngine:
                     c_day = days_in_month[c_month-1] + c_day - 7
                 else:
                     c_day -= 7
-                
-            return self.days_dict[(doomsday + (day - c_day) + 7)%7]
+            if not return_int:
+                return self.days_dict[(doomsday + (day - c_day) + 7)%7]
+            else:
+                return (doomsday + (day - c_day) + 7)%7
     
-    def compute_weekday_vectorized(self, date):
+    def compute_weekday_vectorized(self, date, return_ints=False):
         '''
         Vectorized version of compute_weekday. For dosumentation, see there.
         '''
         def f():
             return np.vectorize(self.compute_weekday)
-        return f()(date)
+        return f()(date, return_ints)
+
+    def extract_weekdays(self, dset, days, data_matrix, lo_date=None, hi_date=None):
+        '''
+        Extracts datapoints corresponding to a certain weekday or a list of such.
+
+        dset: "daily" or "hourly", sgnifies dataset.
+        days: str or list of str containing the day or the days for which the datapoints will
+            be extracted.
+        data_matrix: numpy array, the data on which the function will be performend.
+        lo_date: int, lower bound for the regarded dates.
+        hi_date: int, upper bound for the reagrded dates.
+
+        Returns: numpy array containing only datapoints for which the date falls on specified
+            weekdays.
+
+        TODO: Implement lo_date, hi_date. Also: Why so slow?
+        '''
+        assert(type(days) == list or type(days) == str)
+        assert(type(lo_date) == int and type(hi_date) == int)
+
+        dset = self.dset_dict[dset]
+
+        if type(days) == str:
+            days = [days]
+        days_int = [self.days_backdict[i] for i in days]
+
+        weekdays = self.compute_weekday_vectorized(data_matrix[:][:,0], return_ints=True)
+
+        inds = np.where(reduce(np.logical_or, [weekdays==i for i in days_int]))
+        return data_matrix[:][inds]
+
+
+
