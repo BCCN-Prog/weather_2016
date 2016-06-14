@@ -170,4 +170,4 @@ def scrape_hourly(date, city, data_path):
 
         return dictionary        
         
-scrape('07_06_2016', 'berlin', 'output/')
+#scrape('07_06_2016', 'berlin', 'output/')
