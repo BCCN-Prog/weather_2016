@@ -14,7 +14,7 @@ def test_top_level(data_dic):
                 "cologne", "frankfurt", "stuttgart",
                 "bremen", "leipzig", "hanover", "hannover",
                 "nuremberg", "dortmund", "dresden",
-                "kassel", "kiel", "bielefeld", "bielfeld",
+                "kassel", "cassel", "kiel", "bielefeld", "bielfeld",
                 "saarbruecken", "rostock", "freiburg",
                 "magdeburg", "erfurt", "saarbrucken",
                 "münchen", "koeln", "nuernberg",
