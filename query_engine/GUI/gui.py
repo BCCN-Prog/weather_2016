@@ -134,7 +134,12 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuQuery_Engine.menuAction())
 
         self.retranslateUi(MainWindow)
-        QtCore.QObject.connect(self.RecentFlag, QtCore.SIGNAL(_fromUtf8("clicked()")), self.ParametersList.clearEditText)
+        #QtCore.QObject.connect(self.RecentFlag, QtCore.SIGNAL(_fromUtf8("clicked()")), self.ParametersList.clearEditText)
+
+        self.StationsList.currentIndexChanged.connect(self.station_selected)
+        QtCore.QObject.connect(self.RecentFlag, QtCore.SIGNAL("clicked()"), self.RecentSelected)
+        QtCore.QObject.connect(self.HistoricalFlag, QtCore.SIGNAL("clicked()"), self.HistoricalSelected)
+
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
