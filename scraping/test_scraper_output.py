@@ -23,16 +23,16 @@ def test_top_level(data_dic):
         assert(key in keys_present), "{} is missing".format(key)
     # check for date
     date = data_dic['date']
-    assert(isinstance(date, int)) # date should be int
-    assert(date>10000000 and date<32000000)    # date should be yyyymmdd
+    assert(isinstance(date, int)), "data_dic['date'] should be int"
+    assert(date>10000000 and date<32000000), "date should be yyyymmdd"
     # check for site, this is in integer now
     site = data_dic['site']
-    assert(isinstance(site, int)) # site should be integer, as coded in the wiki
-    assert(str(site) in sites_possible) # site should be one of the sites
+    assert(isinstance(site, int)), "data_dic['site'] should be integer, as coded in the wiki"
+    assert(str(site) in sites_possible), "'site' should be one of the possible sites"
     # check for city
     city = data_dic['city']
-    assert(isinstance(city, str)) # site should be string
-    assert(city in cities_possible) # site should be one of the cities
+    assert(isinstance(city, str)),  "city name should be string"
+    assert(city in cities_possible), "city should be one of possible cities"
     # check hourly and daily to be dicts
     test_format(data_dic['daily'])
     test_format(data_dic['hourly'])

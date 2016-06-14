@@ -19,7 +19,7 @@ def scrape(date, city, data_path='../data'):
                 'date': dateInt,
                 'hourly': scrape_hourly(date, city, data_path),
                 'daily': scrape_daily(date, city, data_path)}
-    assert(tester.run_tests(data_dic))
+    assert(tester.run_tests(data_dic)) # test scraper output
 
     daily_db = wrapper.Daily_DataBase()
     hourly_db = wrapper.Hourly_DataBase()
@@ -243,12 +243,14 @@ def scrape_daily(date, city, data_path='../data'):
         print(err)
 
     # SCRAPE all other values: it is all hard coded in a big string, buggy
+
     # get the sun hours idxs as starting point for every day
     div_jungle = soup.findAll('div', {'class':'flag__body'})
     # there are the position of the sun hours for day block in jungle
     start_idxs_detailed = np.arange(12, 96, 12)
     #print("detailed idx {}".format(start_idxs_detailed))
     dayIDX = 0 # need external day idx to use two different for looops
+
     for idx in start_idxs_detailed:
         rain_offset = 3 # the rain data is 3 lines further down
         wind_offset = 4 # the rain data is 4 lines further down
@@ -278,7 +280,7 @@ def scrape_daily(date, city, data_path='../data'):
     start_idxs = np.arange(96, 132, 4)
     for idx in start_idxs:
         # save sun hours
-        #daily_dic[days_strs[dayIDX]]['sun_hours'] = float(div_jungle[idx].text[:-3])
+        daily_dic[days_strs[dayIDX]]['sun_hours'] = float(div_jungle[idx].text[:-3])
         # the length of the string determines whether we have a rain amt in the data
         rain_str_threshold = 10
         rain_chance = float(div_jungle[idx+1].text[:3])
