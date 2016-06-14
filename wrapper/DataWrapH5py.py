@@ -114,7 +114,7 @@ class Daily_DataBase(DataBase):
         DataBase.__init__(self,
                           file_name=db_name,
                           row_num_init=400,
-                          row_num_max=2*1e6,
+                          row_num_max="unlimited",
                           categ_num_init=len(daily_categories),
                           categ_num_max=15,
                           make_new=make_new
