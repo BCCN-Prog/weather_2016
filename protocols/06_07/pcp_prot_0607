@@ -7,12 +7,13 @@ Query engine, functional side: (Georg)
     Issues: Performance, NaN handling, hourly data
     
 Query engine GUI: (Wolfi, Rahul)
-    Basic version works, looks good
+    Basic version works, looks good --> QT Designer
     Can take parameter and pass on to query engine
 
-Visualization: (Denis, Filip)
+Visualization: (Denis, Filip, Alicja)
     Smoother and more beautiful interpolation of data points (ongoing)
-    Animation: e.g. change of a parameter over time (not yet  started)
+    Animation: e.g. change of a parameter over time (started, but not very far)
+    Plot a variable over time
     
 Report: (Claus, but only a little bit)
     PDF report for queries (first research done, existing package seems      complicated, idea: first render html page, then convert to pdf)
