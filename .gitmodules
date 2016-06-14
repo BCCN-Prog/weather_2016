@@ -1,0 +1,3 @@
+[submodule "natgrid"]
+	path = natgrid
+	url = daveh19@github.com:BCCN-Prog/natgrid
