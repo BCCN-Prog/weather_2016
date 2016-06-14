@@ -9,3 +9,12 @@ conda install pandas
 
 conda install --channel https://conda.anaconda.org/jochym natgrid
 
+
+
+Natgrid is a requirement for the visualisations. There is no MacOS conda install for it. 
+- activate your bccn_programming source in conda
+- go to the natgrid folder
+- run python setup.py install
+- do this only once!
+
+
