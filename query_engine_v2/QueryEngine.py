@@ -44,6 +44,15 @@ class QueryEngine:
     def slice(self, dset, param, lower, upper):
         '''
         Function deprecated (nan handling), use smart_slice instead!
+        
+        Function takes a dataset and a parameter and extracts all data where the parameter lies between lower and upper
+        
+        dset: 'daily'/'hourly' --> so far only works for hourly (14.6.)
+        param: <str>, category e.g. 'temp'
+        lower: Lower bound of parameter to be relevant for slicing (int or float) --> e.g. 10°C 
+        upper: 
+        
+        Problem (14.06.) with sorting
         '''
         dset = self.dset_dict[dset]
         param_int = dset.categories_dict[param]
@@ -68,12 +77,15 @@ class QueryEngine:
     def smart_slice(self, dset, params, lower, upper, return_matrix=True, sort=None):
         '''
         Slices utilizing the presorted indices. By default, all categories are presorted.
-        dset string "hourly" or "daily" specifies the dataset, params is the list of categories involved
-        in the slicing, lower and upper the lists of lower and upper limits corresponding to params.
-        Alternitively, params can be just a string, lower and upper just numbers.
+        dset: string "hourly" or "daily" specifies the dataset, 
+        params: String or list of Strings for category/catebories involved in the slicing, 
+        lower, upper: Lower und upper bounds for the categories specified in params. Must have same shape (number or list of umbers) and order as params. 
+        
+    Returns:
         By default returns a matrix sliced according to the above criteria. If return_matrix==False,
         returns just the indices to be sliced by. This can be used to increase performance if the matrix
         is very large.
+        sort (String): order by this parameter
 
         Nan handling: Nans always considered outside the bounds. This means that slicing wrt to a
         category whose corresponding column contains only nans will always return an empty array.
@@ -161,6 +173,7 @@ class QueryEngine:
         else:
             print("return_matrix=False and sorting are not compatible.")
             return None
+            
 
     def sort(self, param, data_matrix, dset=None):
         '''
@@ -216,14 +229,14 @@ class QueryEngine:
         '''
         Computes all existing dates in the given boundaries.
 
-        lo_year: int, lower bound of years.
+        lo_year: int, lower bound of years. (4 digits)
         lo_month: int, lower bound of months.
         lo_day: int, lower bound of days.
-        hi_year: int, upper bound of years.
+        hi_year: int, upper bound of years. (4 digits)
         hi_month: int, upper bound of months.
         hi_day: int, upper bound of days.
 
-        Returns: list of ints, all dates within specified boundaries.
+        Returns: list of ints, all dates within specified boundaries. (one int = YYYYMMDD) 
         '''
         assert(type(lo_year) == int and type(lo_month) == int and type(lo_day) == int and type(hi_year) == int \
                 and type(hi_month) == int and type(hi_day) == int)
@@ -509,7 +522,8 @@ class QueryEngine:
         TODO: Implement lo_date, hi_date. Also: Why so slow?
         '''
         assert(type(days) == list or type(days) == str)
-        assert(type(lo_date) == int and type(hi_date) == int)
+        if lo_date or hi_date:
+            assert(type(lo_date) == int and type(hi_date) == int)
 
         dset = self.dset_dict[dset]
 

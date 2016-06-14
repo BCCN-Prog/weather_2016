@@ -8,23 +8,27 @@ import os
 
 def convert_stations_specs():
     data = pd.read_table('KL_Tageswerte_Beschreibung_Stationen_pandas_import.txt', sep='[ ]{2,}')
-    chosen = data[['Stations_id', 'geoBreite', 'geoLaenge', 'Stationshoehe', 'Stationsname', 'Bundesland']]
-    chosen.columns = ['id', 'lat', 'lon', 'height', 'name', 'state']
+    chosen = data[['Stations_id', 'geoLaenge', 'geoBreite', 'Stationshoehe', 'Stationsname', 'Bundesland']]
+    chosen.columns = ['id', 'lon', 'lat', 'height', 'name', 'state']
     chosen.to_csv('./dwd_station_specs.csv', index=False)
 
 
-def id_to_geo_location(id_):
+def id_to_geo_location(id_,):
     f = os.path.join(os.path.dirname(__file__), './dwd_station_specs.csv')
     specs = pd.read_csv(f, encoding = "ISO-8859-1")
     coordinates = np.empty((id_.size, 2))
     for i, j in enumerate(id_):
-        coordinates[i,:] = specs[specs['id'] == j][['lat', 'lon']].values
+        coordinates[i,:] = specs[specs['id'] == j][['lon', 'lat']].values
     return coordinates
 
 
-def get_geo_locations():
+def get_geo_locations(unique_coords=False):
+    """ Returns pandas.DataFrame of [latitude, longitude] values extracted from dwd_stations_specs.csv file.
+        If unique_coords=True, duplicates of (lon, lat) pairs are dropped (only first occurence kept). """
     f = os.path.join(os.path.dirname(__file__), './dwd_station_specs.csv')
     specs = pd.read_csv(f, encoding = "ISO-8859-1")
+    if unique_coords:
+        specs.drop_duplicates(['lon', 'lat'], inplace=True)
     coordinates = id_to_geo_location(specs['id'].values)
     return coordinates
 
@@ -42,8 +46,10 @@ def hexagon_map(coordinates, temperature, hex_grid_size=(50,50)):
     plt.show()
 
 
-def interpolated_color_map(lats, lons, values, spatial_resolution=0.1, interp='nn', cmap=None):#cm.s3pcpn):
+def interpolated_color_map(station_lon, station_lat, station_val, grid_dim=(80,110), interp='nn', cmap=None):#cm.s3pcpn):
 
+    
+    # map boundries
     lat_0 = 51
     lat_min = 47
     lat_max = 55
@@ -60,34 +66,31 @@ def interpolated_color_map(lats, lons, values, spatial_resolution=0.1, interp='n
     m.drawcountries()
     m.drawmapboundary()
 
-    lats = np.array(lats)
-    lons = np.array(lons)
-    values = np.array(values)
-   
-    lat_inum = (lat_max - lat_min) / spatial_resolution
-    lon_inum = (lon_max - lon_min) / spatial_resolution
-#    xi = np.linspace(lat_min, lat_max + spatial_resolution, xinum)
-#    yi = np.linspace(lon_min, lon_max + spatial_resolution, yinum)
-    lat_i = np.linspace(lat_min, lat_max, lat_inum)
-    lon_i = np.linspace(lon_min, lon_max, lon_inum)
-    lat_i, lon_i = np.meshgrid(lat_i, lon_i)
-   
-    value_i = griddata(lats, lons, values, lat_i, lon_i, interp=interp)
+    # coordinate axes of shapes (grid_dim[i],)
+    lat_axis = np.linspace(lat_min, lat_max, grid_dim[0])
+    lon_axis = np.linspace(lon_min, lon_max, grid_dim[1])
 
-    lat_grid, lon_grid = m.makegrid(value_i.shape[1], value_i.shape[0])
-    x_grid, y_grid = m(lat_grid, lon_grid)
-    m.contourf(x_grid, y_grid, value_i, cmap=cmap)
-    m.scatter(lats, lons, color='k', s=50, latlon=True)
+    # coordinate axes meshgrip of shape (grid_dim[0], grid_dim[1])
+    lon_mesh, lat_mesh = np.meshgrid(lon_axis, lat_axis)
+   
+    # interpolate datapoints for (station_lon, station_lat) to meshgrid (lat_mesh, lot_mesh)
+    value_mesh = griddata(station_lon, station_lat, station_val, lon_mesh, lat_mesh, interp=interp)
+
+    lon_grid, lat_grid = m.makegrid(value_mesh.shape[1], value_mesh.shape[0])
+
+    x_grid, y_grid = m(lon_grid, lat_grid)
+    m.contourf(x_grid, y_grid, value_mesh, cmap=cmap)
+    m.scatter(station_lon, station_lat, color='k', s=20, latlon=True)
    
     plt.show()
 
 
 def map_mvp():
     
-    coordinates = get_geo_locations()
+    coordinates = get_geo_locations(unique_coords=True)
     temperature = 20 * np.random.randn(coordinates.shape[0])
-    station_map(coordinates, temperature, hex_grid_size=(20,20))
-    #interpolated_color_map(coordinates[:,0], coordinates[:,1], temperature)
+    #hexagon_map(coordinates, temperature, hex_grid_size=(20,20))
+    interpolated_color_map(coordinates[:,0], coordinates[:,1], temperature)
 
 if __name__ == '__main__':
     map_mvp()
