@@ -43,7 +43,7 @@ def scrape (filename):
     
 def scrape_daily (dat):
     res = {}
-    res['site'] = 'weather underground' #!add right number once it is  assigned
+    res['site'] = 5 # weather underground has ID 5
     res['city'] = dat['location']['city']
     datf = dat['forecast']['simpleforecast']['forecastday']
     month = str(datf[0]['date']['month'])
@@ -75,7 +75,7 @@ def scrape_daily (dat):
 
 def scrape_hourly (dat):
     res = {}
-    res['site'] = 'weather underground' #!add right number once it is  assigned
+    res['site'] = 5 # weather underground has ID 5
     res['city'] = dat['location']['city']
     month = (dat['hourly_forecast'][0]['FCTTIME']['mon_padded'])
     day = (dat['hourly_forecast'][0]['FCTTIME']['mday_padded'])
