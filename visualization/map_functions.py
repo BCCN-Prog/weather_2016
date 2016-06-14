@@ -13,7 +13,7 @@ def convert_stations_specs():
     chosen.to_csv('./dwd_station_specs.csv', index=False)
 
 
-def id_to_geo_location(id_):
+def id_to_geo_location(id_,):
     f = os.path.join(os.path.dirname(__file__), './dwd_station_specs.csv')
     specs = pd.read_csv(f, encoding = "ISO-8859-1")
     coordinates = np.empty((id_.size, 2))
@@ -22,9 +22,13 @@ def id_to_geo_location(id_):
     return coordinates
 
 
-def get_geo_locations():
+def get_geo_locations(unique_coords=False):
+    """ Returns pandas.DataFrame of [latitude, longitude] values extracted from dwd_stations_specs.csv file.
+        If unique_coords=True, duplicates of (lat, lon) pairs are dropped (only first occurence kept). """
     f = os.path.join(os.path.dirname(__file__), './dwd_station_specs.csv')
     specs = pd.read_csv(f, encoding = "ISO-8859-1")
+    if unique_coords:
+        specs.drop_duplicates(['lat', 'lon'], inplace=True)
     coordinates = id_to_geo_location(specs['id'].values)
     return coordinates
 
@@ -84,10 +88,10 @@ def interpolated_color_map(lats, lons, values, spatial_resolution=0.1, interp='n
 
 def map_mvp():
     
-    coordinates = get_geo_locations()
+    coordinates = get_geo_locations(unique_coords=True)
     temperature = 20 * np.random.randn(coordinates.shape[0])
-    station_map(coordinates, temperature, hex_grid_size=(20,20))
-    #interpolated_color_map(coordinates[:,0], coordinates[:,1], temperature)
+    #hexagon_map(coordinates, temperature, hex_grid_size=(20,20))
+    interpolated_color_map(coordinates[:,0], coordinates[:,1], temperature)
 
 if __name__ == '__main__':
     map_mvp()
