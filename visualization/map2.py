@@ -87,34 +87,25 @@ def interpolated_color_map(lats, lons, values, spatial_resolution=0.1, interp='n
 
 # initialization function: plot the background of each frame
 def init():
-
-    #m.drawcoastlines()
     m.drawcountries()
     m.drawmapboundary()
-    #line.set_data([], [])
-    #return m
-    line.set_data([], [])
-    return line,
 
 # animation function.  This is called sequentially
 def animate(i):
     lats = coordinates[:, 0]
     lons = coordinates[:, 1]
     x, y = m(lons, lats)
-    m.hexbin(x, y, C=temperature[:,i], gridsize=hex_grid_size, vmin = np.amin(temperature[:,:]), vmax = np.amax(temperature[:,:]), linewidth=0.5, edgecolor='k')
+    m.hexbin(x, y, C=temperature[:,i], gridsize=hex_grid_size, vmin = np.amin(temperature), vmax = np.amax(temperature), linewidth=0.5, edgecolor='k')
     return m,
 
 
 def map_mvp():
     
     coordinates = get_geo_locations()
-    temperature = 20 * np.random.randn(coordinates.shape[0],10)
+    temperature = 10 * np.random.randn(coordinates.shape[0],10)
 
     fig = hexagon_map(coordinates, temperature[:,0], hex_grid_size=(20,20))
     #interpolated_color_map(coordinates[:,0], coordinates[:,1], temperature)
-
-
-    #plt.plot(fig)
 
 
 
@@ -123,18 +114,20 @@ if __name__ == '__main__':
     fig = plt.figure()
     hex_grid_size = (20, 20)
     coordinates = get_geo_locations()
-    temperature = 20 * np.random.randn(coordinates.shape[0],10)
-    ax = plt.axes(xlim=(-20, 20), ylim=(-20, 20))
-    line, = ax.plot([], [])
+    temperature = 10 * np.random.randn(coordinates.shape[0],10)
 
     # call the animator.  blit=True means only re-draw the parts that have changed.
     m = Basemap(projection='tmerc', lat_0=51, lon_0=10, llcrnrlat=47, llcrnrlon=5, urcrnrlat=55, urcrnrlon=16,
                 resolution='i')
-    temperature = 20 * np.random.randn(coordinates.shape[0],10)
     anim = animation.FuncAnimation(fig, animate, init_func=init,
-                                   frames=np.shape(temperature)[1], interval=20, blit=False)
-
+                                   frames=np.shape(temperature)[1], interval=20, blit=False, repeat = False)
     #m.colorbar()
+    # save the animation as an mp4.  This requires ffmpeg or mencoder to be
+    # installed.  The extra_args ensure that the x264 codec is used, so that
+    # the video can be embedded in html5.  You may need to adjust this for
+    # your system: for more information, see
+    # http://matplotlib.sourceforge.net/api/animation_api.html
+    #anim.save('basic_animation.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
 
     map_mvp()
 
