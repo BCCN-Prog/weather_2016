@@ -2,8 +2,10 @@ from bs4 import BeautifulSoup
 from glob import glob
 import numpy as np
 import pprint
-import os, sys
+import os, sys, traceback
 import datetime
+import warnings
+warnings.simplefilter('ignore', UserWarning)
 sys.path.append("../")
 sys.path.append("../../")
 import test_scraper_output as tester
