@@ -26,6 +26,7 @@ before_install:
   - conda install basemap
   - conda install h5py
   - conda install pandas
+  - conda install --channel https://conda.anaconda.org/jochym natgrid
   # Useful for debugging any issues with conda
   - conda info -a
 
@@ -39,6 +40,7 @@ before_install:
 # command to install dependencies
 install:
   - conda install --yes python=3.5 pip numpy scipy nose basemap h5py pandas
+  - conda install --channel https://conda.anaconda.org/jochym natgrid
 #  - "pip install basemap"
 #  - "pip install h5py"
 

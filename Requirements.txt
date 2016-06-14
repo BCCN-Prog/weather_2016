@@ -7,3 +7,5 @@ conda install basemap
 conda install h5py
 conda install pandas
 
+conda install --channel https://conda.anaconda.org/jochym natgrid
+
