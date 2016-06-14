@@ -46,7 +46,7 @@ def hexagon_map(coordinates, temperature, hex_grid_size=(50,50)):
     plt.show()
 
 
-def interpolated_color_map(lats, lons, values, spatial_resolution=0.1, interp='nn', cmap=None):#cm.s3pcpn):
+def interpolated_color_map(lats, lons, values, grid_dim=(80,110), interp='nn', cmap=None):#cm.s3pcpn):
 
     lat_0 = 51
     lat_min = 47
@@ -68,19 +68,25 @@ def interpolated_color_map(lats, lons, values, spatial_resolution=0.1, interp='n
     lons = np.array(lons)
     values = np.array(values)
    
-    lat_inum = (lat_max - lat_min) / spatial_resolution
-    lon_inum = (lon_max - lon_min) / spatial_resolution
+#    lat_inum = (lat_max - lat_min) / spatial_resolution
+#    lon_inum = (lon_max - lon_min) / spatial_resolution
 #    xi = np.linspace(lat_min, lat_max + spatial_resolution, xinum)
 #    yi = np.linspace(lon_min, lon_max + spatial_resolution, yinum)
-    lat_i = np.linspace(lat_min, lat_max, lat_inum)
-    lon_i = np.linspace(lon_min, lon_max, lon_inum)
-    lat_i, lon_i = np.meshgrid(lat_i, lon_i)
-   
-    value_i = griddata(lats, lons, values, lat_i, lon_i, interp=interp)
 
-    lat_grid, lon_grid = m.makegrid(value_i.shape[1], value_i.shape[0])
+    # coordinate axes of shape (grid_dim[i],)
+    lat_axis = np.linspace(lat_min, lat_max, grid_dim[0])
+    lon_axis = np.linspace(lon_min, lon_max, grid_dim[1])
+
+    # coordinate axes meshgrip of shape (grid_dim[0], grid_dim[1])
+    lat_mesh, lon_mesh = np.meshgrid(lat_axis, lon_axis)
+   
+    # interpolate datapoints for (lats, lons) to meshgrid (lat_mesh, lot_mesh)
+    value_mesh = griddata(lats, lons, values, lat_mesh, lon_mesh, interp=interp)
+
+    lat_grid, lon_grid = m.makegrid(value_mesh.shape[1], value_mesh.shape[0])
+
     x_grid, y_grid = m(lat_grid, lon_grid)
-    m.contourf(x_grid, y_grid, value_i, cmap=cmap)
+    m.contourf(x_grid, y_grid, value_mesh, cmap=cmap)
     m.scatter(lats, lons, color='k', s=50, latlon=True)
    
     plt.show()
