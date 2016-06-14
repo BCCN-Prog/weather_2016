@@ -509,7 +509,8 @@ class QueryEngine:
         TODO: Implement lo_date, hi_date. Also: Why so slow?
         '''
         assert(type(days) == list or type(days) == str)
-        assert(type(lo_date) == int and type(hi_date) == int)
+        if lo_date or hi_date:
+            assert(type(lo_date) == int and type(hi_date) == int)
 
         dset = self.dset_dict[dset]
 
