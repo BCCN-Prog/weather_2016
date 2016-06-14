@@ -10,6 +10,7 @@ class MainDialog(QDialog, gui.Ui_MainWindow):
     def __init__(self, parent = None):
         super(MainDialog, self).__init__ (parent)
         
+
     def RecentSelected(self):
         #ListRecent = [self.tr('All'), self.tr('Rain Chance')]
         ListRecent = ['All','Rain Chance']
@@ -31,5 +32,9 @@ MainWindow = QtGui.QMainWindow()
 ui = MainDialog()
 ui.setupUi(MainWindow)
 MainWindow.show()
+
+ui.StationsList.currentIndexChanged.connect(ui.station_selected)
+QtCore.QObject.connect(ui.RecentFlag, QtCore.SIGNAL("clicked()"), ui.RecentSelected)
+QtCore.QObject.connect(ui.HistoricalFlag, QtCore.SIGNAL("clicked()"), ui.HistoricalSelected)
 
 sys.exit(app.exec_())
