@@ -2,10 +2,12 @@
 
 import sys
 sys.path.append('../')
+sys.path.append('../../')
 import os
 from bs4 import BeautifulSoup
 from itertools import product
 import test_scraper_output as tester
+import wrapper.DataWrapH5py as wrapper
 import pprint
 
 def scrape(date, city, data_path):
@@ -27,6 +29,10 @@ def scrape(date, city, data_path):
     # run tests
     assert(tester.run_tests(data_dict))
     #TODO add data to data base
+    daily_db = wrapper.Daily_DataBase()
+    hourly_db = wrapper.Hourly_DataBase()
+    daily_db.save_dict(data_dict)
+    hourly_db.save_dict(data_dict)
     # return nothing
 
 
@@ -115,9 +121,9 @@ def scrape_daily(date, city, data_path):
                 dictionary[day]['cloud_cover'] = daily_clouds(td)
                 dictionary[day]['wind_speed'] = daily_wind(td)
                 # TODO: remove mocked rain chance data
-                dictionary[day]['rain_chance'] = 50.
+                dictionary[day]['rain_chance'] = None
                 # TODO: maybe add rain amount data
-                dictionary[day]['rain_amt'] = 10.
+                dictionary[day]['rain_amt'] = None
             
     return dictionary
 
@@ -153,9 +159,9 @@ def scrape_hourly(date, city, data_path):
             dictionary[index]['cloud_cover'] = hourly_clouds(tr)
             dictionary[index]['wind_speed'] = hourly_wind(tr)
             # TODO: remove mocked rain chance data
-            dictionary[index]['rain_chance'] = 50.
+            dictionary[index]['rain_chance'] = None
             # TODO: maybe add rain amount data
-            dictionary[index]['rain_amt'] = 10.
+            dictionary[index]['rain_amt'] = None
             dictionary[index]['humidity'] = hourly_humidity(tr)
             
             index += 3
@@ -164,4 +170,4 @@ def scrape_hourly(date, city, data_path):
 
         return dictionary        
         
-scrape('07_06_2016', 'berlin', 'output/')
+#scrape('07_06_2016', 'berlin', 'output/')
