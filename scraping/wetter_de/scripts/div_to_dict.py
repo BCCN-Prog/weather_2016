@@ -136,7 +136,7 @@ def build_daily_dict(daily_results):
     return daily_dict
 
 
-def scrape(base_dir, DB_dir):
+def scrape(base_dir):
     IN_DIR = base_dir + 'new/'
     OUT_DIR = base_dir + 'processed/'
 

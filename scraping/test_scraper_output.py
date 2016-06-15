@@ -14,7 +14,7 @@ def test_top_level(data_dic):
                 "cologne", "frankfurt", "stuttgart",
                 "bremen", "leipzig", "hanover", "hannover",
                 "nuremberg", "dortmund", "dresden",
-                "kassel", "kiel", "bielefeld", "bielfeld",
+                "kassel", "cassel", "kiel", "bielefeld", "bielfeld",
                 "saarbruecken", "rostock", "freiburg",
                 "magdeburg", "erfurt", "saarbrucken",
                 "münchen", "koeln", "nuernberg",
@@ -24,7 +24,7 @@ def test_top_level(data_dic):
     # check for date
     date = data_dic['date']
     assert(isinstance(date, int)), "data_dic['date'] should be int"
-    assert(date>10000000 and date<32000000), "date should be yyyymmdd"
+    assert(date>20160301 and date<20160731), "date should be yyyymmdd, is: {}".format(date)
     # check for site, this is in integer now
     site = data_dic['site']
     assert(isinstance(site, int)), "data_dic['site'] should be integer, as coded in the wiki"

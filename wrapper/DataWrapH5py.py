@@ -114,7 +114,7 @@ class Daily_DataBase(DataBase):
         DataBase.__init__(self,
                           file_name=db_name,
                           row_num_init=400,
-                          row_num_max=2*1e6,
+                          row_num_max=4000000000,
                           categ_num_init=len(daily_categories),
                           categ_num_max=15,
                           make_new=make_new
@@ -157,19 +157,24 @@ class Daily_DataBase(DataBase):
         Adds data from csv structure of historic group. So far, this is all specific to
         the fixed structures in this class.
         '''
-        df = pd.read_csv(file_name, usecols=[2, 1, 10, 11, 14, 6])
+        try:
+            df = pd.read_csv(file_name, usecols=[2, 1, 10, 11, 14, 6])
 
-        df = np.array(df.values)
-        site = np.ones((df.shape[0],1))*5
-        midday = np.array([[np.nan] for i in range(df.shape[0])])
-        rain_chance = np.array([[np.nan] for i in range(df.shape[0])])
-        city_id = np.array([[np.nan] for i in range(df.shape[0])])
-        day = np.array([[np.nan] for i in range(df.shape[0])])
+            df = np.array(df.values)
+            site = np.ones((df.shape[0],1))*5
+            midday = np.array([[np.nan] for i in range(df.shape[0])])
+            rain_chance = np.array([[np.nan] for i in range(df.shape[0])])
+            city_id = np.array([[np.nan] for i in range(df.shape[0])])
+            day = np.array([[np.nan] for i in range(df.shape[0])])
 
-        df = np.hstack((df, site, midday, rain_chance, city_id, day))[:, [1, 6, 0, 3, 4, 7, 8, 5, 2, 9, 10]]
+            df = np.hstack((df, site, midday, rain_chance, city_id, day))[:, [1, 6, 0, 3, 4, 7, 8, 5, 2, 9, 10]]
 
-        self.add_data_matrix(df)
-        # should be more general.
+            self.add_data_matrix(df)
+            # should be more general.
+        except:
+            print('Error at: ',file_name)
+
+        
 
     def auto_csv(self):
         for f in glob.glob("./*_daily.csv"):
