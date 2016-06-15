@@ -1,0 +1,31 @@
+Protocol  14.06.2016
+
+Convention of indices for hourly data:
+    - absolute times (i.e. 11 means 11 am)
+    - add time stamp of dowloading as one parameter (int YYYYMMDDhhmm)
+    - Create two dictionaries, one for the data for the same day, one for the data the next day
+    - Jan has already implemented an example
+    
+Scraping Debugging (Eren, Alicja)
+    - Alicjas script works, Denis ongoing, Jan and Ines not yet
+    
+Visualization
+    - Animation works (on Hexagons)
+    - Interpolation works, could be prettified 
+    
+GUI: (Rahul, Wolfi)
+    - looks good, works, can seemingly easily be adapted
+
+Database: (Georg)
+    - Performance issues 
+    - Need more people to work on optimizing this (crucial!!)
+
+Query engine: (Greg)
+    - vague, too much dependencies on things that are not done yet
+    
+Until next time:
+    - define more concrete goals on what queries we want to make possible (wiki)
+    
+
+    
+  
