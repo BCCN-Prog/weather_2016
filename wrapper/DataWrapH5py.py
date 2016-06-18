@@ -88,7 +88,61 @@ class DataBase:
         '''
         assert(param < self.f["weather_data"].shape[1])
         return np.argsort(self.f["weather_data"][:self.f["metadata"][0], param])
-	#what if nan-->sorted to the end, keep in mind.
+
+    def import_from_csv(self, file_name, usecols=None, n_miss=None, inds=None):
+        try:
+            if usecols is None or n_miss is None or inds is None:
+                csv_keys = self.csv_dict.keys()
+                cat_keys = self.categories_dict.keys()
+                inters = csv_keys & cat_keys
+                usecols = np.sort([self.csv_dict[key] for key in inters])
+                cats_int = np.sort([self.categories_dict[key] for key in inters])
+                rng = range(0,len(self.categories_dict.values()))
+                blank_cats = set(rng) - set(cats_int)
+                n_miss = len(blank_cats)
+
+                existing = [self.csv_backdict[key] for key in usecols]
+                nonexisting = [self.params_dict[key] for key in blank_cats]
+                ordering_strs = existing+nonexisting
+                ordering_ints = [self.categories_dict[key] for key in ordering_strs]
+                inds_str = [ordering_strs[i] for i in ordering_ints]
+                inds = np.argsort(ordering_ints)
+
+            
+            df = np.asarray(pd.read_csv(file_name, usecols=usecols).values)
+
+            blank = np.empty((df.shape[0], n_miss))
+            blank[:] = np.nan
+
+            data_matrix = np.hstack((df, blank))[:, inds]
+            data_matrix[:,self.categories_dict['site']] = len(self.sites_dict.keys())
+
+            self.add_data_matrix(data_matrix)
+        except OSError:
+            print('Corrupted file detected: ', file_name)
+
+    def auto_csv(self, dset):
+        csv_keys = self.csv_dict.keys()
+        cat_keys = self.categories_dict.keys()
+        inters = csv_keys & cat_keys
+        usecols = np.sort([self.csv_dict[key] for key in inters])
+        cats_int = np.sort([self.categories_dict[key] for key in inters])
+        rng = range(0,len(self.categories_dict.values()))
+        blank_cats = set(rng) - set(cats_int)
+        n_miss = len(blank_cats)
+
+        existing = [self.csv_backdict[key] for key in usecols]
+        nonexisting = [self.params_dict[key] for key in blank_cats]
+        ordering_strs = existing+nonexisting
+        ordering_ints = [self.categories_dict[key] for key in ordering_strs]
+        inds_str = [ordering_strs[i] for i in ordering_ints]
+        inds = np.argsort(ordering_ints)
+        
+        print('Please wait, loading historical {} files...'.format(dset))
+        for f in glob.glob("./*_{}.csv".format(dset)):
+            self.import_from_csv(f, usecols=usecols, n_miss=n_miss, inds=inds)
+        print('done!')
+
 
     def create_presorted(self, params):
         '''
@@ -108,7 +162,7 @@ class DataBase:
 
 class Daily_DataBase(DataBase):
     def __init__(self, db_name="daily_database.hdf5", make_new=False):
-        daily_categories = ['date', 'site', 'station_id', 'high', 'low', 'midday',
+        daily_categories = ['date', 'site', 'station_id', 'high', 'low', 'temp',
                             'rain_chance', 'rain_amt', 'cloud_cover', 'city_ID', 'day']
 
         DataBase.__init__(self,
@@ -120,12 +174,27 @@ class Daily_DataBase(DataBase):
                           make_new=make_new
                           )
 
-    params_dict = {0:'date', 1:'site', 2:'station_id', 3:'high', 4:'low', 5:'midday', \
+    params_dict = {0:'date', 1:'site', 2:'station_id', 3:'high', 4:'low', 5:'temp', \
                    6:'rain_chance', 7:'rain_amt', 8:'cloud_cover', 9:'city_ID', 10:'day'}
-    categories_dict = {'date':0, 'site':1, 'station_id':2,'high':3, 'low':4, 'midday':5, \
+    categories_dict = {'date':0, 'site':1, 'station_id':2,'high':3, 'low':4, 'temp':5, \
                        'rain_chance':6, 'rain_amt':7, 'cloud_cover':8, 'city_ID':9, 'day':10}
+    csv_dict = {'n_row:':0, 'station_id':1, 'date':2, 'quality':3, 'temp':4, \
+                'steam_pressure':5, 'cloud_cover':6,'air_pressure':7, 'rel_moisture':8, \
+                'wind_speed':9, 'high':10, 'low':11,'soil_temp':12,'wind_spd_max':13, \
+                'rain_amt':14, 'rain_ind':15, 'sunny_hours':16, 'snow_height':17}
+    csv_backdict = {0:'n_row:', 1:'station_id', 2:'date', 3:'quality', 4:'temp', \
+                5:'steam_pressure', 6:'cloud_cover',7:'air_pressure', 8:'rel_moisture', \
+                9:'wind_speed', 10:'high', 11:'low',12:'soil_temp',13:'wind_spd_max', \
+                14:'rain_amt', 15:'rain_ind', 16:'sunny_hours', 17:'snow_height'}
+    sites_dict = {0:'The night', 1:'is dark', 2:'and full', 3:'of', 4:'terrors.'}
+    #Please, someone from scraping change the sites_dict and KEEP IT UPDATED if something changes
+    #as some functions must rely on this structure.
 
-    def add_data_point(self, date, site, day, station_id, high, low, midday,
+    ###########if you change the structure of the data, ALWAYS update these!######################
+
+
+
+    def add_data_point(self, date, site, day, station_id, high, low, temp,
                        rain_chance, rain_amt, cloud_cover, city_ID):
         '''
         Adds a data point to the first empty row of the matrix pointed to by
@@ -141,7 +210,7 @@ class Daily_DataBase(DataBase):
         self.f["weather_data"][self.f["metadata"][0], 2] = station_id
         self.f["weather_data"][self.f["metadata"][0], 3] = high
         self.f["weather_data"][self.f["metadata"][0], 4] = low
-        self.f["weather_data"][self.f["metadata"][0], 5] = midday
+        self.f["weather_data"][self.f["metadata"][0], 5] = temp
         self.f["weather_data"][self.f["metadata"][0], 6] = rain_chance
         self.f["weather_data"][self.f["metadata"][0], 7] = rain_amt
         self.f["weather_data"][self.f["metadata"][0], 8] = cloud_cover
@@ -150,39 +219,14 @@ class Daily_DataBase(DataBase):
 
 
         self.f["metadata"][1] = self.get_cur_datetime_int()
-        self.f["metadata"][0] += 1
-
-    def import_from_csv(self, file_name):
-        '''
-        Adds data from csv structure of historic group. So far, this is all specific to
-        the fixed structures in this class.
-        '''
-        try:
-            df = pd.read_csv(file_name, usecols=[2, 1, 10, 11, 14, 6])
-
-            df = np.array(df.values)
-            site = np.ones((df.shape[0],1))*5
-            midday = np.array([[np.nan] for i in range(df.shape[0])])
-            rain_chance = np.array([[np.nan] for i in range(df.shape[0])])
-            city_id = np.array([[np.nan] for i in range(df.shape[0])])
-            day = np.array([[np.nan] for i in range(df.shape[0])])
-
-            df = np.hstack((df, site, midday, rain_chance, city_id, day))[:, [1, 6, 0, 3, 4, 7, 8, 5, 2, 9, 10]]
-
-            self.add_data_matrix(df)
-            # should be more general.
-        except:
-            print('Error at: ',file_name)
-
-        
-
+        self.f["metadata"][0] += 1 
+    
     def auto_csv(self):
-        for f in glob.glob("./*_daily.csv"):
-            self.import_from_csv(f)
+        DataBase.auto_csv(self, "daily")
 
     def save_dict(self, daily_dict):
 
-        params = ['station_id', 'high', 'low', 'midday', 'rain_chance', 'rain_amt', 'cloud_cover']
+        params = ['station_id', 'high', 'low', 'temp', 'rain_chance', 'rain_amt', 'cloud_cover']
 
         try:
             date = daily_dict['date']
