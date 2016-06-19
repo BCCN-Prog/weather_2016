@@ -116,6 +116,8 @@ class DataBase:
 
             data_matrix = np.hstack((df, blank))[:, inds]
             data_matrix[:,self.categories_dict['site']] = len(self.sites_dict.keys())
+            if 'hour' in self.categories_dict.keys():
+                pass
 
             self.add_data_matrix(data_matrix)
         except OSError:
@@ -162,7 +164,7 @@ class DataBase:
 
 class Daily_DataBase(DataBase):
     def __init__(self, db_name="daily_database.hdf5", make_new=False):
-        daily_categories = ['date', 'site', 'station_id', 'high', 'low', 'temp',
+        daily_categories = ['date', 'site', 'station_id', 'high', 'low', 'temperature',
                             'rain_chance', 'rain_amt', 'cloud_cover', 'city_ID', 'day']
 
         DataBase.__init__(self,
@@ -174,15 +176,15 @@ class Daily_DataBase(DataBase):
                           make_new=make_new
                           )
 
-    params_dict = {0:'date', 1:'site', 2:'station_id', 3:'high', 4:'low', 5:'temp', \
+    params_dict = {0:'date', 1:'site', 2:'station_id', 3:'high', 4:'low', 5:'temperature', \
                    6:'rain_chance', 7:'rain_amt', 8:'cloud_cover', 9:'city_ID', 10:'day'}
-    categories_dict = {'date':0, 'site':1, 'station_id':2,'high':3, 'low':4, 'temp':5, \
+    categories_dict = {'date':0, 'site':1, 'station_id':2,'high':3, 'low':4, 'temperature':5, \
                        'rain_chance':6, 'rain_amt':7, 'cloud_cover':8, 'city_ID':9, 'day':10}
-    csv_dict = {'n_row:':0, 'station_id':1, 'date':2, 'quality':3, 'temp':4, \
+    csv_dict = {'n_row:':0, 'station_id':1, 'date':2, 'quality':3, 'temperature':4, \
                 'steam_pressure':5, 'cloud_cover':6,'air_pressure':7, 'rel_moisture':8, \
                 'wind_speed':9, 'high':10, 'low':11,'soil_temp':12,'wind_spd_max':13, \
                 'rain_amt':14, 'rain_ind':15, 'sunny_hours':16, 'snow_height':17}
-    csv_backdict = {0:'n_row:', 1:'station_id', 2:'date', 3:'quality', 4:'temp', \
+    csv_backdict = {0:'n_row:', 1:'station_id', 2:'date', 3:'quality', 4:'temperature', \
                 5:'steam_pressure', 6:'cloud_cover',7:'air_pressure', 8:'rel_moisture', \
                 9:'wind_speed', 10:'high', 11:'low',12:'soil_temp',13:'wind_spd_max', \
                 14:'rain_amt', 15:'rain_ind', 16:'sunny_hours', 17:'snow_height'}
@@ -194,7 +196,7 @@ class Daily_DataBase(DataBase):
 
 
 
-    def add_data_point(self, date, site, day, station_id, high, low, temp,
+    def add_data_point(self, date, site, day, station_id, high, low, temperature,
                        rain_chance, rain_amt, cloud_cover, city_ID):
         '''
         Adds a data point to the first empty row of the matrix pointed to by
@@ -210,7 +212,7 @@ class Daily_DataBase(DataBase):
         self.f["weather_data"][self.f["metadata"][0], 2] = station_id
         self.f["weather_data"][self.f["metadata"][0], 3] = high
         self.f["weather_data"][self.f["metadata"][0], 4] = low
-        self.f["weather_data"][self.f["metadata"][0], 5] = temp
+        self.f["weather_data"][self.f["metadata"][0], 5] = temperature
         self.f["weather_data"][self.f["metadata"][0], 6] = rain_chance
         self.f["weather_data"][self.f["metadata"][0], 7] = rain_amt
         self.f["weather_data"][self.f["metadata"][0], 8] = cloud_cover
@@ -226,7 +228,7 @@ class Daily_DataBase(DataBase):
 
     def save_dict(self, daily_dict):
 
-        params = ['station_id', 'high', 'low', 'temp', 'rain_chance', 'rain_amt', 'cloud_cover']
+        params = ['station_id', 'high', 'low', 'temperature', 'rain_chance', 'rain_amt', 'cloud_cover']
 
         try:
             date = daily_dict['date']
@@ -290,11 +292,24 @@ class Hourly_DataBase(DataBase):
         DataBase.__init__(self,
                           file_name=db_name,
                           row_num_init=4000,
-                          row_num_max=300000000,
+                          row_num_max=30000000000000,
                           categ_num_init=len(hourly_categories),
                           categ_num_max=15,
                           make_new=make_new
                           )
+
+    params_dict = {0:'date', 1:'hour', 2:'site', 3:'geolocation', 4:'temperature', 5:'humidity', \
+                    6:'wind_speed', 7:'rain_chance', 8:'rain_amt', 9:'cloud_cover', 10:'city_ID'}
+    categories_dict = {'date':0, 'hour':1, 'site':2, 'geolocation':3, 'temperature':4, 'humidity':5, \
+                    'wind_speed':6, 'rain_chance':7, 'rain_amt':8, 'cloud_cover':9, 'city_ID':10}
+    csv_dict = {'date':0, 'station_id':1, 'temperature':2, 'moisture':3, 'cloud_cover':4, \
+                'rain_ind':5, 'rain_amt':6, 'air_pressure_red':7, 'air_pressure':8, 'wind_speed':9}
+    csv_backdict = {0:'date', 1:'station_id', 2:'temperature', 3:'moisture', 4:'cloud_cover', \
+            5:'rain_ind', 6:'rain_amt', 7:'air_pressure_red', 8:'air_pressure', 9:'wind_speed'}
+    sites_dict = {0:'The night', 1:'is dark', 2:'and full', 3:'of', 4:'terrors.'}
+
+    def auto_csv(self):
+        DataBase.auto_csv(self, "hourly")
 
     def add_data_point(self, date, hour, site, station_id, temperature, humidity,
                        wind_speed, rain_chance, rain_amt, cloud_cover, city_ID):
