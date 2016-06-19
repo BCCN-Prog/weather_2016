@@ -117,7 +117,9 @@ class DataBase:
             data_matrix = np.hstack((df, blank))[:, inds]
             data_matrix[:,self.categories_dict['site']] = len(self.sites_dict.keys())
             if 'hour' in self.categories_dict.keys():
-                pass
+                temp = data_matrix[:,self.categories_dict['date']]/100
+                data_matrix[:,self.categories_dict['date']] = np.floor(temp)
+                data_matrix[:,self.categories_dict['hour']] = np.floor(np.around(temp%1*100))
 
             self.add_data_matrix(data_matrix)
         except OSError:
