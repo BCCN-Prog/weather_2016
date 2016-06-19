@@ -19,19 +19,19 @@ def enable_print():
     sys.stdout = sys.__stdout__
 
 class QueryEngine:
-    daily_params = ['date', 'site', 'station_id', 'high', 'low', 'midday', 'rain_chance', 'rain_amt',
+    daily_params = ['date', 'site', 'station_id', 'high', 'low', 'temperature', 'rain_chance', 'rain_amt',
     'cloud_cover', 'city_ID'] #only for example
     hourly_params = ['date']
     days_dict = {0:'Sunday', 1:'Monday', 2:'Tuesday', 3:'Wednesday', 4:'Thursday', 5:'Friday', 6:'Saturday'}
     days_backdict = {'Sunday':0, 'Monday':1, 'Tuesday':2, 'Wednesday':3, 'Thursday':4, 'Friday':5, 'Saturday':6}
 
 
-    def __init__(self, make_new=False):
+    def __init__(self, make_new=False, loading_path="../historic_csv"):
         self.daily = DataWrapH5py.Daily_DataBase(make_new=make_new)
         self.hourly = DataWrapH5py.Hourly_DataBase(make_new=make_new)
 
         if make_new == True:
-            self.daily.auto_csv()
+            self.daily.auto_csv(path=loading_path)
             #call hourly equivalent here
 
             self.daily.create_presorted(self.daily_params)
