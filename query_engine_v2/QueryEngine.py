@@ -73,7 +73,7 @@ class QueryEngine:
 
         return ind[lo_ind: hi_ind]
 
-    def smart_slice(self, dset, data_tuple, return_params, params, lower, upper, return_matrix=True, sort=None):
+    def smart_slice(self, dset, return_params, params, lower, upper, return_matrix=True, sort=None):
         '''
         Slices utilizing the presorted indices. By default, all categories are presorted.
         dset: string "hourly" or "daily" specifies the dataset, 
@@ -124,10 +124,9 @@ class QueryEngine:
         
         dset_names = ["{}_indices".format(params_intersect[i]) for i in range(len(params_intersect))]
 
-        if data_tuple is None:
-            data_tuple = (dset.f["weather_data"][:dset.f["metadata"][0]] ,dset.categories_dict)
+        #data_tuple = (dset.f["weather_data"][:dset.f["metadata"][0]] ,dset.categories_dict)
 
-        ret_cols = np.sort([data_tuple[1][key] for key in return_params])
+        ret_cols = np.sort([dset.categories_dict[key] for key in return_params])
 
         lo_ind = []
         hi_ind = []
