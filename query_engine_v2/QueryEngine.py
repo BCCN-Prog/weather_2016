@@ -73,7 +73,7 @@ class QueryEngine:
 
         return ind[lo_ind: hi_ind]
 
-    def smart_slice(self, dset, params, lower, upper, return_matrix=True, sort=None):
+    def smart_slice(self, dset, data_tuple, return_params, params, lower, upper, return_matrix=True, sort=None):
         '''
         Slices utilizing the presorted indices. By default, all categories are presorted.
         dset: string "hourly" or "daily" specifies the dataset, 
@@ -123,11 +123,16 @@ class QueryEngine:
         #modify this to support aliases of params by having dictionary of string to strings
         
         dset_names = ["{}_indices".format(params_intersect[i]) for i in range(len(params_intersect))]
-        
+
+        if data_tuple is None:
+            data_tuple = (dset.f["weather_data"][:dset.f["metadata"][0]] ,dset.categories_dict)
+
+        ret_cols = np.sort([data_tuple[1][key] for key in return_params])
+
         lo_ind = []
         hi_ind = []
         for i in range(len(params_intersect)):
-            s = dset.f["weather_data"][:][:,params_intersect_int[i]][dset.f[dset_names[i]]]
+            s = dset.f["weather_data"][:,params_intersect_int[i]][dset.f[dset_names[i]]]
             if(np.isnan(np.sum(s))):
                 s = s[:np.argmin(s)]
             #above line removes the nans if they exist in the array.
@@ -148,27 +153,29 @@ class QueryEngine:
             print("No matching entries.")
             return np.array([])
         
-        output = dset.f["weather_data"][:][ind]
+        #output = dset.f["weather_data"][:, ret_cols][ind]
+        output = dset.f["weather_data"][:][ind][:,ret_cols]
+        out_dict = {dset.params_dict[key]:i for i, key in enumerate(ret_cols)}
 
         if sort:
             if type(sort) == str:
-                s_ind = np.argsort(output[:][:,dset.categories_dict[sort]])
-                output = output[:][s_ind]
+                s_ind = np.argsort(output[:,dset.categories_dict[sort]])
+                output = output[s_ind]
             else:
                 temp = output
                 output = []
                 s_ind = []
                 for i in range(len(sort)):
-                    indices = np.argsort(temp[:][:,dset.categories_dict[sort[i]]])
-                    output.append(temp[:][indices])
+                    indices = np.argsort(temp[:,dset.categories_dict[sort[i]]])
+                    output.append(temp[indices])
                     s_ind.append(indices)
                 output = tuple(output)
                 s_ind = tuple(s_ind)
                 
         if return_matrix == True:
-            return output
+            return (output, out_dict)
         elif not sort:
-            return ind
+            return (ind, out_dict)
         else:
             print("return_matrix=False and sorting are not compatible.")
             return None
@@ -397,10 +404,8 @@ class QueryEngine:
         assert(data_matrix.shape[1] == len(dset.params_dict))
         assert(param < data_matrix.shape[1])
 
-        return np.amin(data_matrix[:][:,param]), np.amax(data_matrix[:][:,param])
+        return np.amin(data_matrix[:,param]), np.amax(data_matrix[:,param])
  
-        pass
-
     def get_dataset(self, dset):
         '''
         Gets the specified dataset, discarding unwritten rows.
@@ -435,7 +440,7 @@ class QueryEngine:
 
         endpoint = np.minimum(np.int64(dset.f["metadata"][0]), data.shape[0])
 
-        return data[:][:endpoint][:,category]     
+        return data[:endpoint,category]     
 
     def compute_weekday(self, date, return_int=False):
         '''
