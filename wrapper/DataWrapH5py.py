@@ -158,12 +158,14 @@ class DataBase:
         "date_indices" and "high_indices" which contain the sorted indices wrt to
         date and high.
         '''
+        print('Generating sorting indices...')
         params_int = [self.categories_dict[i] for i in params]
         for i in range(len(params)):
             ind = self.get_sort_indices(params_int[i])
             database_name = "{}_indices".format(params[i])
             #temp = self.f["weather_data"][:,params_int[i]][ind]
             self.f.create_dataset(database_name, data=ind)
+        print('done!')
 
             #also, watch out for nans
 
