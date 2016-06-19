@@ -124,8 +124,6 @@ class QueryEngine:
         
         dset_names = ["{}_indices".format(params_intersect[i]) for i in range(len(params_intersect))]
 
-        #data_tuple = (dset.f["weather_data"][:dset.f["metadata"][0]] ,dset.categories_dict)
-
         ret_cols = np.sort([dset.categories_dict[key] for key in return_params])
 
         lo_ind = []
@@ -405,7 +403,7 @@ class QueryEngine:
 
         return np.amin(data_matrix[:,param]), np.amax(data_matrix[:,param])
  
-    def get_dataset(self, dset):
+    def get_data(self, dset, data_tuple, return_params):
         '''
         Gets the specified dataset, discarding unwritten rows.
 
@@ -414,7 +412,15 @@ class QueryEngine:
         retuns: All written rows of the specified dataset, entry "weather_data".
         '''
         dset = self.dset_dict[dset]
-        return dset.f["weather_data"][:][:dset.f["metadata"][0]]
+        if data_tuple is None:
+            data_tuple = (dset.f["weather_data"][:][:dset.f["metadata"][0]], dset.categories_dict)
+        
+        ret_cols = np.sort([data_tuple[1][key] for key in return_params])
+        inv_dict = dict ( (v,k) for k, v in data_tuple[1].items() )
+        out_dict = {inv_dict[key]:i for i, key in enumerate(ret_cols)}
+
+        return (data_tuple[0][:,ret_cols], out_dict)
+            
         
 
     def get_category(self, dset, data, category):
