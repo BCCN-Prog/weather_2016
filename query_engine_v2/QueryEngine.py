@@ -21,7 +21,8 @@ def enable_print():
 class QueryEngine:
     daily_params = ['date', 'site', 'station_id', 'high', 'low', 'temperature', 'rain_chance', 'rain_amt',
     'cloud_cover', 'city_ID'] #only for example
-    hourly_params = ['date']
+    hourly_params = ['date', 'hour', 'site', 'geolocation', 'temperature', 'humidity', 'wind_speed', 'rain_chance', \
+                    'rain_amt', 'cloud_cover', 'city_ID']
     days_dict = {0:'Sunday', 1:'Monday', 2:'Tuesday', 3:'Wednesday', 4:'Thursday', 5:'Friday', 6:'Saturday'}
     days_backdict = {'Sunday':0, 'Monday':1, 'Tuesday':2, 'Wednesday':3, 'Thursday':4, 'Friday':5, 'Saturday':6}
 
@@ -32,12 +33,10 @@ class QueryEngine:
 
         if make_new == True:
             self.daily.auto_csv(path=loading_path)
-            #call hourly equivalent here
+            self.hourly.auto_csv(path=loading_path)
 
             self.daily.create_presorted(self.daily_params)
-            #self.hourly.create_presorted(self.hourly_params)
-            #above line does not work yet because hourly database does not
-            #have categories_dict yet
+            self.hourly.create_presorted(self.hourly_params)
     
         self.dset_dict = {"daily":self.daily, "hourly":self.hourly}
 
