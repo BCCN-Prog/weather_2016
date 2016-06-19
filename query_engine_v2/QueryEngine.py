@@ -178,7 +178,7 @@ class QueryEngine:
             return None
             
 
-    def sort(self, param, data_matrix, dset=None):
+    def sort(self, dset, param, data_tuple, return_params):
         '''
         Sorts any matrix wrt to one column.
 
@@ -191,28 +191,20 @@ class QueryEngine:
         returns: numpy array that is data_matrix sorted wrt to the column designated by
             param.
         '''
-        if type(param) == int:
-            assert(param < data_matrix.shape[1])
+        assert(type(param) == str)
 
-            if dset:
-                dset = self.dset_dict[dset]
-                endpoint = np.minimum(np.int64(dset.f["metadata"][0]), data_matrix.shape[0])
-            else:
-                endpoint = data_matrix.shape[0]
+        dset = self.dset_dict[dset]
+        param = dset.categories_dict[param]
+        endpoint = np.minimum(np.int64(dset.f["metadata"][0]), data_tuple[0].shape[0])
 
-            sort_ind = np.argsort(data_matrix[:][:endpoint][:,param])
-            return data_matrix[:][sort_ind]
+        sort_ind = np.argsort(data_tuple[0][:endpoint][:,param])
 
-        else:
-            assert(type(param) == str)
-            assert(dset != None)
-            dset = self.dset_dict[dset]
-            assert(data_matrix.shape[1] == len(dset.params_dict))
-            param = dset.categories_dict[param]
-            endpoint = np.minimum(np.int64(dset.f["metadata"][0]), data_matrix.shape[0])
+        ret_cols = np.sort([data_tuple[1][key] for key in return_params])
+        inv_dict = dict ( (v,k) for k, v in data_tuple[1].items() )
+        out_dict = {inv_dict[key]:i for i, key in enumerate(ret_cols)}
 
-            sort_ind = np.argsort(data_matrix[:][:endpoint][:,param])
-            return data_matrix[:][sort_ind]
+
+        return (data_tuple[0][:][sort_ind][:,ret_cols], out_dict)
 
     def n_days_in_month_of_year(self, month, year):
         '''
