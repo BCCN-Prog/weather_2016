@@ -272,7 +272,7 @@ class QueryEngine:
 
         return dates
 
-    def partition(self, dset, param, lo, hi, interval=0, slicing_params=None, lower_slice=None, upper_slice=None, sort=None):
+    def partition(self, dset, param, lo, hi, return_params, interval=0, slicing_params=None, lower_slice=None, upper_slice=None, sort=None):
         '''
         Partitions the dataset wrt. to a category, i.e. 
         q.partition("daily", "site", 0, 4) returns five matrices, the first of which contains
@@ -357,7 +357,7 @@ class QueryEngine:
             for i in iter_ind:
                 upper_slice.append(i)
                 lower_slice.append(i)
-                output.append(self.smart_slice(dset, slicing_params, lower_slice, upper_slice, sort=sort))
+                output.append(self.smart_slice(dset, return_params, slicing_params, lower_slice, upper_slice, sort=sort))
                 del(upper_slice[-1])
                 del(lower_slice[-1])
         else:
@@ -367,7 +367,7 @@ class QueryEngine:
                     lower_slice.append(i+0.0001)
                 else:
                     lower_slice.append(i)
-                output.append(self.smart_slice(dset, slicing_params, lower_slice, upper_slice, sort=sort))                    
+                output.append(self.smart_slice(dset, return_params, slicing_params, lower_slice, upper_slice, sort=sort))                    
                 del(lower_slice[-1])
                 del(upper_slice[-1])
 
