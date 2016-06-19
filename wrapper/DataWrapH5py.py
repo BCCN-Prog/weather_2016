@@ -309,9 +309,9 @@ class Hourly_DataBase(DataBase):
                     6:'wind_speed', 7:'rain_chance', 8:'rain_amt', 9:'cloud_cover', 10:'city_ID'}
     categories_dict = {'date':0, 'hour':1, 'site':2, 'geolocation':3, 'temperature':4, 'humidity':5, \
                     'wind_speed':6, 'rain_chance':7, 'rain_amt':8, 'cloud_cover':9, 'city_ID':10}
-    csv_dict = {'date':0, 'station_id':1, 'temperature':2, 'moisture':3, 'cloud_cover':4, \
+    csv_dict = {'date':0, 'station_id':1, 'temperature':2, 'humidity':3, 'cloud_cover':4, \
                 'rain_ind':5, 'rain_amt':6, 'air_pressure_red':7, 'air_pressure':8, 'wind_speed':9}
-    csv_backdict = {0:'date', 1:'station_id', 2:'temperature', 3:'moisture', 4:'cloud_cover', \
+    csv_backdict = {0:'date', 1:'station_id', 2:'temperature', 3:'humidity', 4:'cloud_cover', \
             5:'rain_ind', 6:'rain_amt', 7:'air_pressure_red', 8:'air_pressure', 9:'wind_speed'}
     sites_dict = {0:'The night', 1:'is dark', 2:'and full', 3:'of', 4:'terrors.'}
 
