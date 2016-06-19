@@ -143,7 +143,7 @@ class DataBase:
         inds = np.argsort(ordering_ints)
         
         print('Please wait, loading historical {} files...'.format(dset))
-        for f in glob.glob("./*_{}.csv".format(dset)):
+        for f in glob.glob("../historic_csv/{}_csv/*_{}.csv".format(dset, dset)):
             self.import_from_csv(f, usecols=usecols, n_miss=n_miss, inds=inds)
         print('done!')
 
