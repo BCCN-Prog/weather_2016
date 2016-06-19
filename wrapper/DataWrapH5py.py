@@ -125,7 +125,10 @@ class DataBase:
         except OSError:
             print('Corrupted file detected: ', file_name)
 
-    def auto_csv(self, dset):
+    def auto_csv(self, dset, path="../historic_csv"):
+        '''
+        path specifies the folder where we can find the two subfolders daily_csv and hourly_csv.
+        '''
         csv_keys = self.csv_dict.keys()
         cat_keys = self.categories_dict.keys()
         inters = csv_keys & cat_keys
@@ -143,7 +146,7 @@ class DataBase:
         inds = np.argsort(ordering_ints)
         
         print('Please wait, loading historical {} files...'.format(dset))
-        for f in glob.glob("../historic_csv/{}_csv/*_{}.csv".format(dset, dset)):
+        for f in glob.glob(path+"/{}_csv/*_{}.csv".format(dset, dset)):
             self.import_from_csv(f, usecols=usecols, n_miss=n_miss, inds=inds)
         print('done!')
 
@@ -225,8 +228,8 @@ class Daily_DataBase(DataBase):
         self.f["metadata"][1] = self.get_cur_datetime_int()
         self.f["metadata"][0] += 1 
     
-    def auto_csv(self):
-        DataBase.auto_csv(self, "daily")
+    def auto_csv(self, path="../historic_csv"):
+        DataBase.auto_csv(self, "daily", path=path)
 
     def save_dict(self, daily_dict):
 
@@ -310,8 +313,8 @@ class Hourly_DataBase(DataBase):
             5:'rain_ind', 6:'rain_amt', 7:'air_pressure_red', 8:'air_pressure', 9:'wind_speed'}
     sites_dict = {0:'The night', 1:'is dark', 2:'and full', 3:'of', 4:'terrors.'}
 
-    def auto_csv(self):
-        DataBase.auto_csv(self, "hourly")
+    def auto_csv(self, path="../historic_csv"):
+        DataBase.auto_csv(self, "hourly", path=path)
 
     def add_data_point(self, date, hour, site, station_id, temperature, humidity,
                        wind_speed, rain_chance, rain_amt, cloud_cover, city_ID):
