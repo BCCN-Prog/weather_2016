@@ -375,7 +375,7 @@ class QueryEngine:
 
         return output
         
-    def get_val_range(self, dset, param, data_matrix):
+    def get_val_range(self, dset, param, data_tuple):
         '''
         Computes the range of values in one category of a dataset-shaped matrix.
 
@@ -386,14 +386,12 @@ class QueryEngine:
         Returns: Tuple, first value being the lowest value encountered in specified category,
             second the highest.
         '''
-        assert(type(param) == int or type(param) == str)
+        assert(type(param) == str)
         dset = self.dset_dict[dset]
-        if type(param) == str:
-            param = dset.categories_dict[param]
-        assert(data_matrix.shape[1] == len(dset.params_dict))
-        assert(param < data_matrix.shape[1])
 
-        return np.amin(data_matrix[:,param]), np.amax(data_matrix[:,param])
+        col = data_tuple[1][param]
+
+        return np.nanmin(data_tuple[0][:,col]), np.nanmax(data_tuple[0][:,col])
  
     def get_data(self, dset, data_tuple, return_params):
         '''
