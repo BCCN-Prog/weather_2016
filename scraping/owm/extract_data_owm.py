@@ -22,15 +22,21 @@ def scrape(date, city, data_path):
     next_date = date_obj + datetime.timedelta(days=1)
     next_date_int = next_date.year * 10000 + next_date.month * 100 + next_date.day
     
+    # prediction time
+    file_name = get_filename(data_path, date, city)   
+    spl_fn = file_name.split('_')
+    prediction_time = int(spl_fn[3] + spl_fn[2] + spl_fn[1] + spl_fn[4] + spl_fn[5])
+    
     # scrape full data dictionary
     data_dict = {'site': 2, # owm id: 1
                 'city': city,
                 'date': dateInt,
+                'prediction_time': prediction_time,
                 'hourly': scrape_hourly(date, city, data_path, False),
                 'daily': scrape_daily(date, city, data_path)}
                 
     pp = pprint.PrettyPrinter(indent=2)
-    #pp.pprint(data_dict)
+    pp.pprint(data_dict)
     # run tests
     assert(tester.run_tests(data_dict))
     daily_db = wrapper.Daily_DataBase()
@@ -42,10 +48,11 @@ def scrape(date, city, data_path):
     data_dict = {'site': 2, # owm id: 1
                  'city': city,
                  'date': next_date_int,
+                 'prediction_time': prediction_time,
                  'hourly': scrape_hourly(date, city, data_path, True),
                  'daily': {}}
                     
-    #pp.pprint(data_dict)
+    pp.pprint(data_dict)
     assert(tester.run_tests(data_dict))
         
     hourly_db.save_dict(data_dict)
