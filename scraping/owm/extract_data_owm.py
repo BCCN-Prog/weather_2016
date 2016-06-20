@@ -28,7 +28,7 @@ def scrape(date, city, data_path):
     prediction_time = int(spl_fn[3] + spl_fn[2] + spl_fn[1] + spl_fn[4] + spl_fn[5])
     
     # scrape full data dictionary
-    data_dict = {'site': 2, # owm id: 1
+    data_dict = {'site': 2, # owm id: 2
                 'city': city,
                 'date': dateInt,
                 'prediction_time': prediction_time,
@@ -45,7 +45,7 @@ def scrape(date, city, data_path):
     hourly_db.save_dict(data_dict)
     
     # now get hourly forecast for the next day
-    data_dict = {'site': 2, # owm id: 1
+    data_dict = {'site': 2, # owm id: 2
                  'city': city,
                  'date': next_date_int,
                  'prediction_time': prediction_time,
