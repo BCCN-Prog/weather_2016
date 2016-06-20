@@ -375,7 +375,7 @@ class QueryEngine:
 
         return output
         
-    def get_val_range(self, dset, param, data_tuple):
+    def get_val_range(self, param, data_tuple):
         '''
         Computes the range of values in one category of a dataset-shaped matrix.
 
@@ -387,7 +387,6 @@ class QueryEngine:
             second the highest.
         '''
         assert(type(param) == str)
-        dset = self.dset_dict[dset]
 
         col = data_tuple[1][param]
 
@@ -414,17 +413,11 @@ class QueryEngine:
         
 
     def get_category(self, dset, data, category):
+        ####################DEPRECATED#########################
         '''
-        Gets the column for the specified category from the specified matrix with
-        shape[1] the same as the dataset's, discarding yet unwritten rows.
-
-        dset: "daily" or "hourly", specifies database data is derived from.
-        data: numpy array, the data from which the category is selected. Must have
-            the same number of columns as the dataset as specified by dset.
-        category: int or str, specifies the category or just column number
-            that is to be extracted.
-
-        returns: One column of data, as specified by category.
+        This function is deprecated, please don't use it anymore, I keep it here for now,
+        should something unforseen happen.
+        You can use get_data instead now, it does everything this function did and more.
         '''
         dset = self.dset_dict[dset]
         assert(type(category) == str or type(category) == int)
@@ -504,7 +497,7 @@ class QueryEngine:
             return np.vectorize(self.compute_weekday)
         return f()(date, return_ints)
 
-    def extract_weekdays(self, dset, days, data_matrix, lo_date=None, hi_date=None):
+    def extract_weekdays(self, dset, days, data_tuple, lo_date=None, hi_date=None):
         '''
         Extracts datapoints corresponding to a certain weekday or a list of such.
 
@@ -530,10 +523,10 @@ class QueryEngine:
             days = [days]
         days_int = [self.days_backdict[i] for i in days]
 
-        weekdays = self.compute_weekday_vectorized(data_matrix[:][:,0], return_ints=True)
+        weekdays = self.compute_weekday_vectorized(data_tuple[0][:,data_tuple[1]['date']], return_ints=True)
 
         inds = np.where(reduce(np.logical_or, [weekdays==i for i in days_int]))
-        return data_matrix[:][inds]
+        return (data_tuple[0][:][inds], data_tuple[1])
 
 
 
