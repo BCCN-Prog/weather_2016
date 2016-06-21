@@ -23,7 +23,9 @@ def scrape(date, city, data_path):
     next_date_int = next_date.year * 10000 + next_date.month * 100 + next_date.day
     
     # prediction time
-    file_name = get_filename(data_path, date, city)   
+    file_name = get_filename(data_path, date, city)
+    if file_name is None:
+        return
     spl_fn = file_name.split('_')
     prediction_time = int(spl_fn[3] + spl_fn[2] + spl_fn[1] + spl_fn[4] + spl_fn[5])
     
@@ -33,8 +35,7 @@ def scrape(date, city, data_path):
                 'date': dateInt,
                 'prediction_time': prediction_time,
                 'hourly': scrape_hourly(date, city, data_path, False),
-                'daily': scrape_daily(date, city, data_path)}
-                
+                'daily': scrape_daily(date, city, data_path)}     
 
     # run tests
     assert(tester.run_tests(data_dict))
