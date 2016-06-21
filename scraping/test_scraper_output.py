@@ -33,6 +33,10 @@ def test_top_level(data_dic):
     city = data_dic['city']
     assert(isinstance(city, str)),  "city name should be string"
     assert(city in cities_possible), "city should be one of possible cities"
+    # check for prediction_time
+    prediction_time = data_dic['prediction_time']       
+    assert(isinstance(prediction_time, int))
+    assert(prediction_time > 201603010000 and prediction_time < 201607312359)
     # check hourly and daily to be dicts
     test_format(data_dic['daily'])
     test_format(data_dic['hourly'])
@@ -43,7 +47,13 @@ def test_daily(data_dic):
     # get all the values
     days_dics = daily_dic.values()
     keys_required = ['high', 'low', 'rain_chance', 'rain_amt']
-
+    
+    # test keys format
+    for key in daily_dic.keys():
+        assert(isinstance(key, str))
+        assert(len(key) <= 2)
+        assert(0 <= int(key) <= 20), 'key is'.format(key)
+    
     # for every day
     for day_dic in days_dics:
         # day should be a dict again
@@ -81,6 +91,13 @@ def test_hourly(data_dic):
     hourly_dic = data_dic['hourly']
     hours_dics = hourly_dic.values()
     keys_required = ['temp', 'wind_speed', 'rain_chance', 'rain_amt', 'humidity']
+    
+    # test keys format
+    for key in hourly_dic.keys():
+        assert(isinstance(key, str))
+        assert(len(key) <= 2)
+        assert(0 <= int(key) < 25), 'key is'.format(key)  
+    
     # for every hour
     for hour_dic in hours_dics:
         # day should be a dict again
