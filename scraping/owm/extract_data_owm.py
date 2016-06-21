@@ -126,7 +126,7 @@ def scrape_daily(date, city, data_path):
     file_name = get_filename(data_path, date, city)
     dictionary = {}
     with open(file_name, encoding='utf-8') as html:
-        soup = BeautifulSoup(html, 'lxml')
+        soup = BeautifulSoup(html)
         table = soup.find(id='daily_list')
         tds = table.find_all('td')
         for i, td in enumerate(tds):
@@ -149,7 +149,7 @@ def scrape_hourly(date, city, data_path, next_day):
     file_name = get_filename(data_path, date, city)
     dictionary = {}
     with open(file_name, encoding='utf-8') as html:
-        soup = BeautifulSoup(html, 'lxml')
+        soup = BeautifulSoup(html)
             
         table = soup.find(id='hourly_long_list').find('table')
         trs = table.find_all('tr')
