@@ -31,14 +31,16 @@ def scrape (filename):
         dat = pickle.load(f)
         f.close()
     fnd, t_st, fl3 = get_data_from_fn (filename)
+    res1 = {}
     if ('hourly_forecast' in dat.keys()):
-        res = scrape_hourly (dat, t_st)
+        res, res1 = scrape_hourly (dat, t_st)
     elif ('forecast' in dat.keys()):
         res = scrape_daily (dat, t_st)
     else: raise Exception ('File data cannot be recognized')
     if not (res['date'] == fnd): raise Exception ('File name date and date of data not coherent')
     if not (res['city'][:3] == fl3): raise Exception ('File name locaction and location in data not coherent')
-    return res
+    if len(res1) == 0: return res
+    else: return [res1, res]
     
 
     
@@ -79,7 +81,8 @@ def scrape_daily (dat, t_st):
 def scrape_hourly (dat, t_st):  
     maxp = len(dat['hourly_forecast']) #gets amount of hourly data packages that are stored
     res = {}
-    if dat['hourly_forecast'][0]['FCTTIME']['mday_padded']<
+    res1 = {}
+
     res['site'] = 5 # weather underground has ID 5
     res['city'] = dat['location']['city']
     res['prediction_time'] = t_st
@@ -89,11 +92,24 @@ def scrape_hourly (dat, t_st):
     date = '{}{}{}'.format(year, month, day)
     res['date'] = int(date) #check for sanity here!
     res['hourly'] = {}
+    if (dat['hourly_forecast'][0]['FCTTIME']['mday_padded'] == dat['hourly_forecast'][maxp-1]['FCTTIME']['mday_padded']):
+        two_dicts = False
+    else: two_dicts = True   
+    if two_dicts: 
+        res1['site'] = 5 # weather underground has ID 5
+        res1['city'] = dat['location']['city']
+        res1['prediction_time'] = t_st
+        month = (dat['hourly_forecast'][maxp-1]['FCTTIME']['mon_padded'])
+        day = (dat['hourly_forecast'][maxp-1]['FCTTIME']['mday_padded'])
+        year = (dat['hourly_forecast'][maxp-1]['FCTTIME']['year'])
+        date = '{}{}{}'.format(year, month, day)
+        res1['date'] = int(date) #check for sanity here!
+        res1['hourly'] = {}
 
-    first_h = ['hourly_forecast'][0]['FCTTIME']['hour']
+    first_day = dat['hourly_forecast'][0]['FCTTIME']['mday_padded']
     for i in range(maxp):
         hr = {}
-        this_hr = ['hourly_forecast'][i]['FCTTIME']['hour']
+        this_hr = dat['hourly_forecast'][i]['FCTTIME']['hour']
         hr['temp'] = float(dat['hourly_forecast'][i]['temp']['metric'])
         if hr['temp'] > 50. or hr['temp'] < -20. : raise Exception ('temp (hourly) does not seem realistic')
         
@@ -109,15 +125,21 @@ def scrape_hourly (dat, t_st):
         hr['rain_chance'] = float(dat['hourly_forecast'][i]['pop'])
         if hr['rain_chance'] > 101. or hr['rain_chance'] < -1. : raise Exception ('Rain chance (hourly) does not seem realistic')
         hr['cloud_cover'] = float(dat['hourly_forecast'][i]['sky'])
-        res['hourly']["{}".format(str(i))] = hr
-    return res1, res2
+        if two_dicts:
+            if dat['hourly_forecast'][i]['FCTTIME']['mday_padded'] == first_day:
+                res['hourly']["{}".format(str(this_hr))] = hr
+            else:
+                res1['hourly']["{}".format(str(this_hr))] = hr
+        else:
+            res['hourly']["{}".format(str(i))] = hr
+    return res, res1
 
 if __name__ == '__main__':
     d = scrape('./ex_data/wunderground_08_06_2016_10_36_Berlin_10days.pkl')
     print ('done daily')
     h = scrape('./ex_data/wunderground_08_06_2016_10_36_Berlin_hourly.pkl')
-    print ('done daily')
-    #print (d)
+    print ('done hourly')
+    print (h)
         
     
     
