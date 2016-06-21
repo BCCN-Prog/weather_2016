@@ -42,22 +42,45 @@ def get_geo_locations(unique_coords=False):
     return coordinates
 
 
-def hexagon_map(coordinates, temperature, hex_grid_size=(50,50)):
+def hexagon_map(station_lon, station_lat, station_val, hex_grid_size=(50,50)):
+    """
+    Creates a map of values for different stations, using hexagons per station location.
+
+    Params:
+        station_lon (1D arrya): longitutes of station locations
+        station_lat (1D arrya): latitudes of station locations
+        station_val (1D arrya): values to plot per stations
+        hex_grid_size (tuple, optional): number of hexagons in x and y dimension
+    """
+
     m = Basemap(projection='tmerc', lat_0=51, lon_0=10, llcrnrlat=47, llcrnrlon=5, urcrnrlat=55, urcrnrlon=16, resolution='i')
     m.drawcoastlines()
     m.drawcountries()
     m.drawmapboundary()
-    lats = coordinates[:,0]
-    lons = coordinates[:,1]
-    x, y  = m(lons, lats)
-    m.hexbin(x, y, C = temperature, gridsize=hex_grid_size, linewidth=0.5, edgecolor='k')
+    x, y  = m(station_lon, station_lat)
+    m.hexbin(x, y, C = station_val, gridsize=hex_grid_size, linewidth=0.5, edgecolor='k')
     m.colorbar(location='bottom')
     plt.show()
 
 
-def interpolated_color_map(station_lon, station_lat, station_val, grid_dim=(80,110), interp='nn', cmap=None):#cm.s3pcpn):
+def interpolated_color_map(station_lon, station_lat, station_val, grid_dim=(80,110), interp='nn', return_figure=False):
+    """
+    Creates a map of values for different stations. The station location can be on an irregular grid,
+    for intermediate locations interpolation is used.
 
-    
+    Params:
+        station_lon (1D arrya): longitutes of station locations
+        station_lat (1D arrya): latitudes of station locations
+        station_val (1D arrya): values to plot per stations
+        grid_dim (tuple, optional):
+            number of interpolated data points in lon/lat dimension
+        interp ('nn' or 'linear', optional):
+            interpolation type, 'nn': Natgrid nearest neighbour interpolation method
+        return_figure (bool, optional):
+            weather or not to return the figure object, if True, plt.show() is not called
+    """
+
+
     # map boundries
     lat_0 = 51
     lat_min = 47
@@ -103,7 +126,10 @@ def interpolated_color_map(station_lon, station_lat, station_val, grid_dim=(80,1
 
     m.scatter(station_lon, station_lat, color='k', s=5, latlon=True)
    
-    plt.show()
+    if return_figure:
+        return plt.gcf()
+    else:
+        plt.show()
 
 def triangulation_map(station_lon, station_lat, station_val, cmap=None, *args, **kwargs):
     """ Using matplotlib.pyplot.tricontourf() function to plot contourplot on an irreguar grid by using triangulation. """
@@ -158,14 +184,14 @@ def get_test_scraping_data():
 def map_mvp():
     
     # SCRAPING
-    coordinates, values = get_test_scraping_data()
+    #coordinates, values = get_test_scraping_data()
 
     # HISTORIC
-#    coordinates = get_geo_locations(unique_coords=True)
-#    values = 20 * np.random.randn(coordinates.shape[0])
+    coordinates = get_geo_locations(unique_coords=True)
+    values = 20 * np.random.randn(coordinates.shape[0])
 
-    #hexagon_map(coordinates, temperature, hex_grid_size=(20,20))
-    interpolated_color_map(coordinates[:,0], coordinates[:,1], values)
+    hexagon_map(coordinates[:,0], coordinates[:,1], values, hex_grid_size=(5,5))
+    #interpolated_color_map(coordinates[:,0], coordinates[:,1], values, return_figure=False)
     #triangulation_map(coordinates[:,0], coordinates[:,1], temperature)
 
 if __name__ == '__main__':

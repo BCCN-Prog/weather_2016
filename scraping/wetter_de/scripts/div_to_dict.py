@@ -148,9 +148,13 @@ def scrape(base_dir):
     for html_name in os.listdir(IN_DIR):
         with open(IN_DIR + html_name) as html_fh:
             CITY = html_name.split('_')[-2]
-            DATE = int(('').join(html_name.split('_')[-5:-2][::-1]))
+            date_str = ('').join(html_name.split('_')[-5:-2][::-1])
+            DATE = int(date_str)
+            PRED_TIME = int(date_str + '0000')
+
             SAMPLE_TYPE = html_name.split('_')[-1].split('.')[0]
-            main_dict = {"site": SITE_ID, "city": CITY, "date": DATE, 'daily': {}, 'hourly': {}}
+            main_dict = {"site": SITE_ID, "city": CITY, "date": DATE,
+                         'daily': {}, 'hourly': {}, 'prediction_time': PRED_TIME}
 
             soup = BeautifulSoup(html_fh, from_encoding='utf-8')
 
@@ -184,4 +188,4 @@ def scrape(base_dir):
         os.rename(IN_DIR + html_name, OUT_DIR + html_name)
 
 if __name__ == '__main__':
-    scrape(os.getcwd() + '/output/', os.getcwd() + '/output/')
+    scrape(os.getcwd() + '/output/')

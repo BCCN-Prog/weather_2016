@@ -21,78 +21,65 @@ def enable_print():
 class QueryEngine:
     daily_params = ['date', 'site', 'station_id', 'high', 'low', 'temperature', 'rain_chance', 'rain_amt',
     'cloud_cover', 'city_ID'] #only for example
-    hourly_params = ['date', 'hour', 'site', 'geolocation', 'temperature', 'humidity', 'wind_speed', 'rain_chance', \
+    hourly_params = ['date', 'hour', 'site', 'station_id', 'temperature', 'humidity', 'wind_speed', 'rain_chance', \
                     'rain_amt', 'cloud_cover', 'city_ID']
     days_dict = {0:'Sunday', 1:'Monday', 2:'Tuesday', 3:'Wednesday', 4:'Thursday', 5:'Friday', 6:'Saturday'}
     days_backdict = {'Sunday':0, 'Monday':1, 'Tuesday':2, 'Wednesday':3, 'Thursday':4, 'Friday':5, 'Saturday':6}
 
 
-<<<<<<< HEAD
-    def __init__(self, day_db, hour_db, make_new=False):
-        self.daily = DataWrapH5py.Daily_DataBase(day_db, make_new=make_new)
-        self.hourly = DataWrapH5py.Hourly_DataBase(hour_db, make_new=make_new)
-=======
     def __init__(self, make_new=False, loading_path="../historic_csv"):
         self.daily = DataWrapH5py.Daily_DataBase(make_new=make_new)
         self.hourly = DataWrapH5py.Hourly_DataBase(make_new=make_new)
->>>>>>> f1da3338e646312b9ba218ab2eda3c1c38925e00
 
         if make_new == True:
             self.daily.auto_csv(path=loading_path)
             self.hourly.auto_csv(path=loading_path)
 
             self.daily.create_presorted(self.daily_params)
-<<<<<<< HEAD
-            #self.hourly.create_presorted(self.hourly_params)
-            #above line does not work yet because hourly database does not
-            #have categories_dict yet
-
-=======
             self.hourly.create_presorted(self.hourly_params)
     
->>>>>>> f1da3338e646312b9ba218ab2eda3c1c38925e00
         self.dset_dict = {"daily":self.daily, "hourly":self.hourly}
 
     def slice(self, dset, param, lower, upper):
         '''
         Function deprecated (nan handling), use smart_slice instead!
-
+        
         Function takes a dataset and a parameter and extracts all data where the parameter lies between lower and upper
-
+        
         dset: 'daily'/'hourly' --> so far only works for hourly (14.6.)
         param: <str>, category e.g. 'temp'
-        lower: Lower bound of parameter to be relevant for slicing (int or float) --> e.g. 10°C
-        upper:
-
+        lower: Lower bound of parameter to be relevant for slicing (int or float) --> e.g. 10°C 
+        upper: 
+        
         Problem (14.06.) with sorting
         '''
         dset = self.dset_dict[dset]
         param_int = dset.categories_dict[param]
-
+        
         ind = dset.get_sort_indices(param_int)
-
+        
         lo_ind = np.argmax(dset.f["weather_data"][:,param_int][ind] >= lower)
         hi_ind = np.argmin(dset.f["weather_data"][:,param_int][ind] <= upper) + 1
-
+        
         #nan handling!
 
         #return dset.f["weather_data"][:][ind][lo_ind:hi_ind]
 
         #the above line shlould not be used because the returned matrix could
-        #still be very large. Instead we are better of gathering all the
+        #still be very large. Instead we are better of gathering all the 
         #lower/upper indices first, computing their intersection and only then take a slice
-
-
+        
+        
 
         return ind[lo_ind: hi_ind]
 
     def smart_slice(self, dset, return_params, params, lower, upper, return_matrix=True, sort=None):
         '''
         Slices utilizing the presorted indices. By default, all categories are presorted.
-        dset: string "hourly" or "daily" specifies the dataset,
-        params: String or list of Strings for category/catebories involved in the slicing,
-        lower, upper: Lower und upper bounds for the categories specified in params. Must have same shape (number or list of umbers) and order as params.
-
+        dset: string "hourly" or "daily" specifies the dataset, 
+        params: String or list of Strings for category/catebories involved in the slicing, 
+        lower, upper: Lower und upper bounds for the categories specified in params. Must have same shape (number or list of umbers) and order as params. 
+        
     Returns:
         By default returns a matrix sliced according to the above criteria. If return_matrix==False,
         returns just the indices to be sliced by. This can be used to increase performance if the matrix
@@ -110,7 +97,7 @@ class QueryEngine:
         else:
             assert(len(params) == len(lower) and len(lower) == len(upper))
         #Accomodation for non-list arguments, checking if they are of the same length if the are lists
-
+        
         assert(sort == None or type(sort) == str or type(sort) == list)
 
         if dset == "daily":
@@ -119,7 +106,7 @@ class QueryEngine:
             sorted_params = self.hourly_params
 
         dset = self.dset_dict[dset]
-
+        
         p_unordered = [dset.categories_dict[params[i]] for i in range(len(params))]
         p_ordered = np.argsort(p_unordered)
         params = list(np.array(params)[p_ordered])
@@ -134,14 +121,11 @@ class QueryEngine:
         hi_intersect = np.array(upper)[hi_lo_indices]
         lo_intersect = np.array(lower)[hi_lo_indices]
         #modify this to support aliases of params by having dictionary of string to strings
-
+        
         dset_names = ["{}_indices".format(params_intersect[i]) for i in range(len(params_intersect))]
 
-<<<<<<< HEAD
-=======
         ret_cols = np.sort([dset.categories_dict[key] for key in return_params])
 
->>>>>>> f1da3338e646312b9ba218ab2eda3c1c38925e00
         lo_ind = []
         hi_ind = []
         for i in range(len(params_intersect)):
@@ -165,15 +149,10 @@ class QueryEngine:
         if not ind.size:
             print("No matching entries.")
             return np.array([])
-<<<<<<< HEAD
-
-        output = dset.f["weather_data"][:][ind]
-=======
         
         #output = dset.f["weather_data"][:, ret_cols][ind]
         output = dset.f["weather_data"][:][ind][:,ret_cols]
         out_dict = {dset.params_dict[key]:i for i, key in enumerate(ret_cols)}
->>>>>>> f1da3338e646312b9ba218ab2eda3c1c38925e00
 
         if sort:
             if type(sort) == str:
@@ -189,7 +168,7 @@ class QueryEngine:
                     s_ind.append(indices)
                 output = tuple(output)
                 s_ind = tuple(s_ind)
-
+                
         if return_matrix == True:
             return (output, out_dict)
         elif not sort:
@@ -197,7 +176,7 @@ class QueryEngine:
         else:
             print("return_matrix=False and sorting are not compatible.")
             return None
-
+            
 
     def sort(self, dset, param, data_tuple, return_params):
         '''
@@ -252,14 +231,14 @@ class QueryEngine:
         hi_month: int, upper bound of months.
         hi_day: int, upper bound of days.
 
-        Returns: list of ints, all dates within specified boundaries. (one int = YYYYMMDD)
+        Returns: list of ints, all dates within specified boundaries. (one int = YYYYMMDD) 
         '''
         assert(type(lo_year) == int and type(lo_month) == int and type(lo_day) == int and type(hi_year) == int \
                 and type(hi_month) == int and type(hi_day) == int)
 
         dates = []
         for i in range(lo_year, hi_year+1):
-            if i == lo_year:
+            if i == lo_year: 
                 l_month = lo_month
             else:
                 l_month = 1
@@ -280,33 +259,33 @@ class QueryEngine:
                     print(j,i)
                     block_print()
                 days = list(range(l_day,end+1))
-
+                                                                                                                                                                                                                                                        
                 if j/10 < 1:
                     str_month = str(0)+str(j)
                 else:
                     str_month = str(j)
                 str_year = str(i)
-
+                                                                                                                                                                                                                                                                                                                                                
                 str_days = [str(0)+str(day) if day/10<1 else str(day) for day in days]
-
+                                                                                                                                                                                                                                                                                                                                                                        
                 dates += [int(str_year+str_month+str(str_days[i])) for i in range(len(days))]
 
         return dates
 
     def partition(self, dset, param, lo, hi, return_params, interval=0, slicing_params=None, lower_slice=None, upper_slice=None, sort=None):
         '''
-        Partitions the dataset wrt. to a category, i.e.
+        Partitions the dataset wrt. to a category, i.e. 
         q.partition("daily", "site", 0, 4) returns five matrices, the first of which contains
         all data that has 0 as its entry for station_id, the second 1 and so on. In other words,
         this is all scraping data (as historical has index 5), partitioned by site index.
-
+        
         Instead of getting a matrix for every value, by setting interval to something other than
         0, it is possible partition the data with an interval of that size, i.e.
         q.partition("daily", "high", -10, 40, interval=10) gives us five matrices the first of which
         has all data where "high" is between -10 and 0 degrees, the second 0 and 10 and so on.
 
         It is also possible to slice the partitions additionally.
-        q.partition("daily", "high", -10, 40, interval=10,
+        q.partition("daily", "high", -10, 40, interval=10, 
         slicing_params=["date"], lower_slice=[19900101], upper_slice=[20000101])
         gives us again five matrices like in the previous example, but this time we only
         take datapoints where the date lies between 01.01.1990 and 01.01.2000.
@@ -317,7 +296,7 @@ class QueryEngine:
         param: str, parameter wrt. to wich we want to partition.
         lo: int or float, lower boundary for the values of the category param over which we partition.
         hi: int or float, upper boundary for the values of the category param over which we partition.
-        interval: int or float, If 0, a partition is created for each value within (lo,hi).
+        interval: int or float, If 0, a partition is created for each value within (lo,hi). 
         If not 0, specifies the size of the intervals, into which (lo,hi) is divided. For each
             of those, a partition is created then.
         slicing_params: List of strings which represent the parameters by which each of the
@@ -345,7 +324,7 @@ class QueryEngine:
             upper_slice = []
         if not lower_slice:
             lower_slice = []
-
+        
         if type(slicing_params) == list:
             assert(len(slicing_params) == len(upper_slice) and len(upper_slice) == len(lower_slice))
         else:
@@ -365,7 +344,7 @@ class QueryEngine:
                 print('''
                         Partitioning over multiple years or months is not supported yet
                         (and not a great idea from a performance standpoint). If you really
-                        need to, use n_days_in_month to compute the numbers of days in
+                        need to, use n_days_in_month to compute the numbers of days in 
                         the months and use multiple function calls. Support for this feature
                         may be implemented in the future. An empty list will be returned now.
                         ''' )
@@ -388,24 +367,15 @@ class QueryEngine:
                     lower_slice.append(i+0.0001)
                 else:
                     lower_slice.append(i)
-<<<<<<< HEAD
-                output.append(self.smart_slice(dset, slicing_params, lower_slice, upper_slice, sort=sort))
-=======
                 output.append(self.smart_slice(dset, return_params, slicing_params, lower_slice, upper_slice, sort=sort))                    
->>>>>>> f1da3338e646312b9ba218ab2eda3c1c38925e00
                 del(lower_slice[-1])
                 del(upper_slice[-1])
 
         enable_print()
 
         return output
-<<<<<<< HEAD
-
-    def get_val_range(self, dset, param, data_matrix):
-=======
         
     def get_val_range(self, param, data_tuple):
->>>>>>> f1da3338e646312b9ba218ab2eda3c1c38925e00
         '''
         Computes the range of values in one category of a dataset-shaped matrix.
 
@@ -418,13 +388,7 @@ class QueryEngine:
         '''
         assert(type(param) == str)
 
-<<<<<<< HEAD
-        return np.amin(data_matrix[:][:,param]), np.amax(data_matrix[:][:,param])
-
-        pass
-=======
         col = data_tuple[1][param]
->>>>>>> f1da3338e646312b9ba218ab2eda3c1c38925e00
 
         return np.nanmin(data_tuple[0][:,col]), np.nanmax(data_tuple[0][:,col])
  
@@ -437,10 +401,6 @@ class QueryEngine:
         retuns: All written rows of the specified dataset, entry "weather_data".
         '''
         dset = self.dset_dict[dset]
-<<<<<<< HEAD
-        return dset.f["weather_data"][:][:dset.f["metadata"][0]]
-
-=======
         if data_tuple is None:
             data_tuple = (dset.f["weather_data"][:][:dset.f["metadata"][0]], dset.categories_dict)
         
@@ -448,10 +408,9 @@ class QueryEngine:
         inv_dict = dict ( (v,k) for k, v in data_tuple[1].items() )
         out_dict = {inv_dict[key]:i for i, key in enumerate(ret_cols)}
 
-        return (data_tuple[0][:,ret_cols], out_dict)
+        return data_tuple[0][:,ret_cols]
             
         
->>>>>>> f1da3338e646312b9ba218ab2eda3c1c38925e00
 
     def get_category(self, dset, data, category):
         ####################DEPRECATED#########################
@@ -469,11 +428,7 @@ class QueryEngine:
 
         endpoint = np.minimum(np.int64(dset.f["metadata"][0]), data.shape[0])
 
-<<<<<<< HEAD
-        return data[:][:endpoint][:,category]
-=======
         return data[:endpoint,category]     
->>>>>>> f1da3338e646312b9ba218ab2eda3c1c38925e00
 
     def compute_weekday(self, date, return_int=False):
         '''
@@ -488,10 +443,10 @@ class QueryEngine:
         year = int(str(date)[:4])
         month = int(str(date)[4:6])
         day = int(str(date)[6:8])
-
+    
         year_ones = int(str(year)[2:4])
         year_hundreds = int(str(year)[:2])
-
+    
         n_1 = int(year_ones/12)
         n_2 = year_ones - n_1*12
         n_3 = int(n_2/4)
@@ -502,11 +457,11 @@ class QueryEngine:
         if year_hundreds == 20:
             anchor = 2
         n_5 = n_1 + n_2 + n_3 + anchor
-
+    
         doomsday = n_5 - (n_5%7)*7
-
+    
         days_in_month = [self.n_days_in_month_of_year(i, year) for i in range(1,13)]
-
+    
         if month == 12 and day == 12:
             if not return_int:
                 return self.days_dict[doomsday]
@@ -533,7 +488,7 @@ class QueryEngine:
                 return self.days_dict[(doomsday + (day - c_day) + 7)%7]
             else:
                 return (doomsday + (day - c_day) + 7)%7
-
+    
     def compute_weekday_vectorized(self, date, return_ints=False):
         '''
         Vectorized version of compute_weekday. For dosumentation, see there.

@@ -3,22 +3,31 @@
 import pprint
 import os
 import scrape_wetter_com as scraper
+from scrape_wetter_com import OKException
+import traceback
 
-data_path = '../data'
+data_path = 'some_wetter_com_data'
 processed_path = '../data/processed'
 
 # dates to process
-dates = ['30-05-2016']
+dates = ['02-05-2016']
 
 # list fo all cities we are scraping from
 cities = ["berlin"] # testing
 # cities = ["berlin", "hamburg", "munich",
-#             "cologne", "frankfurt", "stuttgart",
-#             "bremen", "leipzig", "hanover",
-#             "nuremberg", "dortmund", "dresden",
-#             "cassel", "kiel", "bielefeld",
-#             "saarbruecken", "rostock", "freiburg",
-#             "magdeburg", "erfurt"]
+#              "cologne", "frankfurt", "stuttgart",
+#              "bremen", "leipzig", "hanover",
+#              "nuremberg", "dortmund", "dresden",
+#              "kassel", "kiel", "bielefeld",
+#              "saarbruecken", "rostock", "freiburg",
+#              "magdeburg", "erfurt"]
+# cities_german = ["berlin", "muenchen",
+#              "koeln", "frankfurt", "stuttgart",
+#              "bremen", "leipzig", "hannover",
+#              "nuernberg", "dortmund", "dresden",
+#              "kassel", "kiel", "bielefeld",
+#              "saarbruecken", "rostock", "freiburg",
+#              "magdeburg", "erfurt"]
 
 processed_dates = []
 processed_cities = []
@@ -27,10 +36,11 @@ processed_cities = []
 for date in dates:
     for i,city in enumerate(cities):
         # make dict
-        data_dic = scraper.scrape(date, city)
-        pprint.pprint(data_dic)
-        processed_dates.append(date)
-        processed_cities.append(city)
+        try:
+            scraper.scrape(date, city, data_path)
+        except(OKException):
+            print(traceback.print_exc())
+
 
 # move processed files to 'processed' folder
 testing = True
