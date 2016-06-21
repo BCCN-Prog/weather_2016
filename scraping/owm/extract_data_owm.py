@@ -9,6 +9,7 @@ from itertools import product
 import test_scraper_output as tester
 import wrapper.DataWrapH5py as wrapper
 import pprint
+import datetime
 
 def scrape(date, city, data_path):
     """Scrape data for given date and city.
@@ -17,23 +18,44 @@ def scrape(date, city, data_path):
     """
     # get date id
     dateInt = int(date.split('_')[2] + date.split('_')[1] + date.split('_')[0])
+    date_obj = datetime.date(int(date.split('_')[2]), int(date.split('_')[1]), int(date.split('_')[0]))
+    next_date = date_obj + datetime.timedelta(days=1)
+    next_date_int = next_date.year * 10000 + next_date.month * 100 + next_date.day
+    
+    # prediction time
+    file_name = get_filename(data_path, date, city)   
+    spl_fn = file_name.split('_')
+    prediction_time = int(spl_fn[3] + spl_fn[2] + spl_fn[1] + spl_fn[4] + spl_fn[5])
+    
     # scrape full data dictionary
-    data_dict = {'site': 2, # owm id: 1
+    data_dict = {'site': 2, # owm id: 2
                 'city': city,
                 'date': dateInt,
-                'hourly': scrape_hourly(date, city, data_path),
+                'prediction_time': prediction_time,
+                'hourly': scrape_hourly(date, city, data_path, False),
                 'daily': scrape_daily(date, city, data_path)}
                 
-    #pp = pprint.PrettyPrinter(indent=4)
-    #pp.pprint(data_dict)
+    pp = pprint.PrettyPrinter(indent=2)
+    pp.pprint(data_dict)
     # run tests
     assert(tester.run_tests(data_dict))
-    #TODO add data to data base
     daily_db = wrapper.Daily_DataBase()
     hourly_db = wrapper.Hourly_DataBase()
     daily_db.save_dict(data_dict)
     hourly_db.save_dict(data_dict)
-    # return nothing
+    
+    # now get hourly forecast for the next day
+    data_dict = {'site': 2, # owm id: 2
+                 'city': city,
+                 'date': next_date_int,
+                 'prediction_time': prediction_time,
+                 'hourly': scrape_hourly(date, city, data_path, True),
+                 'daily': {}}
+                    
+    pp.pprint(data_dict)
+    assert(tester.run_tests(data_dict))
+        
+    hourly_db.save_dict(data_dict)
 
 
 def daily_high(tag):
@@ -100,13 +122,12 @@ def get_filename(data_path, date, city):
         if os.path.exists(name):
             return data_path + "owm_{}_{}_{}_{}.html".format(date, hour, minute, city)
 
+
 def scrape_daily(date, city, data_path):
     file_name = get_filename(data_path, date, city)
     dictionary = {}
     with open(file_name, encoding='utf-8') as html:
         soup = BeautifulSoup(html, 'lxml')
-    
-        # daily
         table = soup.find(id='daily_list')
         tds = table.find_all('td')
         for i, td in enumerate(tds):
@@ -120,54 +141,62 @@ def scrape_daily(date, city, data_path):
                 dictionary[day]['pressure'] = daily_pressure(td)
                 dictionary[day]['cloud_cover'] = daily_clouds(td)
                 dictionary[day]['wind_speed'] = daily_wind(td)
-                # TODO: remove mocked rain chance data
                 dictionary[day]['rain_chance'] = None
-                # TODO: maybe add rain amount data
                 dictionary[day]['rain_amt'] = None
-            
     return dictionary
 
-def scrape_hourly(date, city, data_path):
+
+def scrape_hourly(date, city, data_path, next_day):
     file_name = get_filename(data_path, date, city)
     dictionary = {}
     with open(file_name, encoding='utf-8') as html:
         soup = BeautifulSoup(html, 'lxml')
             
-        # hourly
         table = soup.find(id='hourly_long_list').find('table')
-        
         trs = table.find_all('tr')
         
-        day = None
-        index = 0      
+        day = 'today'
+        index = 0
+        first_index = -1
         
         for tr in trs:
+
             if ('class' in tr.attrs and tr.attrs['class'] == ['well']):
-                # TODO: handle day switch, probably call database side more than once
-                day = tr.find('b').string.strip()
                 continue
+
             if index == 0:
-                # TODO: how do I extract the time? It is somewhere in the tr.find('td') object
                 td = tr.find('td')
                 for child in td.children:
                     index = int(child.string.strip().split(':')[0])
                     break
-                
+                if first_index == -1:
+                    first_index = index
+            
+            if not next_day and index > 23:
+                break
+            
+            if next_day and day == 'today':
+                if index <= 23:
+                    index += 3
+                    continue
+                else:
+                    index = index - 24
+                    day = 'tomorrow'
+            
+            if day == 'tomorrow' and index > first_index:
+                break
+ 
             dictionary[index] = {}
             dictionary[index]['temp'] = hourly_temp(tr)
             dictionary[index]['pressure'] = hourly_pressure(tr)
             dictionary[index]['cloud_cover'] = hourly_clouds(tr)
             dictionary[index]['wind_speed'] = hourly_wind(tr)
-            # TODO: remove mocked rain chance data
             dictionary[index]['rain_chance'] = None
-            # TODO: maybe add rain amount data
             dictionary[index]['rain_amt'] = None
             dictionary[index]['humidity'] = hourly_humidity(tr)
             
             index += 3
-            if index > 27:
-                break
 
         return dictionary        
         
-#scrape('07_06_2016', 'berlin', 'output/')
+scrape('07_06_2016', 'berlin', 'output/')

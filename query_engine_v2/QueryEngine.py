@@ -19,26 +19,38 @@ def enable_print():
     sys.stdout = sys.__stdout__
 
 class QueryEngine:
-    daily_params = ['date', 'site', 'station_id', 'high', 'low', 'midday', 'rain_chance', 'rain_amt',
+    daily_params = ['date', 'site', 'station_id', 'high', 'low', 'temperature', 'rain_chance', 'rain_amt',
     'cloud_cover', 'city_ID'] #only for example
-    hourly_params = ['date']
+    hourly_params = ['date', 'hour', 'site', 'geolocation', 'temperature', 'humidity', 'wind_speed', 'rain_chance', \
+                    'rain_amt', 'cloud_cover', 'city_ID']
     days_dict = {0:'Sunday', 1:'Monday', 2:'Tuesday', 3:'Wednesday', 4:'Thursday', 5:'Friday', 6:'Saturday'}
     days_backdict = {'Sunday':0, 'Monday':1, 'Tuesday':2, 'Wednesday':3, 'Thursday':4, 'Friday':5, 'Saturday':6}
 
 
+<<<<<<< HEAD
     def __init__(self, day_db, hour_db, make_new=False):
         self.daily = DataWrapH5py.Daily_DataBase(day_db, make_new=make_new)
         self.hourly = DataWrapH5py.Hourly_DataBase(hour_db, make_new=make_new)
+=======
+    def __init__(self, make_new=False, loading_path="../historic_csv"):
+        self.daily = DataWrapH5py.Daily_DataBase(make_new=make_new)
+        self.hourly = DataWrapH5py.Hourly_DataBase(make_new=make_new)
+>>>>>>> f1da3338e646312b9ba218ab2eda3c1c38925e00
 
         if make_new == True:
-            self.daily.auto_csv()
-            #call hourly equivalent here
+            self.daily.auto_csv(path=loading_path)
+            self.hourly.auto_csv(path=loading_path)
 
             self.daily.create_presorted(self.daily_params)
+<<<<<<< HEAD
             #self.hourly.create_presorted(self.hourly_params)
             #above line does not work yet because hourly database does not
             #have categories_dict yet
 
+=======
+            self.hourly.create_presorted(self.hourly_params)
+    
+>>>>>>> f1da3338e646312b9ba218ab2eda3c1c38925e00
         self.dset_dict = {"daily":self.daily, "hourly":self.hourly}
 
     def slice(self, dset, param, lower, upper):
@@ -74,7 +86,7 @@ class QueryEngine:
 
         return ind[lo_ind: hi_ind]
 
-    def smart_slice(self, dset, params, lower, upper, return_matrix=True, sort=None):
+    def smart_slice(self, dset, return_params, params, lower, upper, return_matrix=True, sort=None):
         '''
         Slices utilizing the presorted indices. By default, all categories are presorted.
         dset: string "hourly" or "daily" specifies the dataset,
@@ -125,10 +137,15 @@ class QueryEngine:
 
         dset_names = ["{}_indices".format(params_intersect[i]) for i in range(len(params_intersect))]
 
+<<<<<<< HEAD
+=======
+        ret_cols = np.sort([dset.categories_dict[key] for key in return_params])
+
+>>>>>>> f1da3338e646312b9ba218ab2eda3c1c38925e00
         lo_ind = []
         hi_ind = []
         for i in range(len(params_intersect)):
-            s = dset.f["weather_data"][:][:,params_intersect_int[i]][dset.f[dset_names[i]]]
+            s = dset.f["weather_data"][:,params_intersect_int[i]][dset.f[dset_names[i]]]
             if(np.isnan(np.sum(s))):
                 s = s[:np.argmin(s)]
             #above line removes the nans if they exist in the array.
@@ -148,34 +165,41 @@ class QueryEngine:
         if not ind.size:
             print("No matching entries.")
             return np.array([])
+<<<<<<< HEAD
 
         output = dset.f["weather_data"][:][ind]
+=======
+        
+        #output = dset.f["weather_data"][:, ret_cols][ind]
+        output = dset.f["weather_data"][:][ind][:,ret_cols]
+        out_dict = {dset.params_dict[key]:i for i, key in enumerate(ret_cols)}
+>>>>>>> f1da3338e646312b9ba218ab2eda3c1c38925e00
 
         if sort:
             if type(sort) == str:
-                s_ind = np.argsort(output[:][:,dset.categories_dict[sort]])
-                output = output[:][s_ind]
+                s_ind = np.argsort(output[:,dset.categories_dict[sort]])
+                output = output[s_ind]
             else:
                 temp = output
                 output = []
                 s_ind = []
                 for i in range(len(sort)):
-                    indices = np.argsort(temp[:][:,dset.categories_dict[sort[i]]])
-                    output.append(temp[:][indices])
+                    indices = np.argsort(temp[:,dset.categories_dict[sort[i]]])
+                    output.append(temp[indices])
                     s_ind.append(indices)
                 output = tuple(output)
                 s_ind = tuple(s_ind)
 
         if return_matrix == True:
-            return output
+            return (output, out_dict)
         elif not sort:
-            return ind
+            return (ind, out_dict)
         else:
             print("return_matrix=False and sorting are not compatible.")
             return None
 
 
-    def sort(self, param, data_matrix, dset=None):
+    def sort(self, dset, param, data_tuple, return_params):
         '''
         Sorts any matrix wrt to one column.
 
@@ -188,28 +212,20 @@ class QueryEngine:
         returns: numpy array that is data_matrix sorted wrt to the column designated by
             param.
         '''
-        if type(param) == int:
-            assert(param < data_matrix.shape[1])
+        assert(type(param) == str)
 
-            if dset:
-                dset = self.dset_dict[dset]
-                endpoint = np.minimum(np.int64(dset.f["metadata"][0]), data_matrix.shape[0])
-            else:
-                endpoint = data_matrix.shape[0]
+        dset = self.dset_dict[dset]
+        param = dset.categories_dict[param]
+        endpoint = np.minimum(np.int64(dset.f["metadata"][0]), data_tuple[0].shape[0])
 
-            sort_ind = np.argsort(data_matrix[:][:endpoint][:,param])
-            return data_matrix[:][sort_ind]
+        sort_ind = np.argsort(data_tuple[0][:endpoint][:,param])
 
-        else:
-            assert(type(param) == str)
-            assert(dset != None)
-            dset = self.dset_dict[dset]
-            assert(data_matrix.shape[1] == len(dset.params_dict))
-            param = dset.categories_dict[param]
-            endpoint = np.minimum(np.int64(dset.f["metadata"][0]), data_matrix.shape[0])
+        ret_cols = np.sort([data_tuple[1][key] for key in return_params])
+        inv_dict = dict ( (v,k) for k, v in data_tuple[1].items() )
+        out_dict = {inv_dict[key]:i for i, key in enumerate(ret_cols)}
 
-            sort_ind = np.argsort(data_matrix[:][:endpoint][:,param])
-            return data_matrix[:][sort_ind]
+
+        return (data_tuple[0][:][sort_ind][:,ret_cols], out_dict)
 
     def n_days_in_month_of_year(self, month, year):
         '''
@@ -277,7 +293,7 @@ class QueryEngine:
 
         return dates
 
-    def partition(self, dset, param, lo, hi, interval=0, slicing_params=None, lower_slice=None, upper_slice=None, sort=None):
+    def partition(self, dset, param, lo, hi, return_params, interval=0, slicing_params=None, lower_slice=None, upper_slice=None, sort=None):
         '''
         Partitions the dataset wrt. to a category, i.e.
         q.partition("daily", "site", 0, 4) returns five matrices, the first of which contains
@@ -362,7 +378,7 @@ class QueryEngine:
             for i in iter_ind:
                 upper_slice.append(i)
                 lower_slice.append(i)
-                output.append(self.smart_slice(dset, slicing_params, lower_slice, upper_slice, sort=sort))
+                output.append(self.smart_slice(dset, return_params, slicing_params, lower_slice, upper_slice, sort=sort))
                 del(upper_slice[-1])
                 del(lower_slice[-1])
         else:
@@ -372,15 +388,24 @@ class QueryEngine:
                     lower_slice.append(i+0.0001)
                 else:
                     lower_slice.append(i)
+<<<<<<< HEAD
                 output.append(self.smart_slice(dset, slicing_params, lower_slice, upper_slice, sort=sort))
+=======
+                output.append(self.smart_slice(dset, return_params, slicing_params, lower_slice, upper_slice, sort=sort))                    
+>>>>>>> f1da3338e646312b9ba218ab2eda3c1c38925e00
                 del(lower_slice[-1])
                 del(upper_slice[-1])
 
         enable_print()
 
         return output
+<<<<<<< HEAD
 
     def get_val_range(self, dset, param, data_matrix):
+=======
+        
+    def get_val_range(self, param, data_tuple):
+>>>>>>> f1da3338e646312b9ba218ab2eda3c1c38925e00
         '''
         Computes the range of values in one category of a dataset-shaped matrix.
 
@@ -391,18 +416,19 @@ class QueryEngine:
         Returns: Tuple, first value being the lowest value encountered in specified category,
             second the highest.
         '''
-        assert(type(param) == int or type(param) == str)
-        dset = self.dset_dict[dset]
-        if type(param) == str:
-            param = dset.categories_dict[param]
-        assert(data_matrix.shape[1] == len(dset.params_dict))
-        assert(param < data_matrix.shape[1])
+        assert(type(param) == str)
 
+<<<<<<< HEAD
         return np.amin(data_matrix[:][:,param]), np.amax(data_matrix[:][:,param])
 
         pass
+=======
+        col = data_tuple[1][param]
+>>>>>>> f1da3338e646312b9ba218ab2eda3c1c38925e00
 
-    def get_dataset(self, dset):
+        return np.nanmin(data_tuple[0][:,col]), np.nanmax(data_tuple[0][:,col])
+ 
+    def get_data(self, dset, data_tuple, return_params):
         '''
         Gets the specified dataset, discarding unwritten rows.
 
@@ -411,21 +437,28 @@ class QueryEngine:
         retuns: All written rows of the specified dataset, entry "weather_data".
         '''
         dset = self.dset_dict[dset]
+<<<<<<< HEAD
         return dset.f["weather_data"][:][:dset.f["metadata"][0]]
 
+=======
+        if data_tuple is None:
+            data_tuple = (dset.f["weather_data"][:][:dset.f["metadata"][0]], dset.categories_dict)
+        
+        ret_cols = np.sort([data_tuple[1][key] for key in return_params])
+        inv_dict = dict ( (v,k) for k, v in data_tuple[1].items() )
+        out_dict = {inv_dict[key]:i for i, key in enumerate(ret_cols)}
+
+        return (data_tuple[0][:,ret_cols], out_dict)
+            
+        
+>>>>>>> f1da3338e646312b9ba218ab2eda3c1c38925e00
 
     def get_category(self, dset, data, category):
+        ####################DEPRECATED#########################
         '''
-        Gets the column for the specified category from the specified matrix with
-        shape[1] the same as the dataset's, discarding yet unwritten rows.
-
-        dset: "daily" or "hourly", specifies database data is derived from.
-        data: numpy array, the data from which the category is selected. Must have
-            the same number of columns as the dataset as specified by dset.
-        category: int or str, specifies the category or just column number
-            that is to be extracted.
-
-        returns: One column of data, as specified by category.
+        This function is deprecated, please don't use it anymore, I keep it here for now,
+        should something unforseen happen.
+        You can use get_data instead now, it does everything this function did and more.
         '''
         dset = self.dset_dict[dset]
         assert(type(category) == str or type(category) == int)
@@ -436,7 +469,11 @@ class QueryEngine:
 
         endpoint = np.minimum(np.int64(dset.f["metadata"][0]), data.shape[0])
 
+<<<<<<< HEAD
         return data[:][:endpoint][:,category]
+=======
+        return data[:endpoint,category]     
+>>>>>>> f1da3338e646312b9ba218ab2eda3c1c38925e00
 
     def compute_weekday(self, date, return_int=False):
         '''
@@ -505,7 +542,7 @@ class QueryEngine:
             return np.vectorize(self.compute_weekday)
         return f()(date, return_ints)
 
-    def extract_weekdays(self, dset, days, data_matrix, lo_date=None, hi_date=None):
+    def extract_weekdays(self, dset, days, data_tuple, lo_date=None, hi_date=None):
         '''
         Extracts datapoints corresponding to a certain weekday or a list of such.
 
@@ -531,10 +568,10 @@ class QueryEngine:
             days = [days]
         days_int = [self.days_backdict[i] for i in days]
 
-        weekdays = self.compute_weekday_vectorized(data_matrix[:][:,0], return_ints=True)
+        weekdays = self.compute_weekday_vectorized(data_tuple[0][:,data_tuple[1]['date']], return_ints=True)
 
         inds = np.where(reduce(np.logical_or, [weekdays==i for i in days_int]))
-        return data_matrix[:][inds]
+        return (data_tuple[0][:][inds], data_tuple[1])
 
 
 
