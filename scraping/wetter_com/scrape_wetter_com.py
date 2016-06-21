@@ -48,7 +48,8 @@ def scrape(date, city, data_path='../data'):
                     'city': city,
                     'date': dateIntTmr,
                     'hourly': hourly_tmr,
-                    'daily': {}}
+                    'daily': {},
+                    'prediction_time': timeInt}
     assert(tester.run_tests(data_dict_tmr)) # test scraper output
     # add hourly to data base
     hourly_db = wrapper.Hourly_DataBase()
@@ -377,6 +378,8 @@ def get_filename(dirpath, date, city, mode='hourly'):
     for f in filelist:
         if (date in f) and (city in f) and ( mode in f) and not('daily6' in f):
             path = f
+    if path==None:
+        raise(OKException('File not found: {}'.format(path)))
     return path
 
 def check_header(soup, city, mode='hourly'):
