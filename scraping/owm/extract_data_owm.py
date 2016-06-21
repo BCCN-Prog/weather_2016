@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from itertools import product
 import test_scraper_output as tester
 import wrapper.DataWrapH5py as wrapper
-#import pprint
+import pprint
 import datetime
 
 def scrape(date, city, data_path):
@@ -35,14 +35,16 @@ def scrape(date, city, data_path):
                 'hourly': scrape_hourly(date, city, data_path, False),
                 'daily': scrape_daily(date, city, data_path)}
                 
-    #pp = pprint.PrettyPrinter(indent=2)
-    #pp.pprint(data_dict)
+
     # run tests
     assert(tester.run_tests(data_dict))
     daily_db = wrapper.Daily_DataBase()
     hourly_db = wrapper.Hourly_DataBase()
     daily_db.save_dict(data_dict)
     hourly_db.save_dict(data_dict)
+    print('added the following dictionary to the DB:')
+    pp = pprint.PrettyPrinter(indent=2)
+    pp.pprint(data_dict)
     
     # now get hourly forecast for the next day
     data_dict = {'site': 2, # owm id: 2
@@ -53,9 +55,11 @@ def scrape(date, city, data_path):
                  'daily': {}}
                     
     #pp.pprint(data_dict)
-    assert(tester.run_tests(data_dict))
-        
+    assert(tester.run_tests(data_dict))  
     hourly_db.save_dict(data_dict)
+    print('added the following dictionary to the DB:')
+    pp = pprint.PrettyPrinter(indent=2)
+    pp.pprint(data_dict)
 
 
 def daily_high(tag):
