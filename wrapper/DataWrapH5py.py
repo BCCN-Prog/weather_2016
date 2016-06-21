@@ -88,7 +88,7 @@ class DataBase:
         '''
         assert(param < self.f["weather_data"].shape[1])
         return np.argsort(self.f["weather_data"][:self.f["metadata"][0], param])
-	#what if nan-->sorted to the end, keep in mind.
+	# what if nan-->sorted to the end, keep in mind.
 
     def create_presorted(self, params):
         '''
@@ -101,10 +101,10 @@ class DataBase:
         for i in range(len(params)):
             ind = self.get_sort_indices(params_int[i])
             database_name = "{}_indices".format(params[i])
-            #temp = self.f["weather_data"][:,params_int[i]][ind]
+            # temp = self.f["weather_data"][:, params_int[i]][ind]
             self.f.create_dataset(database_name, data=ind)
 
-            #also, watch out for nans
+            # also, watch out for nans
 
 class Daily_DataBase(DataBase):
     def __init__(self, db_name="daily_database.hdf5", make_new=False):
@@ -122,7 +122,8 @@ class Daily_DataBase(DataBase):
 
     params_dict = {0:'date', 1:'site', 2:'station_id', 3:'high', 4:'low', 5:'midday', \
                    6:'rain_chance', 7:'rain_amt', 8:'cloud_cover', 9:'city_ID', 10:'day'}
-    categories_dict = {'date':0, 'site':1, 'station_id':2,'high':3, 'low':4, 'midday':5, \
+
+    categories_dict = {'date':0, 'site':1, 'station_id':2, 'high':3, 'low':4, 'midday':5, \
                        'rain_chance':6, 'rain_amt':7, 'cloud_cover':8, 'city_ID':9, 'day':10}
 
     def add_data_point(self, date, site, day, station_id, high, low, midday,
@@ -160,7 +161,7 @@ class Daily_DataBase(DataBase):
         df = pd.read_csv(file_name, usecols=[2, 1, 10, 11, 14, 6])
 
         df = np.array(df.values)
-        site = np.ones((df.shape[0],1))*5
+        site = np.ones((df.shape[0], 1))*5
         midday = np.array([[np.nan] for i in range(df.shape[0])])
         rain_chance = np.array([[np.nan] for i in range(df.shape[0])])
         city_id = np.array([[np.nan] for i in range(df.shape[0])])
@@ -246,6 +247,12 @@ class Hourly_DataBase(DataBase):
                           categ_num_max=15,
                           make_new=make_new
                           )
+
+    params_dict = {0: 'date', 1: 'hour', 2: 'site', 3: 'station_id', 4: 'temperature', 5: 'humidity',
+                   6: 'wind_speed', 7: 'rain_chance', 8: 'rain_amt', 9: 'cloud_cover', 10: 'city_ID'}
+
+    categories_dict = {'date': 0, 'hour': 1, 'site': 2, 'station_id': 3, 'temperature': 4, 'humidity': 5,
+                       'wind_speed': 6, 'rain_chance': 7, 'rain_amt': 8, 'cloud_cover': 9, 'city_ID': 10}
 
     def add_data_point(self, date, hour, site, station_id, temperature, humidity,
                        wind_speed, rain_chance, rain_amt, cloud_cover, city_ID):
