@@ -18,7 +18,10 @@ def scrape(date, city, data_path):
     """
     # get date id
     dateInt = int(date.split('_')[2] + date.split('_')[1] + date.split('_')[0])
-    date_obj = datetime.date(int(date.split('_')[2]), int(date.split('_')[1]), int(date.split('_')[0]))
+    try:
+        date_obj = datetime.date(int(date.split('_')[2]), int(date.split('_')[1]), int(date.split('_')[0]))
+    except ValueError:
+        return
     next_date = date_obj + datetime.timedelta(days=1)
     next_date_int = next_date.year * 10000 + next_date.month * 100 + next_date.day
     
@@ -195,4 +198,4 @@ def scrape_hourly(date, city, data_path, next_day):
 
         return dictionary        
         
-#scrape('07_06_2016', 'berlin', 'output/')
+scrape('07_06_2016', 'berlin', 'output/')
