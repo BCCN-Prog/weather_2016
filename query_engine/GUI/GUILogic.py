@@ -3,6 +3,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys
 import gui
+from executor import *
 
 ListRecentDaily = ['Parameter1','Parameter2']
 ListRecentHourly = ['Parameter1','Parameter2']
@@ -47,8 +48,7 @@ class MainDialog(QDialog, gui.Ui_MainWindow):
         #get parameter and station (selected in drop-down menu)
         parameter = ui.ParametersList.currentText()
         station = ui.StationsList.currentText()
-        print("You have selected:", hourly_daily, recent_hist, parameter, station, StartingDateTime, EndingDateTime)
-        #parameters = 
+        get_data(hourly_daily, recent_hist, parameter, station, StartingDateTime, EndingDateTime)
     def RecentSelected(self):
         if ui.HourlyFlag.isChecked():
             ui.ParametersList.clear()
