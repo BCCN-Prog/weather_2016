@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from itertools import product
 import test_scraper_output as tester
 import wrapper.DataWrapH5py as wrapper
-import pprint
+#import pprint
 import datetime
 
 def scrape(date, city, data_path):
@@ -35,8 +35,8 @@ def scrape(date, city, data_path):
                 'hourly': scrape_hourly(date, city, data_path, False),
                 'daily': scrape_daily(date, city, data_path)}
                 
-    pp = pprint.PrettyPrinter(indent=2)
-    pp.pprint(data_dict)
+    #pp = pprint.PrettyPrinter(indent=2)
+    #pp.pprint(data_dict)
     # run tests
     assert(tester.run_tests(data_dict))
     daily_db = wrapper.Daily_DataBase()
@@ -52,7 +52,7 @@ def scrape(date, city, data_path):
                  'hourly': scrape_hourly(date, city, data_path, True),
                  'daily': {}}
                     
-    pp.pprint(data_dict)
+    #pp.pprint(data_dict)
     assert(tester.run_tests(data_dict))
         
     hourly_db.save_dict(data_dict)
@@ -186,9 +186,8 @@ def scrape_hourly(date, city, data_path, next_day):
             dictionary[idx_str]['rain_chance'] = None
             dictionary[idx_str]['rain_amt'] = None
             dictionary[idx_str]['humidity'] = hourly_humidity(tr)
-            
             index += 3
 
         return dictionary        
         
-scrape('07_06_2016', 'berlin', 'output/')
+#scrape('07_06_2016', 'berlin', 'output/')
