@@ -408,7 +408,7 @@ class QueryEngine:
         inv_dict = dict ( (v,k) for k, v in data_tuple[1].items() )
         out_dict = {inv_dict[key]:i for i, key in enumerate(ret_cols)}
 
-        return (data_tuple[0][:,ret_cols], out_dict)
+        return data_tuple[0][:,ret_cols]
             
         
 
