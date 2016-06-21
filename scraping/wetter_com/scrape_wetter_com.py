@@ -376,7 +376,7 @@ def get_filename(dirpath, date, city, mode='hourly'):
     path = None
     filelist = os.listdir(dirpath)
     for f in filelist:
-        if (date in f) and (city in f) and ( mode in f) and not('daily6' in f):
+        if ('wetter_com' in f) and (date in f) and (city in f) and ( mode in f) and not('daily6' in f):
             path = f
     if path==None:
         raise(OKException('File not found: {}'.format(path)))
