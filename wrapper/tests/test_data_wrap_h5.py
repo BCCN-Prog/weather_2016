@@ -25,7 +25,7 @@ class Test_DataBase(unittest.TestCase):
                         'cloud_cover': test_num, 'city_ID': test_num}
 
     daily_test_dict = {'date': test_num, 'site': test_num, 'station_id': test_num,
-                       'high': test_num, 'low': test_num, 'midday': test_num,
+                       'high': test_num, 'low': test_num, 'temperature': test_num,
                        'rain_chance': test_num, 'rain_amt': test_num,
                        'cloud_cover': test_num, 'city_ID': test_num, 'day': test_num}
 
