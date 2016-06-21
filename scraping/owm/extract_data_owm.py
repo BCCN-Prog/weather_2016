@@ -80,15 +80,6 @@ def daily_pressure(tag):
         if i < 2:
             continue
         return float(child.string.strip().split(',')[1].replace('hpa', '').strip())
-        
-def hourly_first_index(date, time):
-    print(date)
-    scrape_time = date.split('_')[1]
-    print(scrape_time)
-    hours = int(scrape_time.split(':')[0]), int(time.split(':')[0])
-    mins = int(scrape_time.split(':')[1])    
-    diff = hours[1] - hours[0]        
-    return diff if mins < 30 else diff - 1
 
 def hourly_time(tag):
     return list(tag.find('td').children)[0].strip()
@@ -185,15 +176,16 @@ def scrape_hourly(date, city, data_path, next_day):
             
             if day == 'tomorrow' and index > first_index:
                 break
- 
-            dictionary[index] = {}
-            dictionary[index]['temp'] = hourly_temp(tr)
-            dictionary[index]['pressure'] = hourly_pressure(tr)
-            dictionary[index]['cloud_cover'] = hourly_clouds(tr)
-            dictionary[index]['wind_speed'] = hourly_wind(tr)
-            dictionary[index]['rain_chance'] = None
-            dictionary[index]['rain_amt'] = None
-            dictionary[index]['humidity'] = hourly_humidity(tr)
+            
+            idx_str = str(index).zfill(2)
+            dictionary[idx_str] = {}
+            dictionary[idx_str]['temp'] = hourly_temp(tr)
+            dictionary[idx_str]['pressure'] = hourly_pressure(tr)
+            dictionary[idx_str]['cloud_cover'] = hourly_clouds(tr)
+            dictionary[idx_str]['wind_speed'] = hourly_wind(tr)
+            dictionary[idx_str]['rain_chance'] = None
+            dictionary[idx_str]['rain_amt'] = None
+            dictionary[idx_str]['humidity'] = hourly_humidity(tr)
             
             index += 3
 
