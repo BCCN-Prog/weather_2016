@@ -4,7 +4,7 @@ from PyQt4.QtGui import *
 import sys
 import gui
 sys.path.append('../query_engine_v2')
-from executor import get_data
+import executor as ex
 
 ListRecentDaily = ['Parameter1','Parameter2']
 ListRecentHourly = ['Parameter1','Parameter2']
@@ -15,6 +15,7 @@ class MainDialog(QDialog, gui.Ui_MainWindow):
 	
     def __init__(self, parent = None):
         super(MainDialog, self).__init__ (parent)
+
         
     def Initialize_Connections(self):
 
@@ -25,11 +26,13 @@ class MainDialog(QDialog, gui.Ui_MainWindow):
         QtCore.QObject.connect(ui.HourlyFlag, QtCore.SIGNAL("clicked()"), ui.HourlySelected)
         QtCore.QObject.connect(ui.DailyFlag, QtCore.SIGNAL("clicked()"), ui.DailySelected)
         ui.SubmitButton.released.connect(ui.Collect_Data)
+
         #ui.ExitButton.released.connect(QApplication.quit())
         #QtCore.QObject.connect(ui.ExitButton, SIGNAL(clicked()), SLOT(quit()))
     
     def Collect_Data(self):
-        
+        exec_ = ex.Executor()
+
         #Get Time
         StartingDateTime = str(ui.StartingDate.date().toPyDate())
         EndingDateTime = str(ui.EndingDate.date().toPyDate())
@@ -49,7 +52,7 @@ class MainDialog(QDialog, gui.Ui_MainWindow):
         #get parameter and station (selected in drop-down menu)
         parameter = ui.ParametersList.currentText()
         station = ui.StationsList.currentText()
-        get_data(hourly_daily, recent_hist, parameter, station, StartingDateTime, EndingDateTime)
+        exec_.get_data(hourly_daily, recent_hist, parameter, station, StartingDateTime, EndingDateTime)
     def RecentSelected(self):
         if ui.HourlyFlag.isChecked():
             ui.ParametersList.clear()
