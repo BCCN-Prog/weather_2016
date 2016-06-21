@@ -51,7 +51,7 @@ def test_daily(data_dic):
     # test keys format
     for key in daily_dic.keys():
         assert(isinstance(key, str))
-        assert(len(key) == 2)
+        assert(len(key) <= 2)
         assert(0 <= int(key) < 15), 'key is'.format(key)
     
     # for every day
@@ -95,7 +95,7 @@ def test_hourly(data_dic):
     # test keys format
     for key in hourly_dic.keys():
         assert(isinstance(key, str))
-        assert(len(key) == 2)
+        assert(len(key) <= 2)
         assert(0 <= int(key) < 25), 'key is'.format(key)  
     
     # for every hour
