@@ -44,8 +44,7 @@ def get_geo_locations(unique_coords=False):
 
 def hexagon_map(station_lon, station_lat, station_val, hex_grid_size=(50,50)):
     """
-    Creates a map of values for different stations. The station location can be on an irregular grid,
-    for intermediate locations interpolation is used.
+    Creates a map of values for different stations, using hexagons per station location.
 
     Params:
         station_lon (1D arrya): longitutes of station locations
