@@ -22,7 +22,11 @@ The to do list (number= priority)
     
 Some thing to ask David:
     Hints on what the presentation should be like?
-
+    
+Procedure to decide on what the reports are supposed to be:
+    Everyone should access the wiki and write down their ideas. If they are currently working on an implementation already this should be mentioned.
+    Claus and I will try to find a consensus and present and discuss it by the beginning of next time.
+    
 
 Stuff done:
     
@@ -41,6 +45,8 @@ GUI: (Wolfi, Rahul)
     --> On a basic level, we can get a query via the GUI and output a visualized map! 
     
 Jan: started working on a NLP bot
+
+
 
     
     
