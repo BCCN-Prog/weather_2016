@@ -33,6 +33,10 @@ def test_top_level(data_dic):
     city = data_dic['city']
     assert(isinstance(city, str)),  "city name should be string"
     assert(city in cities_possible), "city should be one of possible cities"
+    # check for prediction_time
+    prediction_time = data_dic['prediction_time']       
+    assert(isinstance(prediction_time, int))
+    assert(prediction_time > 201603010000 and prediction_time < 201607312359)
     # check hourly and daily to be dicts
     test_format(data_dic['daily'])
     test_format(data_dic['hourly'])
