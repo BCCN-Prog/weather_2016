@@ -40,6 +40,9 @@ def scrape(date, city, data_path):
                 'hourly': scrape_hourly(date, city, data_path, False),
                 'daily': scrape_daily(date, city, data_path)}     
 
+    if not data_dict['hourly'] or not data_dict['daily']:
+        return
+        
     # run tests
     assert(tester.run_tests(data_dict))
     daily_db = wrapper.Daily_DataBase()
@@ -57,7 +60,10 @@ def scrape(date, city, data_path):
                  'prediction_time': prediction_time,
                  'hourly': scrape_hourly(date, city, data_path, True),
                  'daily': {}}
-                    
+    
+    if not data_dict['hourly']:
+        return    
+    
     #pp.pprint(data_dict)
     assert(tester.run_tests(data_dict))  
     hourly_db.save_dict(data_dict)
@@ -152,6 +158,10 @@ def scrape_hourly(date, city, data_path, next_day):
         soup = BeautifulSoup(html)
             
         table = soup.find(id='hourly_long_list').find('table')
+
+        if table is None:
+            return {}
+        
         trs = table.find_all('tr')
         
         day = 'today'
@@ -198,4 +208,4 @@ def scrape_hourly(date, city, data_path, next_day):
 
         return dictionary        
         
-#scrape('07_06_2016', 'berlin', 'output/')
+scrape('07_06_2016', 'berlin', 'output/')
