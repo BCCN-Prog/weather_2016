@@ -6,6 +6,7 @@ import test_scraper_output as tester
 from itertools import product
 import os.path
 import wrapper.DataWrapH5py as wrapper
+import datetime
 
 def get_month(string):
     """ function extracting month from the string from the table, for date sanity check """
@@ -137,8 +138,16 @@ def scrape(file_date,city, data_path = ''):
         out_dict2['site'] = site
         out_dict2['prediction_time'] = int('{}{}{}'.format(date, ho, mi))
         out_dict2['city'] = city
-        date2 = date_temp.format(month, prepend_0_if_single_digit(str(int(b[-1])+1)))
-        out_dict2['date'] = int(date2) #forecast for the next day
+
+        try:
+            date_obj = datetime.date(2016, int(month), int(day))
+        except ValueError:
+            return
+        next_date = date_obj + datetime.timedelta(days=1)
+        next_date_int =int(date_temp.format(prepend_0_if_single_digit(str(next_date.month)),
+                                            prepend_0_if_single_digit(str(next_date.day))))
+        out_dict2['date'] = next_date_int #forecast for the next day
+
         for j, tr in enumerate(soup[1].find_all('tr')[2:-1]): #for every row in a table
             dict = {}
             #scraping from columns of the table except the first

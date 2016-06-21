@@ -76,7 +76,7 @@ def test_daily(data_dic):
         rain_amt = day_dic['rain_amt']
         # if data is missing (=None) then let the test pass
         if not(np.equal(high, None) or np.equal(low, None)):
-            assert(high>=low), "High is lower than low"
+            assert(high>=low), "High is lower than low high:{} low:{}".format(high, low)
         if not(np.equal(low, None)):
             assert(low >-60 and low <60), "Inplausible value for low: {}".format(low)
         if not(np.equal(high, None)):
