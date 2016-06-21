@@ -40,7 +40,7 @@ def scrape (filename):
     if not (res['date'] == fnd): raise Exception ('File name date and date of data not coherent')
     if not (res['city'][:3] == fl3): raise Exception ('File name locaction and location in data not coherent')
     if len(res1) == 0: return res
-    else: return [res1, res]
+    else: return [res, res1]
     
 
     
@@ -95,7 +95,8 @@ def scrape_hourly (dat, t_st):
     if (dat['hourly_forecast'][0]['FCTTIME']['mday_padded'] == dat['hourly_forecast'][maxp-1]['FCTTIME']['mday_padded']):
         two_dicts = False
     else: two_dicts = True   
-    if two_dicts: 
+    if two_dicts:
+        print('yiiha') 
         res1['site'] = 5 # weather underground has ID 5
         res1['city'] = dat['location']['city']
         res1['prediction_time'] = t_st
