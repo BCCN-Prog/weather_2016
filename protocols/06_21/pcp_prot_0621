@@ -1,0 +1,48 @@
+PCP Protocol 21.06.16
+
+Date fixation:
+    Presentation will be 19.07. at 13.30
+    Sessions before that: today, 28.06., 05.07., 11.07.
+    11.07. shall be exclusively focused on the presentation 
+    05.07. content-generating, but all basic functions should be done by then.
+    So today and next session all important functions should be implemented.
+    Note: this presentation collides with the MHBF presentations. We have to    take this into account, we cannot just
+
+
+The to do list (number= priority)
+    (1) Scrapers: debug (workload hard to estimate) --> Eren and all scrapers for themselves
+    (1) Query Engine: Greg, Georg, Claus, Wolfi, Rahul
+            Optimizing, Speeding Up
+            Getting Scraping Data
+            Writing Tests
+    (2) Report: Concretize. What shall we present?
+    (2) GUI: In accordance to the reports. Relies on working Query Engine
+    (2) Visualization: Relies both on Report and Query engine
+    (3) PDFs: How can we do PDF reports? Should maybe do background research and then talk to report group.
+    
+Some thing to ask David:
+    Hints on what the presentation should be like?
+
+
+Stuff done:
+    
+Scraping: 
+    Lot of debugging done
+    Claus, Alicjas, Gregs scraper works, Jans almost, Ines still pending but next time Greg will help)
+    
+Visualization:
+    Average temperature over time plotting (Filip)
+    Animation: ongoing, still some issues(Alicja)
+    Mapping function to have compatibility with GUI output
+    
+GUI: (Wolfi, Rahul)
+    can take parameters and extract from database (works for the historical daily so far, the other data should be similar)
+    
+    --> On a basic level, we can get a query via the GUI and output a visualized map! 
+    
+Jan: started working on a NLP bot
+
+    
+    
+    
+
