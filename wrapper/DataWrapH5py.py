@@ -108,7 +108,7 @@ class DataBase:
                 inds_str = [ordering_strs[i] for i in ordering_ints]
                 inds = np.argsort(ordering_ints)
 
-            
+
             df = np.asarray(pd.read_csv(file_name, usecols=usecols).values)
 
             blank = np.empty((df.shape[0], n_miss))
@@ -144,7 +144,7 @@ class DataBase:
         ordering_ints = [self.categories_dict[key] for key in ordering_strs]
         inds_str = [ordering_strs[i] for i in ordering_ints]
         inds = np.argsort(ordering_ints)
-        
+
         print('Please wait, loading historical {} files...'.format(dset))
         for f in glob.glob(path+"/{}_csv/*_{}.csv".format(dset, dset)):
             self.import_from_csv(f, usecols=usecols, n_miss=n_miss, inds=inds)
@@ -163,11 +163,11 @@ class DataBase:
         for i in range(len(params)):
             ind = self.get_sort_indices(params_int[i])
             database_name = "{}_indices".format(params[i])
-            #temp = self.f["weather_data"][:,params_int[i]][ind]
+            # temp = self.f["weather_data"][:, params_int[i]][ind]
             self.f.create_dataset(database_name, data=ind)
         print('done!')
 
-            #also, watch out for nans
+            # also, watch out for nans
 
 class Daily_DataBase(DataBase):
     def __init__(self, db_name="daily_database.hdf5", make_new=False):
@@ -228,8 +228,8 @@ class Daily_DataBase(DataBase):
 
 
         self.f["metadata"][1] = self.get_cur_datetime_int()
-        self.f["metadata"][0] += 1 
-    
+        self.f["metadata"][0] += 1
+
     def auto_csv(self, path="../historic_csv"):
         DataBase.auto_csv(self, "daily", path=path)
 
@@ -305,10 +305,11 @@ class Hourly_DataBase(DataBase):
                           make_new=make_new
                           )
 
-    params_dict = {0:'date', 1:'hour', 2:'site', 3:'geolocation', 4:'temperature', 5:'humidity', \
-            6:'wind_speed', 7:'rain_chance', 8:'rain_amt', 9:'cloud_cover', 10:'city_ID', 11:'station_id'}
-    categories_dict = {'date':0, 'hour':1, 'site':2, 'geolocation':3, 'temperature':4, 'humidity':5, \
-            'wind_speed':6, 'rain_chance':7, 'rain_amt':8, 'cloud_cover':9, 'city_ID':10, 'station_id':11}
+    params_dict = {0: 'date', 1: 'hour', 2: 'site', 3: 'station_id', 4: 'temperature', 5: 'humidity',
+                   6: 'wind_speed', 7: 'rain_chance', 8: 'rain_amt', 9: 'cloud_cover', 10: 'city_ID'}
+
+    categories_dict = {'date': 0, 'hour': 1, 'site': 2, 'station_id': 3, 'temperature': 4, 'humidity': 5,
+                       'wind_speed': 6, 'rain_chance': 7, 'rain_amt': 8, 'cloud_cover': 9, 'city_ID': 10}
     csv_dict = {'date':0, 'station_id':1, 'temperature':2, 'humidity':3, 'cloud_cover':4, \
                 'rain_ind':5, 'rain_amt':6, 'air_pressure_red':7, 'air_pressure':8, 'wind_speed':9}
     csv_backdict = {0:'date', 1:'station_id', 2:'temperature', 3:'humidity', 4:'cloud_cover', \
