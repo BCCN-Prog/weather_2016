@@ -29,7 +29,7 @@ def scrape(date, city, data_path):
     file_name = get_filename(data_path, date, city)
     if file_name is None:
         return
-    spl_fn = file_name.split('_')
+    spl_fn = file_name.split('/')[-1].split('_')
     prediction_time = int(spl_fn[3] + spl_fn[2] + spl_fn[1] + spl_fn[4] + spl_fn[5])
     
     # scrape full data dictionary
@@ -117,9 +117,9 @@ def get_filename(data_path, date, city):
     hours = [prepend_0_if_single_digit(str(i)) for i in range(24)]
     minutes = [prepend_0_if_single_digit(str(i)) for i in range(60)]    
     for hour, minute in product(hours,minutes):
-        name = data_path + "owm_{}_{}_{}_{}.html".format(date, hour, minute, city)
+        name = data_path + "/owm_{}_{}_{}_{}.html".format(date, hour, minute, city)
         if os.path.exists(name):
-            return data_path + "owm_{}_{}_{}_{}.html".format(date, hour, minute, city)
+            return data_path + "/owm_{}_{}_{}_{}.html".format(date, hour, minute, city)
 
 
 def scrape_daily(date, city, data_path):
@@ -198,4 +198,4 @@ def scrape_hourly(date, city, data_path, next_day):
 
         return dictionary        
         
-scrape('07_06_2016', 'berlin', 'output/')
+#scrape('07_06_2016', 'berlin', 'output/')
