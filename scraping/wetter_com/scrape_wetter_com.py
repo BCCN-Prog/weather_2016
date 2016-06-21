@@ -19,7 +19,8 @@ def scrape(date, city, data_path='../data'):
     """
     year, month, day = date.split('-')[2], date.split('-')[1], date.split('-')[0]
     dateInt = int(year + month + day)
-
+    # get the time stamp int
+    timeInt = get_timestamp(data_path, date, city)
     # the hourly scraping now returns to dicts: an additional one for some hours of the next day
     hourly_today, hourly_tmr = scrape_hourly(date, city, data_path)
 
@@ -28,7 +29,8 @@ def scrape(date, city, data_path='../data'):
                 'city': city,
                 'date': dateInt,
                 'hourly': hourly_today,
-                'daily': scrape_daily(date, city, data_path)}
+                'daily': scrape_daily(date, city, data_path),
+                'prediction_time': timeInt}
     assert(tester.run_tests(data_dict)) # test scraper output
     # add to data base
     daily_db = wrapper.Daily_DataBase()
@@ -345,12 +347,30 @@ def scrape_daily(date, city, data_path='../data'):
 
     return daily_dict
 
+def get_timestamp(dirpath, date, city):
+    """Extracts the time stamp from a file name.
+    :param dirpath: relative path to the data directory
+    :param date: date in the format 31-05-2016
+    :param city: city as string
+    :param mode: daily or hourly data
+    :return timeInt: the timestamp as int in the format YYYYMMDDHHMM
+    """
+    year, month, day = date.split('-')[2], date.split('-')[1], date.split('-')[0]
+    # for older downloads, there is no exacot time stamp. just set them to zero
+    path = get_filename(dirpath, date, city)
+    if len(path.split('_'))>5:
+        hour, minute, sec = path.split('_')[3], path.split('_')[4], path.split('_')[5]
+    else:
+        hour, minute, sec = '00', '00', '00'
+    return int(year + month + day + hour + minute)
+
 def get_filename(dirpath, date, city, mode='hourly'):
     """Looks up filename of the html file in dirpath for given date and city
     :param dirpath: relative path to the data directory
     :param date: date in the format 31-05-2016
     :param city: city as string
     :param mode: daily or hourly data
+    :return path: the path to the html file
     """
     path = None
     filelist = os.listdir(dirpath)
