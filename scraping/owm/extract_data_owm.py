@@ -50,8 +50,8 @@ def scrape(date, city, data_path):
         assert(tester.run_tests(data_dict))
     except AssertionError:
         print(traceback.print_exc())
-        pprint(data_dict)
-        pprint(file_name)
+        pp.pprint(data_dict)
+        print(file_name)
         return        
         
     daily_db = wrapper.Daily_DataBase()
@@ -222,4 +222,4 @@ def scrape_hourly(date, city, data_path, next_day):
 
         return dictionary        
         
-scrape('07_06_2016', 'berlin', 'output/')
+#scrape('06_06_2016', 'frankfurt', 'output')
