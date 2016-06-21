@@ -16,24 +16,26 @@ def get_data_from_fn (fn):
     day = fn[13:15]
     month = fn[16:18]
     year = fn[19:23]
+    hour = fn[24:26]
+    minute = fn[27:29]
     try:
         date = int('{}{}{}'.format(year, month, day))
+        t_st = int('{}{}{}{}{}'.format(year, month, day, hour, minute)) #timestamp
     except ValueError: print ('Filename must have changed, should start with wunderground_dd_mm_yyyy') 
     loc3 = fn[30:33] #first 3 location letters
-    return date,loc3
+    return date,t_st, loc3
     
 
 def scrape (filename):
     with open(filename, 'rb') as f:
         dat = pickle.load(f)
         f.close()
+    fnd, t_st, fl3 = get_data_from_fn (filename)
     if ('hourly_forecast' in dat.keys()):
-        res = scrape_hourly (dat)
+        res = scrape_hourly (dat, t_st)
     elif ('forecast' in dat.keys()):
-        res = scrape_daily (dat)
+        res = scrape_daily (dat, t_st)
     else: raise Exception ('File data cannot be recognized')
-    
-    fnd, fl3 = get_data_from_fn (filename)
     if not (res['date'] == fnd): raise Exception ('File name date and date of data not coherent')
     if not (res['city'][:3] == fl3): raise Exception ('File name locaction and location in data not coherent')
     return res
@@ -41,10 +43,11 @@ def scrape (filename):
 
     
     
-def scrape_daily (dat):
+def scrape_daily (dat, t_st):
     res = {}
     res['site'] = 5 # weather underground has ID 5
     res['city'] = dat['location']['city']
+    res['prediction_time'] = t_st
     datf = dat['forecast']['simpleforecast']['forecastday']
     month = str(datf[0]['date']['month'])
     if len (month)<2: month = '0' + month
@@ -73,19 +76,24 @@ def scrape_daily (dat):
     
     
 
-def scrape_hourly (dat):
+def scrape_hourly (dat, t_st):  
+    maxp = len(dat['hourly_forecast']) #gets amount of hourly data packages that are stored
     res = {}
+    if dat['hourly_forecast'][0]['FCTTIME']['mday_padded']<
     res['site'] = 5 # weather underground has ID 5
     res['city'] = dat['location']['city']
+    res['prediction_time'] = t_st
     month = (dat['hourly_forecast'][0]['FCTTIME']['mon_padded'])
     day = (dat['hourly_forecast'][0]['FCTTIME']['mday_padded'])
     year = (dat['hourly_forecast'][0]['FCTTIME']['year'])
     date = '{}{}{}'.format(year, month, day)
     res['date'] = int(date) #check for sanity here!
     res['hourly'] = {}
-    maxp = len(dat['hourly_forecast']) #modify this depending on how much and how the data shall be stored
+
+    first_h = ['hourly_forecast'][0]['FCTTIME']['hour']
     for i in range(maxp):
         hr = {}
+        this_hr = ['hourly_forecast'][i]['FCTTIME']['hour']
         hr['temp'] = float(dat['hourly_forecast'][i]['temp']['metric'])
         if hr['temp'] > 50. or hr['temp'] < -20. : raise Exception ('temp (hourly) does not seem realistic')
         
@@ -102,7 +110,7 @@ def scrape_hourly (dat):
         if hr['rain_chance'] > 101. or hr['rain_chance'] < -1. : raise Exception ('Rain chance (hourly) does not seem realistic')
         hr['cloud_cover'] = float(dat['hourly_forecast'][i]['sky'])
         res['hourly']["{}".format(str(i))] = hr
-    return res
+    return res1, res2
 
 if __name__ == '__main__':
     d = scrape('./ex_data/wunderground_08_06_2016_10_36_Berlin_10days.pkl')
