@@ -25,7 +25,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(359, 639)
+        MainWindow.resize(360, 639)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.verticalLayoutWidget = QtGui.QWidget(self.centralwidget)
@@ -293,9 +293,15 @@ class Ui_MainWindow(object):
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipText, brush)
         self.textBrowser.setPalette(palette)
         self.textBrowser.setObjectName(_fromUtf8("textBrowser"))
+        self.label = QtGui.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(30, 30, 61, 41))
+        self.label.setText(_fromUtf8(""))
+        self.label.setPixmap(QtGui.QPixmap(_fromUtf8("../../../../Schreibtisch/weather.png")))
+        self.label.setScaledContents(True)
+        self.label.setObjectName(_fromUtf8("label"))
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 359, 25))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 360, 25))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuQuery_Engine = QtGui.QMenu(self.menubar)
         self.menuQuery_Engine.setObjectName(_fromUtf8("menuQuery_Engine"))
@@ -313,6 +319,18 @@ class Ui_MainWindow(object):
         QtCore.QObject.connect(self.HourlyFlag, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.SubmitButton.setEnabled)
         QtCore.QObject.connect(self.DailyFlag, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.SubmitButton.setEnabled)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        MainWindow.setTabOrder(self.HourlyFlag, self.DailyFlag)
+        MainWindow.setTabOrder(self.DailyFlag, self.HistoricalFlag)
+        MainWindow.setTabOrder(self.HistoricalFlag, self.RecentFlag)
+        MainWindow.setTabOrder(self.RecentFlag, self.StationsList)
+        MainWindow.setTabOrder(self.StationsList, self.StartingDate)
+        MainWindow.setTabOrder(self.StartingDate, self.StartingTime)
+        MainWindow.setTabOrder(self.StartingTime, self.EndingDate)
+        MainWindow.setTabOrder(self.EndingDate, self.EndingTime)
+        MainWindow.setTabOrder(self.EndingTime, self.ParametersList)
+        MainWindow.setTabOrder(self.ParametersList, self.SubmitButton)
+        MainWindow.setTabOrder(self.SubmitButton, self.ExitButton)
+        MainWindow.setTabOrder(self.ExitButton, self.textBrowser)
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "Awesome Query Engine", None))
@@ -342,7 +360,8 @@ class Ui_MainWindow(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Ubuntu\'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Welcome to BCCN\'s <span style=\" font-weight:600;\">Awesome Weather App!</span></p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Welcome to BCCN\'s </p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Awesome Weather App!</span></p>\n"
 "<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
 "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">State your desires and we\'ll se what you can do for you</p></body></html>", None))
         self.menuQuery_Engine.setTitle(_translate("MainWindow", "Query Engine", None))

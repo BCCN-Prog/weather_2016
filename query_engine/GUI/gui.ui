@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>359</width>
+    <width>360</width>
     <height>639</height>
    </rect>
   </property>
@@ -743,9 +743,29 @@
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Welcome to BCCN's &lt;span style=&quot; font-weight:600;&quot;&gt;Awesome Weather App!&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Welcome to BCCN's &lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Awesome Weather App!&lt;/span&gt;&lt;/p&gt;
 &lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;State your desires and we'll se what you can do for you&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>30</y>
+      <width>61</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>../../../../Schreibtisch/weather.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>
@@ -754,7 +774,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>359</width>
+     <width>360</width>
      <height>25</height>
     </rect>
    </property>
@@ -767,6 +787,21 @@ p, li { white-space: pre-wrap; }
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <tabstops>
+  <tabstop>HourlyFlag</tabstop>
+  <tabstop>DailyFlag</tabstop>
+  <tabstop>HistoricalFlag</tabstop>
+  <tabstop>RecentFlag</tabstop>
+  <tabstop>StationsList</tabstop>
+  <tabstop>StartingDate</tabstop>
+  <tabstop>StartingTime</tabstop>
+  <tabstop>EndingDate</tabstop>
+  <tabstop>EndingTime</tabstop>
+  <tabstop>ParametersList</tabstop>
+  <tabstop>SubmitButton</tabstop>
+  <tabstop>ExitButton</tabstop>
+  <tabstop>textBrowser</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
@@ -776,12 +811,12 @@ p, li { white-space: pre-wrap; }
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>60</x>
-     <y>176</y>
+     <x>62</x>
+     <y>213</y>
     </hint>
     <hint type="destinationlabel">
-     <x>60</x>
-     <y>225</y>
+     <x>62</x>
+     <y>282</y>
     </hint>
    </hints>
   </connection>
@@ -792,12 +827,12 @@ p, li { white-space: pre-wrap; }
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>110</x>
-     <y>174</y>
+     <x>112</x>
+     <y>213</y>
     </hint>
     <hint type="destinationlabel">
-     <x>202</x>
-     <y>236</y>
+     <x>307</x>
+     <y>282</y>
     </hint>
    </hints>
   </connection>
@@ -808,12 +843,12 @@ p, li { white-space: pre-wrap; }
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>190</x>
-     <y>176</y>
+     <x>307</x>
+     <y>213</y>
     </hint>
     <hint type="destinationlabel">
-     <x>96</x>
-     <y>227</y>
+     <x>98</x>
+     <y>282</y>
     </hint>
    </hints>
   </connection>
@@ -824,12 +859,12 @@ p, li { white-space: pre-wrap; }
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>222</x>
-     <y>172</y>
+     <x>307</x>
+     <y>213</y>
     </hint>
     <hint type="destinationlabel">
-     <x>224</x>
-     <y>224</y>
+     <x>307</x>
+     <y>282</y>
     </hint>
    </hints>
   </connection>
@@ -840,12 +875,12 @@ p, li { white-space: pre-wrap; }
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>54</x>
-     <y>234</y>
+     <x>62</x>
+     <y>282</y>
     </hint>
     <hint type="destinationlabel">
      <x>64</x>
-     <y>538</y>
+     <y>563</y>
     </hint>
    </hints>
   </connection>
@@ -856,12 +891,12 @@ p, li { white-space: pre-wrap; }
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>170</x>
-     <y>227</y>
+     <x>298</x>
+     <y>282</y>
     </hint>
     <hint type="destinationlabel">
      <x>119</x>
-     <y>539</y>
+     <y>564</y>
     </hint>
    </hints>
   </connection>

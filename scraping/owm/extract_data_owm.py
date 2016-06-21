@@ -18,13 +18,18 @@ def scrape(date, city, data_path):
     """
     # get date id
     dateInt = int(date.split('_')[2] + date.split('_')[1] + date.split('_')[0])
-    date_obj = datetime.date(int(date.split('_')[2]), int(date.split('_')[1]), int(date.split('_')[0]))
+    try:
+        date_obj = datetime.date(int(date.split('_')[2]), int(date.split('_')[1]), int(date.split('_')[0]))
+    except ValueError:
+        return
     next_date = date_obj + datetime.timedelta(days=1)
     next_date_int = next_date.year * 10000 + next_date.month * 100 + next_date.day
     
     # prediction time
-    file_name = get_filename(data_path, date, city)   
-    spl_fn = file_name.split('_')
+    file_name = get_filename(data_path, date, city)
+    if file_name is None:
+        return
+    spl_fn = file_name.split('/')[-1].split('_')
     prediction_time = int(spl_fn[3] + spl_fn[2] + spl_fn[1] + spl_fn[4] + spl_fn[5])
     
     # scrape full data dictionary
@@ -33,16 +38,20 @@ def scrape(date, city, data_path):
                 'date': dateInt,
                 'prediction_time': prediction_time,
                 'hourly': scrape_hourly(date, city, data_path, False),
-                'daily': scrape_daily(date, city, data_path)}
-                
-    pp = pprint.PrettyPrinter(indent=2)
-    pp.pprint(data_dict)
+                'daily': scrape_daily(date, city, data_path)}     
+
+    if not data_dict['hourly'] or not data_dict['daily']:
+        return
+        
     # run tests
     assert(tester.run_tests(data_dict))
     daily_db = wrapper.Daily_DataBase()
     hourly_db = wrapper.Hourly_DataBase()
     daily_db.save_dict(data_dict)
     hourly_db.save_dict(data_dict)
+    print('added the following dictionary to the DB:')
+    pp = pprint.PrettyPrinter(indent=2)
+    pp.pprint(data_dict)
     
     # now get hourly forecast for the next day
     data_dict = {'site': 2, # owm id: 2
@@ -51,11 +60,16 @@ def scrape(date, city, data_path):
                  'prediction_time': prediction_time,
                  'hourly': scrape_hourly(date, city, data_path, True),
                  'daily': {}}
-                    
-    pp.pprint(data_dict)
-    assert(tester.run_tests(data_dict))
-        
+    
+    if not data_dict['hourly']:
+        return    
+    
+    #pp.pprint(data_dict)
+    assert(tester.run_tests(data_dict))  
     hourly_db.save_dict(data_dict)
+    print('added the following dictionary to the DB:')
+    pp = pprint.PrettyPrinter(indent=2)
+    pp.pprint(data_dict)
 
 
 def daily_high(tag):
@@ -80,15 +94,6 @@ def daily_pressure(tag):
         if i < 2:
             continue
         return float(child.string.strip().split(',')[1].replace('hpa', '').strip())
-        
-def hourly_first_index(date, time):
-    print(date)
-    scrape_time = date.split('_')[1]
-    print(scrape_time)
-    hours = int(scrape_time.split(':')[0]), int(time.split(':')[0])
-    mins = int(scrape_time.split(':')[1])    
-    diff = hours[1] - hours[0]        
-    return diff if mins < 30 else diff - 1
 
 def hourly_time(tag):
     return list(tag.find('td').children)[0].strip()
@@ -118,16 +123,16 @@ def get_filename(data_path, date, city):
     hours = [prepend_0_if_single_digit(str(i)) for i in range(24)]
     minutes = [prepend_0_if_single_digit(str(i)) for i in range(60)]    
     for hour, minute in product(hours,minutes):
-        name = data_path + "owm_{}_{}_{}_{}.html".format(date, hour, minute, city)
+        name = data_path + "/owm_{}_{}_{}_{}.html".format(date, hour, minute, city)
         if os.path.exists(name):
-            return data_path + "owm_{}_{}_{}_{}.html".format(date, hour, minute, city)
+            return data_path + "/owm_{}_{}_{}_{}.html".format(date, hour, minute, city)
 
 
 def scrape_daily(date, city, data_path):
     file_name = get_filename(data_path, date, city)
     dictionary = {}
     with open(file_name, encoding='utf-8') as html:
-        soup = BeautifulSoup(html, 'lxml')
+        soup = BeautifulSoup(html)
         table = soup.find(id='daily_list')
         tds = table.find_all('td')
         for i, td in enumerate(tds):
@@ -150,9 +155,13 @@ def scrape_hourly(date, city, data_path, next_day):
     file_name = get_filename(data_path, date, city)
     dictionary = {}
     with open(file_name, encoding='utf-8') as html:
-        soup = BeautifulSoup(html, 'lxml')
+        soup = BeautifulSoup(html)
             
         table = soup.find(id='hourly_long_list').find('table')
+
+        if table is None:
+            return {}
+        
         trs = table.find_all('tr')
         
         day = 'today'
@@ -185,16 +194,16 @@ def scrape_hourly(date, city, data_path, next_day):
             
             if day == 'tomorrow' and index > first_index:
                 break
- 
-            dictionary[index] = {}
-            dictionary[index]['temp'] = hourly_temp(tr)
-            dictionary[index]['pressure'] = hourly_pressure(tr)
-            dictionary[index]['cloud_cover'] = hourly_clouds(tr)
-            dictionary[index]['wind_speed'] = hourly_wind(tr)
-            dictionary[index]['rain_chance'] = None
-            dictionary[index]['rain_amt'] = None
-            dictionary[index]['humidity'] = hourly_humidity(tr)
             
+            idx_str = str(index).zfill(2)
+            dictionary[idx_str] = {}
+            dictionary[idx_str]['temp'] = hourly_temp(tr)
+            dictionary[idx_str]['pressure'] = hourly_pressure(tr)
+            dictionary[idx_str]['cloud_cover'] = hourly_clouds(tr)
+            dictionary[idx_str]['wind_speed'] = hourly_wind(tr)
+            dictionary[idx_str]['rain_chance'] = None
+            dictionary[idx_str]['rain_amt'] = None
+            dictionary[idx_str]['humidity'] = hourly_humidity(tr)
             index += 3
 
         return dictionary        
