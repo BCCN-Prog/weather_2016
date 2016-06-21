@@ -1,4 +1,4 @@
-import h6py
+import h5py
 import datetime
 import pandas as pd
 import numpy as np
@@ -171,7 +171,7 @@ class DataBase:
 
 class Daily_DataBase(DataBase):
     def __init__(self, db_name="daily_database.hdf5", make_new=False):
-        daily_categories = ['date', 'site', 'station_id', 'high', 'low', 'midday',
+        daily_categories = ['date', 'site', 'station_id', 'high', 'low', 'temperature',
                             'rain_chance', 'rain_amt', 'cloud_cover', 'city_ID', 'day']
 
         DataBase.__init__(self,
@@ -185,8 +185,7 @@ class Daily_DataBase(DataBase):
 
     params_dict = {0:'date', 1:'site', 2:'station_id', 3:'high', 4:'low', 5:'temperature', \
                    6:'rain_chance', 7:'rain_amt', 8:'cloud_cover', 9:'city_ID', 10:'day'}
-
-    categories_dict = {'date':0, 'site':1, 'station_id':2, 'high':3, 'low':4, 'midday':5, \
+    categories_dict = {'date':0, 'site':1, 'station_id':2,'high':3, 'low':4, 'temperature':5, \
                        'rain_chance':6, 'rain_amt':7, 'cloud_cover':8, 'city_ID':9, 'day':10}
     csv_dict = {'n_row:':0, 'station_id':1, 'date':2, 'quality':3, 'temperature':4, \
                 'steam_pressure':5, 'cloud_cover':6,'air_pressure':7, 'rel_moisture':8, \
@@ -295,7 +294,7 @@ class Daily_DataBase(DataBase):
 class Hourly_DataBase(DataBase):
     def __init__(self, db_name="hourly_database.hdf5", make_new=False):
         hourly_categories = ['date', 'hour', 'site', 'geolocation', 'temperature', 'humidity',
-                             'wind_speed', 'rain_chance', 'rain_amt', 'cloud_cover', 'city_ID']
+                             'wind_speed', 'rain_chance', 'rain_amt', 'cloud_cover', 'city_ID', 'station_id']
 
         DataBase.__init__(self,
                           file_name=db_name,
