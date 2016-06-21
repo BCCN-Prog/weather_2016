@@ -19,7 +19,8 @@ def scrape(date, city, data_path='../data'):
     """
     year, month, day = date.split('-')[2], date.split('-')[1], date.split('-')[0]
     dateInt = int(year + month + day)
-
+    # get the time stamp int
+    timeInt = get_timestamp(data_path, date, city)
     # the hourly scraping now returns to dicts: an additional one for some hours of the next day
     hourly_today, hourly_tmr = scrape_hourly(date, city, data_path)
 
@@ -28,9 +29,9 @@ def scrape(date, city, data_path='../data'):
                 'city': city,
                 'date': dateInt,
                 'hourly': hourly_today,
-                'daily': scrape_daily(date, city, data_path)}
+                'daily': scrape_daily(date, city, data_path),
+                'prediction_time': timeInt}
     assert(tester.run_tests(data_dict)) # test scraper output
-
     # add to data base
     daily_db = wrapper.Daily_DataBase()
     hourly_db = wrapper.Hourly_DataBase()
@@ -102,8 +103,8 @@ def scrape_hourly(date, city, data_path='../data'):
         # get the starting hour of the hour table
         starting_hour = int((hours[0].string.split()[0])[1])
     except:
-        print("Scraping failed: starting hour")
-        print(traceback.print_exc())
+        print("Scraping failed: starting hour. File seems to be broken: {}".format(path))
+        raise(OKException('File seems to be broken or data missing: {}'.format(path)))
 
     # define the hour string list for indexing the dictionary correctly
     hour_strs = []
@@ -254,15 +255,27 @@ def scrape_daily(date, city, data_path='../data'):
         for j, div in enumerate(temps_high):
             # get the length of the string in div to be sensitive to one/two digit numbers
             # format is 4° vs. 14°
-            str_len = len(div.string)
-            daily_dict[days_strs[j]]['high'] = float(div.string[:(str_len-1)])
+            degreeIDX = div.string.index('°')
+            try:
+                # the temperature will be just in front of the degree symbol
+                daily_dict[days_strs[j]]['high'] = float(div.string[:degreeIDX])
+            except:
+                # some times the website does is missing some values, set them to None
+                daily_dict[days_strs[j]]['high'] = None
+                print("Missing value in temperature high/low")
         # low
         temps_low = soup.find_all('div', class_=temp_low_class)
         # for every div, get the string, take the temperature value and save it
         assert(len(temps_low)==days), "not enough temperatures extracted 24!={}".format(len(temps_low))
         for j, div in enumerate(temps_low):
-            str_len = len(div.string)
-            daily_dict[days_strs[j]]['low'] = float(div.string[3:(str_len-1)])
+            degreeIDX = div.string.index('°')
+            try:
+                daily_dict[days_strs[j]]['low'] = float(div.string[3:degreeIDX])
+            except:
+                # some times the website does is missing some values, set them to None
+                daily_dict[days_strs[j]]['low'] = None
+                print("Missing value in temperature high/low")
+
     except:
         print("Scraping failed: daily temperature")
         print(traceback.print_exc())
@@ -308,11 +321,23 @@ def scrape_daily(date, city, data_path='../data'):
         daily_dict[days_strs[dayIDX]]['sun_hours'] = float(div_jungle[idx].text[:-3])
         # the length of the string determines whether we have a rain amt in the data
         rain_str_threshold = 10
-        rain_chance = float(div_jungle[idx+1].text[:3])
-        if len(div_jungle[idx+1].text)>rain_str_threshold:
-            rain_amt = float(div_jungle[idx+1].text[5:-5])
-        else:
-            rain_amt = 0.
+        percentIDX = div_jungle[idx+1].text.index('%')
+        try: # there might be a new line in front
+            nlIDX = div_jungle[idx+1].text.index('\n')
+        except:
+            nlIDX = 0
+        try: # there might be missing data
+            rain_chance = float(div_jungle[idx+1].text[nlIDX:percentIDX])
+        except:
+            rain_chance = None
+        # if there is enough rain
+        try: # find amount unit as reference
+            amtIDX = div_jungle[idx+1].text.index('l/m')
+            rain_amt = float(div_jungle[idx+1].text[amtIDX-4:amtIDX])
+        except:
+            #if rain chance is None, then there is missing data.
+            if rain_chance==None: rain_amt = None
+            else: rain_amt = 0.
         # log results
         daily_dict[days_strs[dayIDX]]['rain_chance'] = rain_chance
         daily_dict[days_strs[dayIDX]]['rain_amt'] = rain_amt
@@ -322,17 +347,35 @@ def scrape_daily(date, city, data_path='../data'):
 
     return daily_dict
 
+def get_timestamp(dirpath, date, city):
+    """Extracts the time stamp from a file name.
+    :param dirpath: relative path to the data directory
+    :param date: date in the format 31-05-2016
+    :param city: city as string
+    :param mode: daily or hourly data
+    :return timeInt: the timestamp as int in the format YYYYMMDDHHMM
+    """
+    year, month, day = date.split('-')[2], date.split('-')[1], date.split('-')[0]
+    # for older downloads, there is no exacot time stamp. just set them to zero
+    path = get_filename(dirpath, date, city)
+    if len(path.split('_'))>5:
+        hour, minute, sec = path.split('_')[3], path.split('_')[4], path.split('_')[5]
+    else:
+        hour, minute, sec = '00', '00', '00'
+    return int(year + month + day + hour + minute)
+
 def get_filename(dirpath, date, city, mode='hourly'):
     """Looks up filename of the html file in dirpath for given date and city
     :param dirpath: relative path to the data directory
     :param date: date in the format 31-05-2016
     :param city: city as string
     :param mode: daily or hourly data
+    :return path: the path to the html file
     """
     path = None
     filelist = os.listdir(dirpath)
     for f in filelist:
-        if (date in f) and (city in f) and ( mode in f):
+        if (date in f) and (city in f) and ( mode in f) and not('daily6' in f):
             path = f
     return path
 
@@ -370,3 +413,8 @@ def check_header(soup, city, mode='hourly'):
         mode_str = '16-Tage Trend'
     if not(header[6].text==mode_str): result = False
     return result
+
+class OKException(Exception):
+    """Exception for detecting errors due to missing data on the provider side"""
+    def __init__(self,*args,**kwargs):
+        Exception.__init__(self,*args,**kwargs)
