@@ -10,6 +10,7 @@ import test_scraper_output as tester
 import wrapper.DataWrapH5py as wrapper
 import pprint
 import datetime
+import traceback
 
 def scrape(date, city, data_path):
     """Scrape data for given date and city.
@@ -43,14 +44,21 @@ def scrape(date, city, data_path):
     if not data_dict['hourly'] or not data_dict['daily']:
         return
         
+    pp = pprint.PrettyPrinter(indent=2)
     # run tests
-    assert(tester.run_tests(data_dict))
+    try:
+        assert(tester.run_tests(data_dict))
+    except AssertionError:
+        print(traceback.print_exc())
+        pp.pprint(data_dict)
+        print(file_name)
+        return        
+        
     daily_db = wrapper.Daily_DataBase()
     hourly_db = wrapper.Hourly_DataBase()
     daily_db.save_dict(data_dict)
     hourly_db.save_dict(data_dict)
     print('added the following dictionary to the DB:')
-    pp = pprint.PrettyPrinter(indent=2)
     pp.pprint(data_dict)
     
     # now get hourly forecast for the next day
@@ -64,8 +72,14 @@ def scrape(date, city, data_path):
     if not data_dict['hourly']:
         return    
     
-    #pp.pprint(data_dict)
-    assert(tester.run_tests(data_dict))  
+    try:
+        assert(tester.run_tests(data_dict))
+    except AssertionError:
+        print(traceback.print_exc())
+        pprint(data_dict)
+        pprint(file_name)
+        return     
+        
     hourly_db.save_dict(data_dict)
     print('added the following dictionary to the DB:')
     pp = pprint.PrettyPrinter(indent=2)
@@ -208,4 +222,4 @@ def scrape_hourly(date, city, data_path, next_day):
 
         return dictionary        
         
-scrape('07_06_2016', 'berlin', 'output/')
+#scrape('06_06_2016', 'frankfurt', 'output')
