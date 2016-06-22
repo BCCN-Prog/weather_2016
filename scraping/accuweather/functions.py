@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
+sys.path.append('/home/denis/Documents/Uni/project_software_carpentry/weather_2016')
+
 import urllib.request
 import time
 import os
@@ -10,9 +13,10 @@ import re
 import glob
 import pprint
 import numpy as np
+import datetime
+import wrapper.DataWrapH5py as wrapper
 
-import sys
-sys.path.append('../')
+sys.path.append('/home/denis/Documents/Uni/project_software_carpentry/weather_2016/scraping')
 import test_scraper_output as tester
 
 #          CITY                         PC      ID
@@ -38,6 +42,10 @@ STATION = [('berlin',                   '10178',  '178087'),
            ('erfurt',                   '99084',  '171707')
           ]
 
+class OKException(Exception):
+    """ Exception class for exceptions due to not available date / city combinations in scrape()"""
+    def __init__(self, *args, **kwargs):
+        Exception.__init__(*args, **kwargs)
 
 def download_html(datafolder):
 
@@ -89,7 +97,12 @@ def download_html(datafolder):
 def test_html_title(html_file, city, country, request_type):
     """ Check if the title of html_file has the expected city, country and request_type (hourly or daily) name. """
 
-    soup = BeautifulSoup(open(html_file))
+    try:
+        soup = BeautifulSoup(open(html_file).read())#decode('utf-8','ignore'))
+    except UnicodeDecodeError as err:
+        print('UNICODE DECODE ERROR in file: {}'.format(html_file))
+        raise err
+
     title = find_unique(soup, name='title').get_text()
     words = title.split()
 
@@ -105,7 +118,7 @@ def test_html_title(html_file, city, country, request_type):
         assert False, "Request=type = {} not know. Only 'daily' or 'hourly' possible".format(request_type)
 
     city = city.lower()
-    assert title_city == city, 'City in html file title ({}) is not the one expected ({}).'.format(title_city, city)
+    assert title_city == city, 'City in html file title ({}) is not the one expected ({}). \n\tFile: {}'.format(title_city, city, html_file)
 
     title_country = words[-1].lower()
     country = country.lower()
@@ -259,7 +272,7 @@ def scrape_daily_html(html_file):
             #print('rain_hours', rain_hours)
         
 
-def scrape_hourly_html(html_file):
+def scrape_hourly_html(html_file, next_day=False):
 
     site, date_, time, city_, request_type, request_index, timestemp = os.path.splitext(os.path.basename(html_file))[0].split('_') 
     request_index = request_index[1:]
@@ -297,46 +310,59 @@ def scrape_hourly_html(html_file):
                 h = str(int(h) + 12)
         hour.append(h)
         #print('HOURS after :', h)
+
+    start_pos = 0
+    end_pos = len(hour)
     for i, h in enumerate(hour):
         if int(h) < int(time):
-            hour[i] = str(int(h) + 24)
+            if not next_day:
+                end_pos = i
+            elif next_day:
+                start_pos = i
+            break
+            #hour[i] = str(int(h) + 24)
+        elif i == len(hour) and next_day:
+            assert False, 'next_day=True even though no hour key is smaller then time!'
+    hour_test = hour_test[start_pos:end_pos]
 
     # create dict with given hourly values
-    #print('HOUR', hour)
-    for h in hour:
+    print('HOUR', hour)
+    print('start: {}\tend: {}\ttime: {}'.format(start_pos, end_pos, time))
+    for h in hour[start_pos:end_pos]:
         #print('TEST', h)
         assert(h not in hour_dicts.keys()), '{} is already in the hour dictionary!'.format(h)
         hour_dicts[h] = {}
+    print('HOUR_DICT', hour_dicts)
 
 
     temp_entries = find_unique(lines[2], n=8, name='span')
     temp = np.empty(8, dtype=float)
-    for j, temp_entry in enumerate(temp_entries):
+    for j, temp_entry in enumerate(temp_entries[start_pos:end_pos]):
         temp_str = temp_entry.get_text()
         t = parse_unique('\d+', temp_str)
         temp[j] = t
-        hour_dicts[str(hour[j])]['temp'] = float(t)
+        hour_dicts[str(hour[j+start_pos])]['temp'] = float(t)
 
 
     felt_temp_entries = find_unique(lines[3], n=8, name='span')
     felt_temp = np.empty(8, dtype=float)
-    for j, felt_temp_entry in enumerate(felt_temp_entries):
+    for j, felt_temp_entry in enumerate(felt_temp_entries[start_pos:end_pos]):
         felt_temp_str = felt_temp_entry.get_text()
         ft = parse_unique('\d+', felt_temp_str)
         felt_temp[j] = ft
-        hour_dicts[str(hour[j])]['felt_temp'] = float(ft)
+        hour_dicts[str(hour[j+start_pos])]['felt_temp'] = float(ft)
 
 
     wind_entries = find_unique(lines[4], n=8, name='span')
     wind_speed = np.empty(8, dtype=float)
     wind_dir = []
-    for j, wind_entry in enumerate(wind_entries):
+    for j, wind_entry in enumerate(wind_entries[start_pos:end_pos]):
         wind_str = wind_entry.get_text()
         speed, direction = wind_str.split()
         wind_speed[j] = float(speed) * 1e3 / 3600 # m/s 
         wind_dir.append(direction)
-        hour_dicts[str(hour[j])]['wind_speed'] = float(speed)
-        hour_dicts[str(hour[j])]['wind_direction'] = direction
+        hour_dicts[str(hour[j+start_pos])]['wind_speed'] = float(speed)
+        hour_dicts[str(hour[j+start_pos])]['wind_direction'] = direction
 
 
     precip_hourly = find_unique(soup, name='div', class_="hourly-table precip-hourly")
@@ -345,40 +371,40 @@ def scrape_hourly_html(html_file):
 
 
     hour2_entries = find_unique(lines[0], n=8, name='td')
-    hour2 = np.empty(8, dtype=str)
-    for j, hour2_entry in enumerate(hour2_entries):
+    hour2 = np.empty(end_pos-start_pos, dtype=str)
+    for j, hour2_entry in enumerate(hour2_entries[start_pos:end_pos]):
         hour2_str = hour2_entry.find('div').get_text()
         h, unit = split_string(hour2_str)
         assert (unit == 'am' or unit == 'pm'), 'Unit of hour2 variable is not am, but {}'.format(unit)
         hour2[j] = h
-    assert np.all(hour_test==hour2), 'Something wrong with the hour variable.'
+    assert np.all(hour_test==hour2), 'Something wrong with the hour variable: \nhour_test={}\nhour2={}'.format(hour_test, hour2)
 
 
     rain_chance_entries = find_unique(lines[1], n=8, name='span')
     rain_chance = np.empty(8, dtype=float)
-    for j, rain_chance_entry in enumerate(rain_chance_entries):
+    for j, rain_chance_entry in enumerate(rain_chance_entries[start_pos:end_pos]):
         rain_chance_str = rain_chance_entry.get_text()
         rc = parse_unique('\d+', rain_chance_str)
         rain_chance[j] = rc
-        hour_dicts[str(hour[j])]['rain_chance'] = float(rc)
+        hour_dicts[str(hour[j+start_pos])]['rain_chance'] = float(rc)
 
 
     snow_chance_entries = find_unique(lines[2], n=8, name='span')
     snow_chance = np.empty(8, dtype=float)
-    for j, snow_chance_entry in enumerate(snow_chance_entries):
+    for j, snow_chance_entry in enumerate(snow_chance_entries[start_pos:end_pos]):
         snow_chance_str = snow_chance_entry.get_text()
         sc = parse_unique('\d+', snow_chance_str)
         snow_chance[j] = sc
-        hour_dicts[str(hour[j])]['snow_chance'] = float(sc)
+        hour_dicts[str(hour[j+start_pos])]['snow_chance'] = float(sc)
 
 
     ice_chance_entries = find_unique(lines[3], n=8, name='span')
     ice_chance = np.empty(8, dtype=float)
-    for j, ice_chance_entry in enumerate(ice_chance_entries):
+    for j, ice_chance_entry in enumerate(ice_chance_entries[start_pos:end_pos]):
         ice_chance_str = ice_chance_entry.get_text()
         ic = parse_unique('\d+', ice_chance_str)
         ice_chance[j] = ic
-        hour_dicts[str(hour[j])]['ice_chance'] = float(ic)
+        hour_dicts[str(hour[j+start_pos])]['ice_chance'] = float(ic)
 
 
     sky_hourly = find_unique(soup, name='div', class_="hourly-table sky-hourly")
@@ -386,45 +412,46 @@ def scrape_hourly_html(html_file):
     lines = find_unique(sky_hourly, n=5, name='tr')
 
     hour3_entries = find_unique(lines[0], n=8, name='td')
-    hour3 = np.empty(8, dtype=str)
-    for j, hour3_entry in enumerate(hour3_entries):
+    hour3 = np.empty(end_pos-start_pos, dtype=str)
+    for j, hour3_entry in enumerate(hour3_entries[start_pos:end_pos]):
         hour3_str = hour3_entry.find('div').get_text()
         h, unit = split_string(hour3_str)
         assert (unit == 'am' or unit == 'pm'), 'Unit of hour3 variable is not am, but {}'.format(unit)
         hour3[j] = h
-    assert np.all(hour_test==hour3), 'Something wrong with the hour variable.'
+    assert np.all(hour_test==hour3), 'Something wrong with the hour variable: \nhour_test={}\nhour3={}'.format(hour_test, hour3)
+
 
     # skip UV factor
 
     cloud_cover_entries = find_unique(lines[2], n=8, name='span')
     cloud_cover = np.empty(8, dtype=float)
-    for j, cloud_cover_entry in enumerate(cloud_cover_entries):
+    for j, cloud_cover_entry in enumerate(cloud_cover_entries[start_pos:end_pos]):
         cloud_cover_str = cloud_cover_entry.get_text()
         cc = parse_unique('\d+', cloud_cover_str)
         cloud_cover[j] = cc
-        hour_dicts[str(hour[j])]['cloud_cover'] = float(cc)
+        hour_dicts[str(hour[j+start_pos])]['cloud_cover'] = float(cc)
 
 
     humidity_entries = find_unique(lines[3], n=8, name='span')
     humidity = np.empty(8, dtype=float)
-    for j, humidity_entry in enumerate(humidity_entries):
+    for j, humidity_entry in enumerate(humidity_entries[start_pos:end_pos]):
         humidity_str = humidity_entry.get_text()
         hu = parse_unique('\d+', humidity_str)
         humidity[j] = hu
-        hour_dicts[str(hour[j])]['humidity'] = float(hu)
+        hour_dicts[str(hour[j+start_pos])]['humidity'] = float(hu)
 
 
     dew_point_entries = find_unique(lines[4], n=8, name='span')
     dew_point = np.empty(8, dtype=float)
-    for j, dew_point_entry in enumerate(dew_point_entries):
+    for j, dew_point_entry in enumerate(dew_point_entries[start_pos:end_pos]):
         dew_point_str = dew_point_entry.get_text()
         dp = parse_unique('\d+', dew_point_str)
         dew_point[j] = dp
-        hour_dicts[str(hour[j])]['dew_point'] = float(dp)
+        hour_dicts[str(hour[j+start_pos])]['dew_point'] = float(dp)
 
 
     # no rain_amt 
-    for j in range(8):
+    for j in range(start_pos, end_pos):
         # no rain_amt
         hour_dicts[str(hour[j])]['rain_amt'] = None
 
@@ -433,21 +460,21 @@ def scrape_hourly_html(html_file):
 
 def scrape(date, city, data_folder):
 
-    data_dict = {'site'     :   4, # accuweather id
-                 'city'     :   city,
-                 'date'     :   int(''.join(date.split('-')[::-1]))
-                }
+
     daily_dict = {}
     hourly_dict = {}
+    next_day_hourly_dict = {}
+    prediction_times = []
 
-    #print(glob.glob(data_folder + '/accuweather_' + date + '*' + city + '*.html'))
-
-    for html_file in glob.glob(data_folder + '/accuweather_' + date + '*' + city + '*.html'):
+    for html_file in glob.glob(data_folder + '/accuweather_' + date + '*' + city + '_*.html'):
 
 
         print('Scraping html file:\n', html_file, '\n\n')
         site, date_, time, city_, request_type, request_index, timestemp = os.path.splitext(os.path.basename(html_file))[0].split('_') 
         request_index = request_index[1:]
+
+        # once set the prediction time of the dict
+        prediction_times.append(int(''.join(date.split('-')[::-1] + time.split(':'))))
 
         assert city == city_, "City name from function argument ({}) and from html filename ({}) are different!".format(city, city_)
         assert date == date_, "Date from function argument ({}) and from html filename ({}) are different!".format(date, date_)
@@ -465,19 +492,84 @@ def scrape(date, city, data_folder):
 
             test_html_title(html_file, city=city, country='Germany', request_type='Hourly')
 
-            hour_dict = scrape_hourly_html(html_file)
-
             # request_index is hours since 12 midnight of day of recording
-            hourly_dict.update(hour_dict)
+            # the first hour for which the html file has data saved is forecast_time
+            forecast_time = int(request_index) - int(time[:2])
+            if forecast_time < 16: # date == prediction_date
+                hour_dict = scrape_hourly_html(html_file)
+                hourly_dict.update(hour_dict)
+            elif forecast_time < 24: # need to split hours into two dates
+                hour_dict = scrape_hourly_html(html_file)
+                hourly_dict.update(hour_dict)
+                hour_dict = scrape_hourly_html(html_file, next_day=True)
+                next_day_hourly_dict.update(hour_dict)
+            elif forecast_time < 48: # date = prediction_date + 1 day
+                hour_dict = scrape_hourly_html(html_file, next_day=True)
+                next_day_hourly_dict.update(hour_dict)
+            else:
+                assert False, 'hour index is >= 48, something wrong here, hour={}'.format(request_index)
 
+
+    if 'html_file' not in locals():
+        # no file with given date/city combination found
+        print('For date: {}, city: {} no html file found in {}'.format(date, city, data_folder))
+        return
+
+    try:
+        date_obj = datetime.date(int(date.split('-')[2]), int(date.split('-')[1]), int(date.split('-')[0]))
+    except ValueError as err:
+        print('WUUUAAASFDHAEWFEEFS: Excepted some ValueError in Claus hacky date thingy.\n{}'.format(err))
+        return
+
+    next_date = date_obj + datetime.timedelta(days=1)
+    date_int = date_obj.year * 10000 + date_obj.month * 100 + date_obj.day
+    next_date_int = next_date.year * 10000 + next_date.month * 100 + next_date.day
+
+    date_check = int(''.join(date.split('-')[::-1]))
+    assert date_int == date_check, 'Dates are messed up! date_obj={} and date from filename={}'.format(date_int, date_check)
+
+    assert date_int+1 == next_date_int, 'today={}, tmr={}'.format(date_int, next_date_int)
+
+    data_dict = {'site'                 :   4, # accuweather id
+                 'city'                 :   city,
+                 'date'                 :   date_int
+                }
+
+    next_data_dict = {'site'                 :   4, # accuweather id
+                      'city'                 :   city,
+                      'date'                 :   next_date_int
+                     }
+
+    # prediction time will be the time the first file for given date and city was downloaded
+    data_dict['prediction_time'] = int(np.array(prediction_times).min())
+    next_data_dict['prediction_time'] = int(np.array(prediction_times).min())
+
+    # init wrapper objects
+    daily_db = wrapper.Daily_DataBase()
+    hourly_db = wrapper.Hourly_DataBase()
+
+    # finish and test first scraped dict
     data_dict['hourly'] = hourly_dict
     data_dict['daily'] = daily_dict
-
-    #pprint.pprint(data_dict)
-
     assert tester.run_tests(data_dict), 'test_scraper_output.py failed!!!'
 
-    #return data_dict
+    # save first scraped dict to db
+    hourly_db.save_dict(data_dict)
+    daily_db.save_dict(data_dict)
+    print('Added the CURRENT dictionary to the DB:')
+    pp = pprint.PrettyPrinter(indent=2)
+    pp.pprint(data_dict)
+
+    # for the prediction hours in the next day, create new dict and test
+    next_data_dict['hourly'] = next_day_hourly_dict
+    next_data_dict['daily'] = {}
+    assert tester.run_tests(next_data_dict), 'test_scraper_output.py failed!!!'
+
+    # if there are predictions in the next day, save the extra dict in db
+    if next_data_dict['hourly']:
+        hourly_db.save_dict(next_data_dict)
+        print('Added the NEXT dictionary to the DB:')
+        pp.pprint(next_data_dict)
 
 
 def scrape_all(data_folder):
@@ -505,10 +597,10 @@ def scrape_all(data_folder):
 
 
         
-if __name__=='__main__':
-    #download_html('./data/')
-    scrape('17-05-2016', 'berlin', './data/17_05/')
-    import sys
+#if __name__=='__main__':
+    #download_html('./data/new_21062016/')
+    #scrape('17-05-2016', 'berlin', './data/17_05/')
+    #import sys
     #sys.stdout = open('./data/test_scrape_all.txt', 'w+')
     #scrape_all('./data/')
     #scrape_daily_html('/home/denis/Documents/Uni/project_software_carpentry/weather_2016/scraping/data/accuweather_10-05-2016_16:33_dortmund_daily_d15_1462890787.html')
