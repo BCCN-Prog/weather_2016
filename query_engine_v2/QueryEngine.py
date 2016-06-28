@@ -6,6 +6,8 @@ import numpy as np
 import bisect
 from functools import reduce
 
+import time
+
 def block_print():
     '''
     Blocks all print output.
@@ -21,9 +23,9 @@ def enable_print():
 
 class QueryEngine:
     daily_params = ['date', 'site', 'station_id', 'high', 'low', 'temperature', 'rain_chance', 'rain_amt',
-                    'cloud_cover', 'city_ID']  # only for example
+                    'cloud_cover', 'city_ID', 'day']  # only for example
     hourly_params = ['date', 'hour', 'site', 'station_id', 'temperature', 'humidity',
-                     'wind_speed', 'rain_chance', 'rain_amt', 'cloud_cover', 'city_ID']
+                     'wind_speed', 'rain_chance', 'rain_amt', 'cloud_cover', 'city_ID', 'prediction_time']
     days_dict = {0: 'Sunday', 1: 'Monday', 2:  'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday'}
     days_backdict = {'Sunday': 0, 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4, 'Friday': 5, 'Saturday': 6}
 
@@ -130,19 +132,23 @@ class QueryEngine:
         lo_ind = []
         hi_ind = []
         for i in range(len(params_intersect)):
-            s = dset.f["weather_data"][:, params_intersect_int[i]][dset.f[dset_names[i]]]
+            s = dset.f["weather_data"][:,params_intersect_int[i]][dset.f[dset_names[i]]]
+            n = time.time()
             if(np.isnan(np.sum(s))):
-                s = s[: np.argmin(s)]
-            # above line removes the nans if they exist in the array.
+                s = s[:np.argmin(s)]
+            #print("sum-nan ckeching: ", n-time.time())
+            #above line removes the nans if they exist in the array.
 
-            lo_ind.append(bisect.bisect_left(s, lo_intersect[i]))
-            hi_ind.append(bisect.bisect_right(s, hi_intersect[i]))
-            # getting the slicing indices wrt to all parameters in params_intersect
+            #lo_ind.append(bisect.bisect_left(s, lo_intersect[i]))
+            #hi_ind.append(bisect.bisect_right(s, hi_intersect[i]))
+            lo_ind.append(np.searchsorted(s, lo_intersect[i]))
+            hi_ind.append(np.searchsorted(s, hi_intersect[i], side='right'))
+            #getting the slicing indices wrt to all parameters in params_intersect
 
-        set_list = [dset.f[dset_names[i]][:][lo_ind[i]: hi_ind[i]] for i in range(len(params_intersect))]
-        # make a list of array of indices. This is faster then to use sets, because although
-        # set.intersection is a lot faster then np.intersect1d, converting arrays to sets takes
-        # a lot more time.
+        set_list = [dset.f[dset_names[i]][:][lo_ind[i]:hi_ind[i]] for i in range(len(params_intersect))]
+        #make a list of array of indices. This is faster then to use sets, because although
+        #set.intersection is a lot faster then np.intersect1d, converting arrays to sets takes
+        #a lot more time.
 
         ind = np.sort(reduce(np.intersect1d, set_list))
         # sorting in oder to better comply with h5py.
@@ -150,7 +156,6 @@ class QueryEngine:
         if not ind.size:
             print("No matching entries.")
             return np.array([])
-
         # output = dset.f["weather_data"][: , ret_cols][ind]
         output = dset.f["weather_data"][:][ind][:, ret_cols]
         out_dict = {dset.params_dict[key]: i for i, key in enumerate(ret_cols)}
@@ -177,7 +182,6 @@ class QueryEngine:
         else:
             print("return_matrix=False and sorting are not compatible.")
             return None
-
 
     def sort(self, dset, param, data_tuple, return_params):
         '''
