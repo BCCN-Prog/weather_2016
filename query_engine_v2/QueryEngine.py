@@ -41,6 +41,8 @@ class QueryEngine:
             self.daily.create_presorted(self.daily_params)
             self.hourly.create_presorted(self.hourly_params)
 
+            #use pickle here for dictionary and h5py for filenames
+
         self.dset_dict = {"daily": self.daily, "hourly": self.hourly}
 
     def slice(self, dset, param, lower, upper):
