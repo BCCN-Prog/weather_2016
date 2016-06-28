@@ -134,7 +134,6 @@ class QueryEngine:
         lo_ind = []
         hi_ind = []
         for i in range(len(params_intersect)):
-<<<<<<< HEAD
             s = dset.f["weather_data"][:,params_intersect_int[i]][dset.f[dset_names[i]]]
             n = time.time()
             if(np.isnan(np.sum(s))):
