@@ -1,0 +1,27 @@
+PCP Prot 28.06.
+
+
+
+For the presentation: 4 scenarios 
+Idea: There are different scenes played where questions come up that are answered by the BCCN hero with help of the app.
+
+Scenario 0: 
+O (very much like summer, (sun glasses, hat, shorts), wants to go camping. P (umbrealla): Did you check the weather forecast? It's probably going to be terrible... O: --> Checks out some parameters about the weather that show off the GUI. 
+P: Last year around that time we went camping and it was awful. O: No, come on, the weather wasn't that bad...  --> check out using GUI
+
+Scenario 1:
+P: 'the rain probability is 60% for tomorrow, you really shouldn't go!' Optimist 'So there is a probability of 40% it does not rain? --> BCCN hero answers the question what the rain percentage actually means showing funny plots
+What we show: Compare hourly scraped and historical data
+
+Scenario 2:
+Optimist 'But on the weekend the weather will be better!' Pessimist: 'Nah that's just what the weather websites say to make you like them more...
+BCCN hero answers the question 'Is there a positive bias towards weekends?'
+What we show: Compare daily scraped and historical data
+
+Scenario 3: Two people wearing hats and gloves talk, A: 'Why is it so cold anyways? I mean, it's July! Where is this stupid climate change?' BCCN hero shows whether climate change is real
+What we show: animation, averaging over long times (full extent of the historical data)
+
+Scenario 4: B: Huh, weird, I feel like ice cream... A: Yah that is kind of weird. Though scandinavian countries have the highest consumption of ice cream per person and year... B: You think people here also eat more ice cream when it is cold? BCCN hero answers that: (compare with graphs such as mean temp, days > 27°C, total sun shine duration
+Here the ice cream statistics of the last 15 years: http://de.statista.com/statistik/daten/studie/20152/umfrage/entwicklung-des-eiskonsums-in-deutschland-seit-2001/
+In the end ice cream for everyone!
+

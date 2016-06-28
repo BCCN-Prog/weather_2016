@@ -9,7 +9,7 @@ def test_top_level(data_dic):
     # check for keys
     keys_present = data_dic.keys()
     keys_required = ['site', 'city', 'date', 'daily','hourly', 'prediction_time']
-    sites_possible = ['0', '1', '2', '3', '4']
+    sites_possible = ['0', '1', '2', '3', '4', '5']
     cities_possible = ["berlin", "hamburg", "munich", "muenchen",
                 "cologne", "frankfurt", "stuttgart",
                 "bremen", "leipzig", "hanover", "hannover",
@@ -50,9 +50,9 @@ def test_daily(data_dic):
 
     # test keys format
     for key in daily_dic.keys():
-        assert(isinstance(key, str))
-        assert(len(key) <= 2)
-        assert(0 <= int(key) <= 20), 'key is'.format(key)
+        assert(isinstance(key, str)), 'days should coded as strings'
+        assert(len(key) <= 2), 'days string must not be longer than 2'
+        assert(0 <= int(key) <= 100), 'key is {}, too a forecast'.format(key)
 
     # for every day
     for day_dic in days_dics:
@@ -75,8 +75,9 @@ def test_daily(data_dic):
         rain_chance = day_dic['rain_chance']
         rain_amt = day_dic['rain_amt']
         # if data is missing (=None) then let the test pass
-        if not(np.equal(high, None) or np.equal(low, None)):
-            assert(high>=low), "High is lower than low"
+        #                                                       exception for owm
+        if not(np.equal(high, None) or np.equal(low, None)) and not(data_dic['site']==2):
+            assert(high>=low), "High is lower than low high:{} low:{}".format(high, low)
         if not(np.equal(low, None)):
             assert(low >-60 and low <60), "Inplausible value for low: {}".format(low)
         if not(np.equal(high, None)):

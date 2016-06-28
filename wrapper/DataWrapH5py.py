@@ -21,20 +21,21 @@ class DataBase:
         self.cities = {'berlin': 1, 'hamburg': 2, 'munich': 3, 'muenchen': 3,
                        'koeln': 4, 'cologne': 4, 'frankfurt': 5, 'stuttgart': 6,
                        'bremen': 7, 'leipzig': 8, 'hannover': 9, 'hanover': 9,
-                       'nuernberg': 10, 'nuremburg': 10, 'dortmund': 11, 'dresden': 12,
+                       'nuernberg': 10, 'nuremburg': 10, 'nuremberg': 10, 'dortmund': 11, 'dresden': 12,
                        'kassel': 13, 'kiel': 14, 'bielfeld': 15, 'bielefeld': 15, 'saarbrucken': 16,
                        'saarbruecken': 16, 'rostock': 17, 'freiburg': 18,
                        'magdeburg': 19, 'erfurt': 20}
 
-        if make_new == False:
+        if not make_new:
             try:
                 self.f = h5py.File(file_name, "r+")
             except:
                 self.f = h5py.File(file_name, "w")
                 self.f.create_dataset("weather_data",
-                                    (row_num_init, categ_num_init),
-                                    maxshape=(row_num_max, categ_num_max),
-                                    dtype='float64')
+                                      (row_num_init, categ_num_init),
+                                      maxshape=(row_num_max, categ_num_max),
+                                      dtype='float64',
+                                      )
                 self.f.create_dataset("metadata", (2, ), dtype='uint64')
 
                 # initialize row pointer and intial write time
@@ -43,9 +44,10 @@ class DataBase:
         else:
                 self.f = h5py.File(file_name, "w")
                 self.f.create_dataset("weather_data",
-                                    (row_num_init, categ_num_init),
-                                    maxshape=(row_num_max, categ_num_max),
-                                    dtype='float64')
+                                      (row_num_init, categ_num_init),
+                                      maxshape=(row_num_max, categ_num_max),
+                                      dtype='float64',
+                                      )
                 self.f.create_dataset("metadata", (2, ), dtype='uint64')
 
                 # initialize row pointer and intial write time
@@ -97,7 +99,7 @@ class DataBase:
                 inters = csv_keys & cat_keys
                 usecols = np.sort([self.csv_dict[key] for key in inters])
                 cats_int = np.sort([self.categories_dict[key] for key in inters])
-                rng = range(0,len(self.categories_dict.values()))
+                rng = range(0, len(self.categories_dict.values()))
                 blank_cats = set(rng) - set(cats_int)
                 n_miss = len(blank_cats)
 
@@ -105,7 +107,7 @@ class DataBase:
                 nonexisting = [self.params_dict[key] for key in blank_cats]
                 ordering_strs = existing+nonexisting
                 ordering_ints = [self.categories_dict[key] for key in ordering_strs]
-                inds_str = [ordering_strs[i] for i in ordering_ints]
+                # inds_str = [ordering_strs[i] for i in ordering_ints]
                 inds = np.argsort(ordering_ints)
 
 
@@ -115,11 +117,11 @@ class DataBase:
             blank[:] = np.nan
 
             data_matrix = np.hstack((df, blank))[:, inds]
-            data_matrix[:,self.categories_dict['site']] = len(self.sites_dict.keys())
+            data_matrix[:, self.categories_dict['site']] = len(self.sites_dict.keys())
             if 'hour' in self.categories_dict.keys():
-                temp = data_matrix[:,self.categories_dict['date']]/100
-                data_matrix[:,self.categories_dict['date']] = np.floor(temp)
-                data_matrix[:,self.categories_dict['hour']] = np.floor(np.around(temp%1*100))
+                temp = data_matrix[:, self.categories_dict['date']]/100
+                data_matrix[:, self.categories_dict['date']] = np.floor(temp)
+                data_matrix[:, self.categories_dict['hour']] = np.floor(np.around(temp % 1 * 100))
 
             self.add_data_matrix(data_matrix)
         except OSError:
@@ -134,7 +136,7 @@ class DataBase:
         inters = csv_keys & cat_keys
         usecols = np.sort([self.csv_dict[key] for key in inters])
         cats_int = np.sort([self.categories_dict[key] for key in inters])
-        rng = range(0,len(self.categories_dict.values()))
+        rng = range(0, len(self.categories_dict.values()))
         blank_cats = set(rng) - set(cats_int)
         n_miss = len(blank_cats)
 
@@ -142,7 +144,7 @@ class DataBase:
         nonexisting = [self.params_dict[key] for key in blank_cats]
         ordering_strs = existing+nonexisting
         ordering_ints = [self.categories_dict[key] for key in ordering_strs]
-        inds_str = [ordering_strs[i] for i in ordering_ints]
+        # inds_str = [ordering_strs[i] for i in ordering_ints]
         inds = np.argsort(ordering_ints)
 
         print('Please wait, loading historical {} files...'.format(dset))
@@ -183,23 +185,23 @@ class Daily_DataBase(DataBase):
                           make_new=make_new
                           )
 
-    params_dict = {0:'date', 1:'site', 2:'station_id', 3:'high', 4:'low', 5:'temperature', \
-                   6:'rain_chance', 7:'rain_amt', 8:'cloud_cover', 9:'city_ID', 10:'day'}
-    categories_dict = {'date':0, 'site':1, 'station_id':2,'high':3, 'low':4, 'temperature':5, \
-                       'rain_chance':6, 'rain_amt':7, 'cloud_cover':8, 'city_ID':9, 'day':10}
-    csv_dict = {'n_row:':0, 'station_id':1, 'date':2, 'quality':3, 'temperature':4, \
-                'steam_pressure':5, 'cloud_cover':6,'air_pressure':7, 'rel_moisture':8, \
-                'wind_speed':9, 'high':10, 'low':11,'soil_temp':12,'wind_spd_max':13, \
-                'rain_amt':14, 'rain_ind':15, 'sunny_hours':16, 'snow_height':17}
-    csv_backdict = {0:'n_row:', 1:'station_id', 2:'date', 3:'quality', 4:'temperature', \
-                5:'steam_pressure', 6:'cloud_cover',7:'air_pressure', 8:'rel_moisture', \
-                9:'wind_speed', 10:'high', 11:'low',12:'soil_temp',13:'wind_spd_max', \
-                14:'rain_amt', 15:'rain_ind', 16:'sunny_hours', 17:'snow_height'}
-    sites_dict = {0:'The night', 1:'is dark', 2:'and full', 3:'of', 4:'terrors.'}
-    #Please, someone from scraping change the sites_dict and KEEP IT UPDATED if something changes
-    #as some functions must rely on this structure.
+    params_dict = {0: 'date', 1: 'site', 2: 'station_id', 3: 'high', 4: 'low', 5: 'temperature',
+                   6: 'rain_chance', 7: 'rain_amt', 8: 'cloud_cover', 9: 'city_ID', 10: 'day'}
+    categories_dict = {'date': 0, 'site': 1, 'station_id': 2, 'high': 3, 'low': 4, 'temperature': 5,
+                       'rain_chance': 6, 'rain_amt': 7, 'cloud_cover': 8, 'city_ID': 9, 'day': 10}
+    csv_dict = {'n_row: ': 0, 'station_id': 1, 'date': 2, 'quality': 3, 'temperature': 4,
+                'steam_pressure': 5, 'cloud_cover': 6, 'air_pressure': 7, 'rel_moisture': 8,
+                'wind_speed': 9, 'high': 10, 'low': 11, 'soil_temp': 12, 'wind_spd_max': 13,
+                'rain_amt': 14, 'rain_ind': 15, 'sunny_hours': 16, 'snow_height': 17}
+    csv_backdict = {0: 'n_row: ', 1: 'station_id', 2: 'date', 3: 'quality', 4: 'temperature',
+                    5: 'steam_pressure', 6: 'cloud_cover', 7: 'air_pressure', 8: 'rel_moisture',
+                    9: 'wind_speed', 10: 'high', 11: 'low', 12: 'soil_temp', 13: 'wind_spd_max',
+                    14: 'rain_amt', 15: 'rain_ind', 16: 'sunny_hours', 17: 'snow_height'}
+    sites_dict = {0: 'The night', 1: 'is dark', 2: 'and full', 3: 'of', 4: 'terrors.'}
+    # Please, someone from scraping change the sites_dict and KEEP IT UPDATED if something changes
+    # as some functions must rely on this structure.
 
-    ###########if you change the structure of the data, ALWAYS update these!######################
+    # ########## if you change the structure of the data, ALWAYS update these!######################
 
 
 
@@ -306,21 +308,22 @@ class Hourly_DataBase(DataBase):
                           )
 
     params_dict = {0: 'date', 1: 'hour', 2: 'site', 3: 'station_id', 4: 'temperature', 5: 'humidity',
-                   6: 'wind_speed', 7: 'rain_chance', 8: 'rain_amt', 9: 'cloud_cover', 10: 'city_ID'}
+                   6: 'wind_speed', 7: 'rain_chance', 8: 'rain_amt', 9: 'cloud_cover', 10: 'city_ID', 11: 'prediction_time'}
 
     categories_dict = {'date': 0, 'hour': 1, 'site': 2, 'station_id': 3, 'temperature': 4, 'humidity': 5,
-                       'wind_speed': 6, 'rain_chance': 7, 'rain_amt': 8, 'cloud_cover': 9, 'city_ID': 10}
-    csv_dict = {'date':0, 'station_id':1, 'temperature':2, 'humidity':3, 'cloud_cover':4, \
-                'rain_ind':5, 'rain_amt':6, 'air_pressure_red':7, 'air_pressure':8, 'wind_speed':9}
-    csv_backdict = {0:'date', 1:'station_id', 2:'temperature', 3:'humidity', 4:'cloud_cover', \
-            5:'rain_ind', 6:'rain_amt', 7:'air_pressure_red', 8:'air_pressure', 9:'wind_speed'}
-    sites_dict = {0:'The night', 1:'is dark', 2:'and full', 3:'of', 4:'terrors.'}
+                       'wind_speed': 6, 'rain_chance': 7, 'rain_amt': 8, 'cloud_cover': 9, 'city_ID': 10, 'prediction_time': 11}
+
+    csv_dict = {'date': 0, 'station_id': 1, 'temperature': 2, 'humidity': 3, 'cloud_cover': 4,
+                'rain_ind': 5, 'rain_amt': 6, 'air_pressure_red': 7, 'air_pressure': 8, 'wind_speed': 9}
+    csv_backdict = {0: 'date', 1: 'station_id', 2: 'temperature', 3: 'humidity', 4: 'cloud_cover',
+                    5: 'rain_ind', 6: 'rain_amt', 7: 'air_pressure_red', 8: 'air_pressure', 9: 'wind_speed'}
+    sites_dict = {0: 'The night', 1: 'is dark', 2: 'and full', 3: 'of', 4: 'terrors.'}
 
     def auto_csv(self, path="../historic_csv"):
         DataBase.auto_csv(self, "hourly", path=path)
 
     def add_data_point(self, date, hour, site, station_id, temperature, humidity,
-                       wind_speed, rain_chance, rain_amt, cloud_cover, city_ID):
+                       wind_speed, rain_chance, rain_amt, cloud_cover, city_ID, prediction_time):
         if self.f["metadata"][0] == self.f["weather_data"].shape[0]:
             self.f["weather_data"].resize(self.f["weather_data"].shape[0]*2, 0)
 
@@ -335,6 +338,7 @@ class Hourly_DataBase(DataBase):
         self.f["weather_data"][self.f["metadata"][0], 8] = rain_amt
         self.f["weather_data"][self.f["metadata"][0], 9] = cloud_cover
         self.f["weather_data"][self.f["metadata"][0], 10] = city_ID
+        self.f["weather_data"][self.f["metadata"][0], 11] = prediction_time
 
         self.f["metadata"][1] = self.get_cur_datetime_int()
         self.f["metadata"][0] += 1
@@ -353,12 +357,17 @@ class Hourly_DataBase(DataBase):
         except:
             raise Exception('save_hourly_dict: hourly dictionary has no site')
 
+        try:
+            pred_time = hourly_dict['prediction_time']
+        except:
+            raise Exception('save_hourly_dict: hourly dictionary has no site')
+
         data = hourly_dict['hourly']
         city_ID = self.cities[hourly_dict['city']]
 
         for hour_key, _d in data.items():
             arg_dict = {'date': date, 'site': website, 'hour': int(hour_key),
-                        'city_ID': city_ID}
+                        'city_ID': city_ID, 'prediction_time': pred_time}
 
             for param in params:
                 try:
