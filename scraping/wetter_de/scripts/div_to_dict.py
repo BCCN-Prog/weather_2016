@@ -1,4 +1,5 @@
 import os
+import shutil
 from bs4 import BeautifulSoup
 from wrapper.DataWrapH5py import Daily_DataBase, Hourly_DataBase
 HOURLY_DB = 'hourly_database.hdf5'
@@ -185,7 +186,7 @@ def scrape(base_dir):
             DB.save_dict(main_dict)
 
         # move html to processed folder
-        os.rename(IN_DIR + html_name, OUT_DIR + html_name)
+        shutil.move(IN_DIR + html_name, OUT_DIR + html_name)
 
 if __name__ == '__main__':
     scrape(os.getcwd() + '/output/')

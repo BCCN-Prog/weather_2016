@@ -1,0 +1,1091 @@
+name
+Aach
+Aachen
+Großenkneten
+Ahrensburg-Wulfsdorf
+Aiterhofen
+Albstadt-Ebingen
+Albstadt-Badkap
+Albstadt-Onstmettingen
+Aldersbach-Kriestorf
+Alfhausen
+Alsfeld-Eifa
+Alsfeld-Reibertenrod
+Altastenberg
+Leuchtturm Alte Weser
+Altenburg
+Altenstadt
+Altentreptow
+Geringswalde-Altgeringswalde
+Altglashütte
+Altomünster-Maisbrunn
+Alzey
+Amberg-Unterammersricht
+Amerang-Pfaffing
+Andernach
+Angermünde
+Anklam
+Annaberg-Buchholz
+Annaturm
+Annweiler-Bindersbach
+Ansbach
+Ansbach-Hennenbach
+Arkona
+Arneburg
+Arnis
+Arnsberg
+Arnstein-Müdesheim
+Arolsen-Neu Berich
+Artern
+Aschaffenburg
+Aschersleben
+Aßlar Klein-Altenstädten
+Attenkam
+Au i.d.Hallertau-Günzenhausen
+Aue
+Augsburg (Sankt Stephan)
+Augsburg
+Aulendorf-Spiegler
+Aurich
+Baden-Baden-Geroldsau
+Müllheim
+Baiersbronn-Obertal
+Baindt
+Bamberg
+Bamberg-Altenburg
+Bamberg (Sternwarte)
+Bargischow-Gnevezin
+Barsinghausen-Hohenbostel
+Barth
+Baruth
+Kubschütz, Kr. Bautzen
+Heinersreuth-Vollhof
+Beckum-Unterberg
+Bederkesa
+Beerfelden
+Behrensdorf
+Belm
+Bendorf
+Bensheim
+Berchtesgaden (KKst)
+Berg/Oberpfalz
+Bergen
+Bergzabern, Bad
+Berleburg, Bad
+Berleburg, Bad-Stünzel
+Berlin-Adlershof
+Berlin-Alexanderplatz
+Berlin-Buch
+Berlin-Dahlem (LFAG)
+Berlin-Dahlem (FU)
+Berlin-Friedrichshagen
+Berlin-Frohnau
+Berlin-Invalidenstraße
+Berlin-Kaniswall
+Berlin-Lichtenrade
+Berlin-Lichterfelde (Süd)
+Berlin-Marzahn
+Berlin-Mitte
+Berlin-Ostkreuz
+Berlin-Rudow
+Berlin-Schönefeld
+Berlin-Spandau
+Berlin-Tegel
+Berlin-Tegeler Fliesstal
+Berlin-Tempelhof
+Berlin-Treptow
+Berlin-Zehlendorf
+Bernburg/Saale (Nord)
+Bernkastel-Kues
+Berus
+Warthausen-Birkenhard
+Biedenkopf-Wallau
+Bischbrunn
+Bitterfeld
+Blankenburg, Bad
+Blankenrath
+Bobeck
+Bocholt (Marienschule)
+Bocholt-Liedern (Wasserwerk)
+Bochum
+Böblingen
+Böhming
+Boffzen
+Boizenburg
+Bokel
+Boltenhagen
+Bonn
+Bonn-Friesdorf
+Bonn-Hardthöhe
+Bonn-Roleber
+Boos
+Borgentreich-Bühne
+Borken in Westfalen
+Borkum-Süderstraße
+Brake
+Brake-Süderfeld
+Bramsche
+Brande-Hörnerkirchen
+Brandenburg-Görden
+Hagenbüchach
+Braunlage
+Braunschweig-Gliesmarode
+Braunschweig (T.H.)
+Braunschweig
+Breitsol
+Bremen
+Bremen-Seefahrtschule
+Bremerhaven
+Bremerhaven-Speckenbüttel
+Bremervörde (A)
+Bremervörde
+Bremervörde-Niederochtenhausen
+Eschbach
+Bretten
+Brilon
+Brocken
+Brombachtal-Kirch-Brombach
+Brotterode
+Brücken
+Brückenau, Bad (A)
+Buchen, Kr. Neckar-Odenwald
+Buchenbach
+Rosengarten-Klecken
+Büchel (Flugplatz)
+Bückeburg
+Büdingen
+Bühlertal
+Bühlertal-Obertal
+Buhlenberg
+Schlüsselfeld (Kläranlage)
+Burgwald-Bottendorf
+Neuhausen/Erzgeb.-Rauschenbach (Talsp.)
+Carlsfeld
+Celle (Stadt)
+Celle
+Pemfling-Pitzling
+Chemnitz
+Chieming
+Clausthal-Zellerfeld
+Cloppenburg
+Lautertal-Oberlauter
+Collmberg
+Cottbus (Flugplatz)
+Cottbus
+Crailsheim-Alexandersreut
+Crimmitschau
+Cuxhaven
+Dachwig
+Darmstadt
+Darmstadt (A)
+Darmstadt-Botanischer Garten
+Deggenhausertal-Azenweiler
+Dessau
+Deuselbach
+UFS Deutsche Bucht
+Diepholz
+Dierfeld
+Diesbar-Seußlitz
+Dietenhofen
+Dillenburg
+Dillingen/Donau
+Dillingen/Donau-Fristingen
+Dippoldiswalde-Reinberg
+Doberan, Bad-Heiligendamm
+Doberlug-Kirchhain
+Döbeln
+Dömitz
+Donaueschingen
+Dortmund
+Dresden (Mitte)
+Dresden-Klotzsche
+Dresden-Hosterwitz
+Dresden-Strehlen
+Drewitz bei Burg
+Duderstadt
+Dürkheim, Bad
+Dürkheim, Bad (Saline)
+Dürrenberg, Bad
+Düsseldorf
+Düsseldorf-Südfriedhof
+Duisburg-Friemersheim
+Duisburg-Laar
+Ebeleben
+Eberbach (LUBW)
+Ebersbach/Fils
+Ebersberg-Halbing
+Eberswalde
+Ebrach
+Eggebek
+Ehningen
+Eiberg
+Eichstätt-Landershofen
+Eimeldingen
+Einbeck
+Eisleben-Helfta
+UFS Elbe 1
+Elgersburg
+Ellwangen-Rindelbach
+Elpersbüttel
+Elsdorf/Erftkreis
+Elsfleth
+Elster, Bad-Sohl
+Elzach-Fisnacht
+Emden-Nesserland
+Emden-Wolthusen
+Emmendingen-Mundingen
+UFS TW Ems
+Ems, Bad
+Engelskirchen
+Engen/Hegau
+Eningen
+Ennigerloh-Ostenfelde
+Eppingen
+Eppingen-Elsenz
+München-Flughafen
+Erfde
+Erfurt-Weimar
+Ering
+Eriskirch-Mariabrunn
+Möhrendorf-Kleinseebach
+Erlangen-Bruck
+Eschau-Hobbach
+Eschenbach/Oberpfalz
+Eschwege
+Esens
+Eslohe
+Essen-Bredeney
+Weilerswist-Lommersum
+Eutin
+Falkenberg,Kr.Rottal-Inn
+Faßberg
+Fehmarnbelt
+Feldberg
+Feldberg/Schwarzwald
+Fichtelberg/Oberfranken-Hüttstadl
+Fichtelberg
+Fladungen-Heufurt
+Flensburg
+Flensburg (Schäferhaus)
+Flensburg-Mürwik
+Flossenbürg
+Frammersbach
+Frankenhausen/Kyffhäuser, Bad
+Birx/Rhön
+Frankfurt/Main
+Frankfurt/Main (Stadt)
+Frankfurt/Main-Westend
+Frankfurt/Main (Feldbergstr.)
+Frankfurt/Oder
+Frankweiler
+Freiamt-Ottoschwanden
+Freiberg
+Freiburg
+Freiburg im Breisgau-Herdern
+Freiburg/Elbe
+Freudenstadt
+Freystadt-Oberndorf
+Friedrichsbrunn
+Friedrichshafen
+Malsburg-Marzell-Friedrichsheim
+Friesoythe-Altenoythe
+Fritzlar (Flugplatz)
+Fuchskauten
+Fürstenfeldbruck
+Fürth/Bayern (A)
+Fulda
+Gardelegen
+Garmisch-Partenkirchen
+Gartz/Oder
+Geisenheim
+Geisingberg
+Geisingen
+Traunstein-Geißing
+Gelbelsee
+Geldern-Walbeck
+Gelnhausen
+Ohlsbach
+Genthin
+Gera-Leumnitz
+Gernrode
+Gernsheim
+Geroda-Platz
+Gießen (Lahntal)
+Gießen/Wettenberg
+Gilserberg-Moischeid
+Glücksburg-Meierwik
+Glückstadt
+Görlitz
+Gößweinstein
+Göttingen
+Goldberg
+Gräfenberg-Kasberg
+Grainet-Rehberg
+Grambek
+Grebenhain-Herchenhain
+Greifswald
+Greifswald-Wieck
+Greifswalder Oie
+Greiz
+Greiz-Dölau
+Münster/Osnabrück
+Groß Lüsewitz
+Großer Arber
+Grosser Falkenstein
+Grosser Inselsberg
+Feldkirchen-Westerham-Lenzmühle
+Großmehring-Theißing
+Gründau-Breitenborn
+Grünow
+Gschwend, Kr. Ostalb
+Güstrow-Schabernack
+Rheda-Wiedenbrück-Lintel
+Hagen-Fley
+Halle-Kröllwitz
+Halle (Stadt)
+Olsdorf
+Hamburg-Bergedorf
+Hamburg-Botanischer Garten
+Hamburg-Fuhlsbüttel
+Hamburg-Kirchwerder
+Hamburg-Neuwiedenthal
+Hamburg-Reitbrook
+Hamburg-Sankt Pauli
+Hamburg-Wandsbek
+Hameln
+Hanau
+Hankensbüttel
+Hannover
+Harburg
+Harzburg, Bad
+Harzgerode
+Haseldorf
+Hasselfelde
+Hausstein
+Hechingen
+Weddingstedt
+Heidelberg
+Königstuhl
+Heidelberg-Grenzhof
+Heidenheim/Brenz
+Heidenrod-Mappershain
+Heilbronn
+Heinsberg-Schleiden
+Helgoland
+Helmstedt
+Helse, Kr. Dithmarschen
+Herford
+Herleshausen
+Herrenberg
+Herrenhof
+Herrnhut
+Niederwörresbach
+Hersfeld, Bad
+Herten
+Herzberg
+Hessenthal
+Hiddensee-Vitte
+Hildesheim
+Hilgenroth
+Hindfeld
+Hinterhermsdorf
+Eisfeld-Waffenrod-Hinterrod
+Hinterzarten
+Höllenstein (Kraftwerk)
+Bertsdorf-Hörnitz
+Hof (Stadt)
+Hof
+Hofgeismar-Beberbeck
+Hofheim
+Hohennauen
+Hohenpeißenberg
+Hohlstedt-Kötschau
+Hohn
+Hohwacht
+Holzdorf (Flugplatz)
+Holzhausen a.d. Haide
+Holzkirchen
+Bevern, Kr. Holzminden
+Holzminden-Silberborn
+Homberg/Ohm
+Homburg/Saar
+Hopsten (Flugplatz)
+Horlachen
+Hornisgrinde
+Hoyerswerda (Ph)
+Hüll
+Hümmerich
+Husum
+Idar-Oberstein
+Ihringen
+Ilsenburg
+Ingelfingen
+Ingolstadt (Flussmeisterstelle)
+Ingolstadt (Flugplatz)
+Mittbach
+Iserlohn-Westig
+Itzehoe
+Schleswig-Jagel
+Jena (Sternwarte)
+Jessen/Elster
+Jever
+Jork
+Jülich (Forsch.-Anlage)
+Jüterbog
+Kahl/Main
+Kahler Asten
+Kaisersbach-Cronhütte
+Kaiserslautern
+Kaisheim-Neuhof
+Kalkar
+Kall-Sistig
+Heiligenstadt, Heilbad-Kalteneber
+Kaltennordheim
+Kamenz
+Karlshuld
+Karlsruhe
+Kassel
+Kassel-Harleshausen
+Kaufbeuren
+Kaufering
+Kehl-Odelshofen
+Kempten
+Kiel-Holtenau
+Kiel-Kronshagen
+Kirchberg/Jagst-Herboldshausen
+Kirchdorf/Poel
+Kissingen, Bad
+Kitzingen
+Kleiner Feldberg/Taunus
+Klein Rönnau
+Kleiner Inselsberg
+Kleinmachnow
+Klettwitz
+Kleve
+Klippeneck
+Klitzschen bei Torgau
+Knittlingen
+Koblenz-Horchheim
+Köln-Botanischer Garten
+Köln-Bonn
+Königshofen, Bad
+Königsmoor
+Königsmoos-Untermaxfeld
+Kösching
+Kösen, Bad
+Köterberg
+Köthen (Anhalt)
+Kohlgrub, Bad (Rosshof)
+Konstanz
+Korbach-Lengefeld
+Kronach
+Krumbach-Edenhausen
+Kükels
+Kümmersbruck
+Künzelsau
+Kulmbach
+Kumhausen
+Kusel-Fünfbirken
+Kyritz
+Laage (Flugplatz)
+Lahr
+Merklingen
+Lamspringe
+Landsberg (Flugplatz)
+Landsberg/Lech
+Landshut
+Langen (BTZ)
+Langenlipsdorf
+Langensalza, Bad
+Langeoog
+Lathen
+Lauchstädt, Bad
+Lauda-Königshofen-Gerlachsheim
+Laupheim
+Lechfeld
+Leck (A)
+Leck
+Lehbek
+Lehesten/Thüringer Wald
+Leiblfing
+Leinau
+Leinefelde
+Leipzig-Holzhausen
+Leipzig-Mockau
+Leipzig/Halle
+Lennestadt-Theten
+Lenningen-Schopfloch
+Lensahn
+Lenzen/Elbe
+Lenzkirch-Ruhbühl
+Leuchtturm Kiel
+Leunawerke
+Köln-Stammheim
+Lichtenhain-Mittelndorf
+Liebenzell, Bad (LUBW)
+Liliental
+Limburg/Lahn-Offheim
+Limburgerhof
+Lindenberg
+Lindenberg/Allgäu
+Lindenfels-Winterkasten
+Lingen
+Lippspringe, Bad
+Lippstadt-Bökenförde
+List auf Sylt
+Lobenstein, Bad
+Löhnberg-Obershausen
+Löningen
+Löningen-Hagel
+Lohr/Main-Steinbach
+Lorch/Rhein
+Ludwigshafen-Mundenheim
+Lübben
+Lübben-Blumenfelde
+Lübeck
+Lübeck-Blankensee
+Lübeck-Werft
+Lüchow
+Lüdenscheid (Zeppelin-Gymnasium)
+Lüdenscheid
+Lüdinghausen
+Lüneburg
+Luisenthal (Talsperre)
+Magdeburg
+Mainhardt-Ziegelbronn
+Mainz-Lerchenberg (ZDF)
+Maisach-Gernlinden
+Mallersdorf-Pfaffenberg/Niederbayern
+Manderscheid-Sonnenhof
+Manschnow
+Vatterode-Gräfenstuhl
+Cölbe, Kr. Marburg-Biedenkopf
+Marienberg
+Marienberg, Bad
+Marienleuchte
+Marnitz
+Martinroda
+Mauth-Finsterau
+Mayen
+Meerbeck
+Meersburg
+Aschersleben-Mehringen
+Meinerzhagen (A)
+Meiningen
+Garsebach bei Meißen
+Melle
+Memmingen
+Memmingen (Flugplatz)
+Mendig
+Sankt Blasien-Menzenschwand
+Meppen
+Mergentheim, Bad-Neunkirchen
+Meßstetten
+Metten
+Metzingen
+Michelstadt
+Michelstadt-Vielbrunn
+Schmieritz-Weltwitz
+Miltenberg
+Mittel-Gründau
+Mittenwald-Buckelwiesen
+Modautal-Neunkirchen
+Mölln
+Röllbach
+Mönchengladbach
+Montabaur
+Moringen-Lutterbeck
+Mühlacker
+Mühldorf
+Mühlhausen
+Müncheberg
+München-Stadt
+München-Bogenhausen
+München-Botanischer Garten
+München-Nymphenburg
+München-Perlach
+München-Riem
+Münsingen-Apfelstetten
+Münster
+Murrhardt
+Muskau, Bad
+Nagold
+Nauheim, Bad
+Neubrandenburg
+Neuburg/Donau (Flugplatz)
+Neuburg/Kammel-Langenhaslach
+Neudenau
+Neuenahr, Bad-Ahrweiler
+Menz
+Neuhaus
+Neuhaus am Rennweg
+Neuhausen ob Eck
+Neuhausen ob Eck-Unterschwandorf
+Neukirchen-Hauptschwenda
+Neuland
+Neumünster
+Neunkirchen-Seelscheid-Krawinkel
+Neunkirchen-Seelscheid-Meisenbach
+Neunkirchen-Wellesweiler
+Neuruppin
+Neustadt/Aisch
+Neustadt am Kulm-Filchendorf
+Neustadt/Weinstraße
+Neustadt/Weinstraße (Heidehof)
+Neustrelitz
+Regensburg-Burgweinting
+Nidderau-Windecken
+Nideggen-Schmidt
+Niederelbert
+Niederstetten
+Niederstotzingen
+Nienburg
+Reimlingen
+Nörvenich (Flugplatz)
+Norderney
+Nordholz (Flugplatz)
+Nordhorn-Blanke
+Nürburg
+Nürburg-Barweiler
+Nürnberg-Buchenbuehl
+Nürnberg-Netzstall
+Nürnberg
+Nürtingen
+Nufringen
+Kiefersfelden-Gach
+Oberndorf/Neckar-Aistaig
+Oberschleißheim
+Oberstdorf
+Obersulm-Willsbach
+Obertaufkirchen
+Oberviechtach
+Oberweser-Gieselwerder
+Ochsenhausen-Mittelbuch
+Ochsenkopf
+Ochtrup
+Öhringen
+Offenbach/M. (Stadt)
+Offenburg
+Olbersdorf
+Oldenburg (A)
+Oldenburg
+Oschatz
+Osnabrück
+Osterburg
+Osterfeld
+Osterhof
+Ostheim v.d. Rhön
+Oy-Mittelberg
+Oy-Mittelberg-Petersthal
+Papenburg
+Parsberg/Oberpfalz-Eglwang
+Passau-Maierhof
+Passau-Oberhaus
+Pausa-Unterreichenau
+Pelzerhaken
+Perl-Besch
+Perl-Nennig
+Petkus
+Pfofeld-Langlau
+Pforzheim-Eutingen
+Pforzheim-Ispringen
+Pfullendorf
+Philippsburg
+Pirmasens
+Plauen
+Plön (See)
+Pommelsbrunn
+Pommelsbrunn-Mittelburg
+Potsdam
+Potsdam (Säkularstation)
+Prien-Stock
+Puch
+Putbus
+Quakenbrück
+Quedlinburg
+Querfurt-Mühle Lodersleben
+Quickborn (Kurzer Kamp)
+Quickborn
+Radolfzell-Markelfingen
+Rahden-Kleinendorf
+Raisting
+Rastatt
+Rastenberg
+Rauschberg bei Ruhpolding
+Weingarten, Kr. Ravensburg
+Recklinghausen
+Regensburg
+Reichenhall, Bad
+Reichshof-Eckenhagen
+Marienberg-Reitzenhain
+Remetschwiel
+Remscheid-Lennep
+Rendsburg
+Renningen-Ihinger Hof
+Reutlingen-Betzingen
+Rheinau-Memprechtshofen
+Rheine-Bentlage
+Rheinfelden
+Rheinstetten
+Altheim, Kreis Biberach
+Rodewisch
+Röhrigshof bei Schlüchtern
+Roetgen
+Rosenheim
+Rostock-Warnemünde
+Rotenburg (Wümme)
+Roth bei Nürnberg
+Roth
+Rothenburg ob der Tauber
+Rothenfelde, Bad
+Rottenburg-Kiebingen
+Rottweil
+Kreuznach, Bad
+Ruhwinkel
+Ruppertsecken
+Rusel-Irlmoos
+Rutesheim
+Saalfeld
+Saarbrücken-Ensheim
+Saarbrücken-Sankt Johann
+Sachsa, Bad
+Sachsenheim
+Saldenburg-Entschenreuth
+Salzgitter-Ringelheim
+Salzhemmendorf-Lauenstein
+Salzuflen, Bad
+Salzwedel
+Sandberg
+Sankt Peter-Ording
+Sankt Wendel-Hof
+Sankt Wendel-Urweiler
+Sassendorf, Bad-Ostinghausen
+Schaafheim-Schlierbach
+Schallstadt-Mengen
+Schaumberg-Tholey
+Schemmerhofen-Ingerkingen
+Schenklengsfeld
+Scheßlitz
+Schieder
+Wernigerode-Schierke
+Schleiz
+Schleswig
+Schleswig-Stadtfeld
+Schlossböckelheim
+Schlüchtern-Kloster Gomfritz
+Schlüchtern-Herolz
+Schmalenbeck
+Schmalkalden, Kurort
+Schmatzfeld
+Schmelz-Hüttersdorf
+Schmücke
+Schnarrtanne-Vogelsgrün
+Schneifelforsthaus
+Selb/Oberfranken-Lauterbach
+Schopfheim-Eichen
+Schorndorf-Knöbling
+Schotten
+Schulenberg
+Schwabach (A)
+Schwäbisch Gmünd-Strassdorf
+Schwäbisch Hall-Bibersfeld
+Schwaigermoos
+Schwalbach, Bad
+Schwandorf
+Schwanebeck
+Schwangau-Horn
+Schwarzburg
+Schwarze Pumpe
+Schwarzenberg
+Schweinfurt-Gartenstadt
+Schwerin
+Schwesing
+Seehausen
+Seelscheid
+Seesen
+Segeberg, Bad
+Selb/Oberfranken-Wildenau
+Siegen (Kläranlage)
+Sigmaringen (Flugplatz)
+Sigmaringen-Laiz
+Sigmarszell-Zeisertsweiler
+Silberhütte
+Simbach/Inn
+Simmern-Wahlbach
+Sinsheim
+Steinau-Seidenroth
+Solingen-Hohenscheid
+Soltau
+Sondershausen
+Sonneberg-Neufang
+Sontra
+Sooden-Allendorf, Bad
+Speinshart
+Spören-Prussendorf
+Stammbach-Querenbach
+Stegen
+Steinau, Kr. Cuxhaven
+Steinberg
+Mittelnkirchen-Hohenfelde
+Oberharz am Brocken-Stiege
+Stockach
+Stötten
+Wagersrott
+Straubing
+Stuttgart (Neckartal)
+Stuttgart-Stadt
+Stuttgart (Schnarrenberg)
+Stuttgart-Echterdingen
+Stuttgart-Hohenheim
+Suderode, Bad
+Tangermünde
+Tann/Rhön
+Tauberbischofsheim-Dittigheim
+Starkenberg-Tegkwitz
+Teterow
+Worpswede-Hüttenbusch
+Teuschnitz
+Theeßen
+Tholey
+Thüngersheim
+Tiefenort
+Tirschenreuth-Lodermühl
+Titisee-Neustadt-Langenordnach
+Todtmoos
+Tölz, Bad
+Tönisvorst
+Torfhaus im Solling
+Torgau
+Traunstein-Sparz
+Traunstein-Axdorf
+Travemünde
+Trent
+Tribsees
+Trier-Zewen
+Trier-Petrisberg
+Trochtelfingen
+Trochtelfingen-Wilsingen
+Trollenhagen
+Trostberg
+Tübingen
+Tuttlingen
+Tuttlingen-Möhringen
+Twistetal-Mühlhausen
+Überlingen/Bodensee
+Ueckermünde
+Uelzen
+Gollhofen
+Ulm
+Ummendorf
+Unterlüß
+Uttenreuth
+Villingen-Schwenningen
+Visbek
+Völklingen-Stadt
+Vogtsburg-Oberrotweil
+Voldagsen
+Wackersleben
+Waghäusel-Kirrlach
+Wahlen
+Wahlsburg-Lippoldsberg
+Wittenborn
+Wahnsdorf bei Dresden
+Waiblingen
+Waldau-Jostal
+Waldeck
+Waldems-Reinborn
+Waldhäuser (National Park)
+Waldsassen
+Waldshut
+Waltershausen
+Wangerooge
+Warburg
+Waren (Müritz)
+Wartenberg-Angersbach
+Wasserburg
+Wasserkuppe
+Watzmannhaus
+Weiden
+Weidenbach, Kr.Ansbach
+Weigenheim-Reusch
+Weihenstephan-Dürnast
+Weilburg (Kläranlage)
+Weimar
+Weimar-Schöndorf
+Weinbiet
+Weinsberg
+Weisen bei Wittenberge
+Weiskirchen/Saar
+Weismain
+Weissach
+Weißenburg-Emetzheim
+Weißenfels
+Weißensee-Ottenhausen
+Weisweil-Waldeckhof
+Wellendingen
+Wellmitz
+Wendelstein
+Werl
+Mühlhausen, Kr. Schweinfurt
+Wernigerode
+Wertheim-Eichel
+Westerland
+Fehmarn
+Wielenbach (Demollstr.)
+Wiesbaden-Auringen
+Wiesbaden-Dotzheim
+Wiesenburg
+Wildbad, Bad-Calmbach
+Neubulach-Oberhaugstett
+Wildungen, Bad
+Wilhelmshaven
+Willingen/Upland
+Winterbach, Rems-Murr-Kreis
+Wismar
+Wittenberg
+Wittmundhafen
+Wittstock
+Wittstock-Rote Mühle
+Witzenhausen
+Wörnitz-Bottenweiler
+Woldegk
+Wolfach
+Wolfsburg
+Wolfsburg (Südwest)
+Wolfstein/Pfalz
+Worms
+Würzburg (Klärwerk)
+Würzburg
+Würzburg (Physikalisches-Institut)
+Wunstorf
+Wuppertal-Buchenhofen
+Remscheid
+Wustrau-Ziethenhorst
+Wutöschingen-Ofteringen
+Wrixum/Föhr
+Zehdenick
+Zeitz
+Zerbst
+Zinnowitz
+Zinnwald-Georgenfeld
+Zugspitze
+Lichtentanne
+Zwiesel
+Zwieselberg
+Bassum (A)
+Bassum
+Berge
+Dannenberg
+Emden
+Fürstenzell
+Hahn
+Kirchheim/Teck-Ötlingen
+Kohlgrub, Bad (A)
+Mainburg
+Mannheim
+Melsungen-Bürstoß
+Neuwied
+Schönhagen (Ostseebad)
+Reit im Winkl
+Welzheim (A)
+Melchow-Schönholz
+Wendisch Evern
+Taubenheim-Seeligstadt
+Ostenfeld (Rendsburg)
+Grambow-Schwennenz
+Medow-Wussentin
+Stralsund-Devin
+Sohland/Spree
+Wangerland-Hooksiel
+Weidenbach-Weiherschneidbach
+Dörpen
+Dörnick
+Coschen
+Mallersdorf-Pfaffenberg
+Wilhelmshaven (Flugplatz)
+Nastätten
+Selb-Spielberg
+Lügde-Paenbruch
+Steinhagen-Negast
+Saarbrücken-Burbach
+Dollnstein-Breitenfurt
+Friedrichshafen-Unterraderach
+Großerlach-Mannenweiler
+Ingelfingen-Stachenhausen
+Schwäbisch Gmünd-Weiler
+Singen
+Brilon-Thülen
+Wusterwitz
+Pabstorf
+Moorgrund Gräfen-Nitzendorf
+Demker
+Notzingen
+Pilsach-Litzlohe
+Mühlhausen/Thüringen-Görmar
+Karlshagen
+Markt Erlbach-Mosbach
+Nossen
+Lohr/Main-Halsbach
+Lüdinghausen-Brochtrup
+Runkel-Ennerich
+Maisach-Galgen
+Schonungen-Mainberg
+Elsendorf-Horneck
+Liebenburg-Othfresen
+Siegsdorf-Höll
+Bielefeld-Deppendorf
+Freudenberg/Main-Boxtal
+Neuglobsow (HM)
+Hattstedt
+Donauwörth-Osterweiler
+Olbersleben
+Schneefernerhaus
+Treuen
+Arnsberg-Neheim
+Hermaringen-Allewind
+Offenbach-Wetterpark
+Deutschneudorf-Brüderwiese
+Prackenbach-Neuhäusl
+Feldberg/Mecklenburg
+Jeßnitz
+Alfeld
+Eisenach
+Feuchtwangen-Heilbronn
+Waldmünchen
+Borkum-Flugplatz
+Ahaus
+Heckelberg
+Hoyerswerda
+Wunsiedel-Schönbrunn
+Gottfrieding
+Hoherodskopf/Vogelsberg
+Leutkirch-Herlazhofen
+Neu-Ulrichstein
+Neuhütten/Spessart
+Langenwetzendorf-Göttendorf
+Naumburg/Saale-Kreipitzsch
+Piding
+Padenstedt (Pony-Park)
+Veilsdorf
+Oberhaching-Laufzorn
+Wittingen-Vorhop
+Duisburg-Baerl
+Waibstadt
+Hameln-Hastenbeck
+Waltrop-Abdinghof
+Gevelsberg-Oberbröking
+Landshut-Reithof
+Krölpa-Rockendorf
+Meinerzhagen-Redlendorf
+Hildesheim-Drispenstedt
+Helmstedt-Emmerstedt
+Bake Zulu
+Nordseeboje 2
+Falkenberg (Grenzschichtmessfeld)
+Hersdorf-Weißenseifen
+Aachen-Orsbach
+Schauenburg-Elgershausen
+Ulm-Mähringen
+Hamburg (Deutsche Seewarte)
+Kaufbeuren-Oberbeuren
+

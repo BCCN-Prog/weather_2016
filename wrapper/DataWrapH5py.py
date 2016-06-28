@@ -296,7 +296,7 @@ class Daily_DataBase(DataBase):
 class Hourly_DataBase(DataBase):
     def __init__(self, db_name="hourly_database.hdf5", make_new=False):
         hourly_categories = ['date', 'hour', 'site', 'station_id', 'temperature', 'humidity',
-                             'wind_speed', 'rain_chance', 'rain_amt', 'cloud_cover', 'city_ID']
+                             'wind_speed', 'rain_chance', 'rain_amt', 'cloud_cover', 'city_ID', 'prediction_time']
 
         DataBase.__init__(self,
                           file_name=db_name,

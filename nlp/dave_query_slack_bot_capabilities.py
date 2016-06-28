@@ -2,10 +2,16 @@ from slackclient import SlackClient
 import os as os
 
 token = os.environ.get('SLACK_BOT_TOKEN')
-BOT_NAME = 'wetterfeeddd'
+BOT_NAME = 'eliza_rt'
 
 #sc = SlackClient(token)
 #print(sc.api_call("api.test"))
+#print(sc.api_call("channels.info", channel="1234567890"))
+#print(sc.api_call(
+#    "chat.postMessage", channel="#general", text="Hello from the Eliza Python bot! :tada: How can I help you today?",
+#    username='Eliza', icon_emoji=':phone:'
+#))
+
 
 slack_client = SlackClient(token)
 
