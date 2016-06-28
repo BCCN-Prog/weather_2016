@@ -23,9 +23,9 @@ def enable_print():
 
 class QueryEngine:
     daily_params = ['date', 'site', 'station_id', 'high', 'low', 'temperature', 'rain_chance', 'rain_amt',
-                    'cloud_cover', 'city_ID']  # only for example
+                    'cloud_cover', 'city_ID', 'day']  # only for example
     hourly_params = ['date', 'hour', 'site', 'station_id', 'temperature', 'humidity',
-                     'wind_speed', 'rain_chance', 'rain_amt', 'cloud_cover', 'city_ID']
+                     'wind_speed', 'rain_chance', 'rain_amt', 'cloud_cover', 'city_ID', 'prediction_time']
     days_dict = {0: 'Sunday', 1: 'Monday', 2:  'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday'}
     days_backdict = {'Sunday': 0, 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4, 'Friday': 5, 'Saturday': 6}
 
