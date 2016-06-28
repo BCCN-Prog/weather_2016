@@ -306,10 +306,10 @@ class Hourly_DataBase(DataBase):
                           )
 
     params_dict = {0: 'date', 1: 'hour', 2: 'site', 3: 'station_id', 4: 'temperature', 5: 'humidity',
-                   6: 'wind_speed', 7: 'rain_chance', 8: 'rain_amt', 9: 'cloud_cover', 10: 'city_ID'}
+                   6: 'wind_speed', 7: 'rain_chance', 8: 'rain_amt', 9: 'cloud_cover', 10: 'city_ID', 11: 'prediction_time'}
 
     categories_dict = {'date': 0, 'hour': 1, 'site': 2, 'station_id': 3, 'temperature': 4, 'humidity': 5,
-                       'wind_speed': 6, 'rain_chance': 7, 'rain_amt': 8, 'cloud_cover': 9, 'city_ID': 10}
+                       'wind_speed': 6, 'rain_chance': 7, 'rain_amt': 8, 'cloud_cover': 9, 'city_ID': 10, 'prediction_time': 11}
     csv_dict = {'date':0, 'station_id':1, 'temperature':2, 'humidity':3, 'cloud_cover':4, \
                 'rain_ind':5, 'rain_amt':6, 'air_pressure_red':7, 'air_pressure':8, 'wind_speed':9}
     csv_backdict = {0:'date', 1:'station_id', 2:'temperature', 3:'humidity', 4:'cloud_cover', \
