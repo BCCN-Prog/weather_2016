@@ -10,11 +10,18 @@ import pprint
 import wrapper.DataWrapH5py as wrapper
 from itertools import product
 
+'''READ FIRST: In the download function, the daily and hourly data were swapped wrt the filename (yes, that is pretty stupid). Anyway, this code tries to check for any file that is loaded whether the data is daily or hourly by itself.'''
 
 def get_data_from_fn (fn):
     '''extracts data from the filename for chacking
-    date in format YYYYMMDD
-    loc3 are the first 3 letters of the location'''
+    Input:
+    fn, the filename as string
+    Returns:
+    date: int in format YYYYMMDD
+    t_st: int in format YYYYMMDDhhmm (redundant, but used for different things)
+    loc3: first 3 letters of the location'''
+    
+    
     # first step: if the filename is a path, remove everything from the path
     gr =  [pos for pos, char in enumerate(fn) if char == '/']
     gr.append(0)
@@ -51,8 +58,8 @@ def dict_type (my_dict):
 def scrape(date, city, data_path):
 
     '''Function calls filename scraping function from the given parameters and returns three dictionaries: One with the daily forecasts, Two with the hourly forecasts, one for this, the other for the next day. Downloading function does have a bug so hourly data is stored in file that is named daily and the other way around.'''
-    #daily_db = wrapper.Daily_DataBase()
-    #hourly_db = wrapper.Hourly_DataBase()
+    daily_db = wrapper.Daily_DataBase()
+    hourly_db = wrapper.Hourly_DataBase()
 
     #date[2,5] = '_'
     hours = [prepend_0_if_single_digit(str(i)) for i in range(24)]
@@ -65,16 +72,26 @@ def scrape(date, city, data_path):
             [d, d1] = scrape_from_filename(name1)
             print (tester.run_tests(d))
             print (tester.run_tests(d1))
+            for obj in [d, d1]:
+                if dict_type(obj) == 'h':
+                    hourly_db.save_dict(obj)
+                elif dict_type(obj) == 'd':
+                    daily_db.save_dict(obj)
         if os.path.exists(name2):
             [h, h1] = scrape_from_filename(name2)
             print (tester.run_tests(h))
             print (tester.run_tests(h1))
-    for obj in [d,d1, h, h1]:
-        print (dict_type(obj))
-    return [d,d1, h, h1]           
+            for obj in [h, h1]:
+                if dict_type(obj) == 'h':
+                    hourly_db.save_dict(obj)
+                elif dict_type(obj) == 'd':
+                    daily_db.save_dict(obj)          
+
+
 
 def scrape_from_filename (filename):
-
+    '''function loads the file, finds out whether the data is hourly or daily and scrapes according to this.
+    Returns: Two dicts, one of them does not contain data for daily case'''
     with open(filename, 'rb') as f:
         dat = pickle.load(f)
         f.close()
@@ -100,8 +117,19 @@ def gen_basic_dict (city, pred_t, date):
     res['daily'] = {}
     return res
     
+    
+    
+    
+    
 def scrape_daily (dat, t_st):
 
+    '''scrapes daily data
+    Input:
+    dat: loaded pkl file with daily dat
+    t_st: time stemp, YYYYMMDDhhmm int
+    Returns:
+    2 dicts, one of them containing the daily data, one  of them empty'''
+    
     city = (dat['location']['city']).lower()
 
     datf = dat['forecast']['simpleforecast']['forecastday']
@@ -137,6 +165,12 @@ def scrape_daily (dat, t_st):
     
 
 def scrape_hourly (dat, t_st):  
+    '''scrapes hourly data
+    Input:
+    dat: loaded pkl file with hourly data
+    t_st: time stemp, YYYYMMDDhhmm int
+    Returns:
+    2 dicts, first one with the predictions on the day of the scraping, one with the predictions for the following day'''
 
     city = (dat['location']['city']).lower()
     
