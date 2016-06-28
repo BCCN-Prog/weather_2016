@@ -4,6 +4,7 @@ from PyQt4.QtGui import *
 import sys
 import gui
 sys.path.append('../query_engine_v2')
+sys.path.append('../visualization')
 import executor as ex
 
 ListRecentDaily = ['Parameter1','Parameter2']
@@ -45,14 +46,17 @@ class MainDialog(QDialog, gui.Ui_MainWindow):
             StartingDateTime += StartingTime[0:2]
             EndingDateTime += EndingTime[0:2]
         
-            
         #Get h/d, r/h
         hourly_daily = ('h' if ui.HourlyFlag.isChecked() else 'd')
         recent_hist = ('h' if ui.HistoricalFlag.isChecked() else 'r')
         #get parameter and station (selected in drop-down menu)
         parameter = ui.ParametersList.currentText()
         station = ui.StationsList.currentText()
+
+        #pass info!
         exec_.get_data(hourly_daily, recent_hist, parameter, station, StartingDateTime, EndingDateTime)
+
+
     def RecentSelected(self):
         if ui.HourlyFlag.isChecked():
             ui.ParametersList.clear()
