@@ -9,7 +9,7 @@ def test_top_level(data_dic):
     # check for keys
     keys_present = data_dic.keys()
     keys_required = ['site', 'city', 'date', 'daily','hourly', 'prediction_time']
-    sites_possible = ['0', '1', '2', '3', '4']
+    sites_possible = ['0', '1', '2', '3', '4', '5']
     cities_possible = ["berlin", "hamburg", "munich", "muenchen",
                 "cologne", "frankfurt", "stuttgart",
                 "bremen", "leipzig", "hanover", "hannover",
