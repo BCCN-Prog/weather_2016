@@ -6,6 +6,8 @@ import numpy as np
 import bisect
 from functools import reduce
 
+import time
+
 def block_print():
     '''
     Blocks all print output.
@@ -89,6 +91,7 @@ class QueryEngine:
         Nan handling: Nans always considered outside the bounds. This means that slicing wrt to a
         category whose corresponding column contains only nans will always return an empty array.
         '''
+        s = time.time()
         if(type(params) != list and type(lower) != list and type(upper) != list):
             assert(type(params) == str and isinstance(lower, (int, float, np.int64)) and isinstance(upper, (int, float,np.int64)))
             params = [params]
@@ -100,13 +103,18 @@ class QueryEngine:
         
         assert(sort == None or type(sort) == str or type(sort) == list)
 
+        print("asserts: ", s-time.time())
+
+        s = time.time()
         if dset == "daily":
             sorted_params = self.daily_params
         else:
             sorted_params = self.hourly_params
 
         dset = self.dset_dict[dset]
+        print("Assign dataset ", s-time.time())
         
+        s = time.time()
         p_unordered = [dset.categories_dict[params[i]] for i in range(len(params))]
         p_ordered = np.argsort(p_unordered)
         params = list(np.array(params)[p_ordered])
@@ -114,45 +122,59 @@ class QueryEngine:
         upper = list(np.array(upper)[p_ordered])
         #here we order the param and upper and lower lists according to the dset.params_dict
         #in order to allow for these to be passed to the function in any order.
+        print("Orderin params ", s-time.time())
 
+        s = time.time()
         params_intersect = [p for p in params if p in sorted_params]
         params_intersect_int = [dset.categories_dict[params_intersect[i]] for i in range(len(params_intersect))]
         hi_lo_indices = [params.index(params_intersect[i]) for i in range(len(params_intersect))]
         hi_intersect = np.array(upper)[hi_lo_indices]
         lo_intersect = np.array(lower)[hi_lo_indices]
         #modify this to support aliases of params by having dictionary of string to strings
+        print("Stuff with indices ", s-time.time())
         
         dset_names = ["{}_indices".format(params_intersect[i]) for i in range(len(params_intersect))]
 
         ret_cols = np.sort([dset.categories_dict[key] for key in return_params])
 
+        t = time.time()
         lo_ind = []
         hi_ind = []
         for i in range(len(params_intersect)):
             s = dset.f["weather_data"][:,params_intersect_int[i]][dset.f[dset_names[i]]]
+            n = time.time()
             if(np.isnan(np.sum(s))):
                 s = s[:np.argmin(s)]
+            #print("sum-nan ckeching: ", n-time.time())
             #above line removes the nans if they exist in the array.
 
-            lo_ind.append(bisect.bisect_left(s, lo_intersect[i]))
-            hi_ind.append(bisect.bisect_right(s, hi_intersect[i]))
+            #lo_ind.append(bisect.bisect_left(s, lo_intersect[i]))
+            #hi_ind.append(bisect.bisect_right(s, hi_intersect[i]))
+            lo_ind.append(np.searchsorted(s, lo_intersect[i]))
+            hi_ind.append(np.searchsorted(s, hi_intersect[i], side='right'))
             #getting the slicing indices wrt to all parameters in params_intersect
+        print("Limiting presorted indices ", t-time.time())
 
+        s = time.time()
         set_list = [dset.f[dset_names[i]][:][lo_ind[i]:hi_ind[i]] for i in range(len(params_intersect))]
         #make a list of array of indices. This is faster then to use sets, because although
         #set.intersection is a lot faster then np.intersect1d, converting arrays to sets takes
         #a lot more time.
+        print("Getting list: ", s-time.time())
 
+        s = time.time()
         ind = np.sort(reduce(np.intersect1d, set_list))
         #sorting in oder to better comply with h5py.
+        print("Intersecting :", s-time.time())
 
         if not ind.size:
             print("No matching entries.")
             return np.array([])
         
-        #output = dset.f["weather_data"][:, ret_cols][ind]
+        s = time.time()
         output = dset.f["weather_data"][:][ind][:,ret_cols]
         out_dict = {dset.params_dict[key]:i for i, key in enumerate(ret_cols)}
+        print("Getting output: ", s-time.time())
 
         if sort:
             if type(sort) == str:
@@ -168,7 +190,8 @@ class QueryEngine:
                     s_ind.append(indices)
                 output = tuple(output)
                 s_ind = tuple(s_ind)
-                
+        
+        s = time.time()
         if return_matrix == True:
             return (output, out_dict)
         elif not sort:
@@ -176,6 +199,7 @@ class QueryEngine:
         else:
             print("return_matrix=False and sorting are not compatible.")
             return None
+        print("Return block ", s-time.time())
             
 
     def sort(self, dset, param, data_tuple, return_params):
