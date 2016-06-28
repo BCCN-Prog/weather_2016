@@ -5,6 +5,7 @@ import numpy as np
 import datetime
 import test_scraper_output as tester
 import pprint
+import wrapper.DataWrapH5py as wrapper
 
 
 def get_data_from_fn (fn):
@@ -141,16 +142,23 @@ def scrape_hourly (dat, t_st):
                 res1['hourly']["{}".format(str(this_hr))] = hr
         else:
             res['hourly']["{}".format(str(i))] = hr
-    pp = pprint.PrettyPrinter(indent = 2)
+    #pp = pprint.PrettyPrinter(indent = 2)
     #pp.pprint(res)
     return res, res1
 
 if __name__ == '__main__':
+    # CAUTION: There was a mix-up of hourly and daily data, so what looks like
+    # the dictionary is the hourly one and vice versa
+    daily_db = wrapper.Daily_DataBase()
+    hourly_db = wrapper.Hourly_DataBase()
     [d,  d1] = scrape('./ex_data/wunderground_08_06_2016_10_36_Berlin_10days.pkl')
+    hourly_db.save_dict(d)
+    hourly_db.save_dict(d1)
     print (tester.run_tests(d))
     print (tester.run_tests(d1))
     print ('done daily')
     h = scrape('./ex_data/wunderground_08_06_2016_10_36_Berlin_hourly.pkl')
+    daily_db.save_dict(h)
     print ('done hourly')
     print (tester.run_tests(h))
 
