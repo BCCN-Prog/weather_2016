@@ -3,13 +3,18 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys
 import gui
+import pandas as pd
 sys.path.append('../query_engine_v2')
 import executor as ex
 
 ListRecentDaily = ['Parameter1','Parameter2']
 ListRecentHourly = ['Parameter1','Parameter2']
-ListHistoricalDaily = ['All','Maximum Temperature', 'Minimum Temperature', 'Average Temperature','Rain Chance', 'Rain Amount', 'Cloud Cover', 'Day']
-ListHistoricalHourly = ['All','Temperature', 'Moisture', 'Cloud Cover', 'Rainfall', 'Rain Amount', 'Air Pressure reduced', 'Air Pressure Station', 'Windspeed' ]
+ListHistoricalDaily = ['Maximum Temperature', 'Minimum Temperature', 'Average Temperature', 'Rain Amount', 'Cloud Cover']
+ListHistoricalHourly = ['Temperature', 'Moisture', 'Cloud Cover', 'Rainfall', 'Rain Amount', 'Air Pressure reduced', 'Air Pressure Station', 'Windspeed' ]
+
+StationTable = pd.read_table('stations.txt')
+ListStations = StationTable['name'].tolist()
+
 
 class MainDialog(QDialog, gui.Ui_MainWindow):
 	
@@ -46,13 +51,13 @@ class MainDialog(QDialog, gui.Ui_MainWindow):
             EndingDateTime += EndingTime[0:2]
         
         #Get h/d, r/h
-        hourly_daily = ('h' if ui.HourlyFlag.isChecked() else 'd')
-        recent_hist = ('h' if ui.HistoricalFlag.isChecked() else 'r')
+        hourly_daily = ('hourly' if ui.HourlyFlag.isChecked() else 'daily')
+        recent_hist = ('historical' if ui.HistoricalFlag.isChecked() else 'recent')
         #get parameter and station (selected in drop-down menu)
         parameter = ui.ParametersList.currentText()
         station = ui.StationsList.currentText()
-
         #pass info!
+
         exec_.get_data(hourly_daily, recent_hist, parameter, station, StartingDateTime, EndingDateTime)
 
 
@@ -93,6 +98,8 @@ class MainDialog(QDialog, gui.Ui_MainWindow):
         ui.enable_stuff() 
 
     def enable_stuff(self):
+            ui.StationsList.addItem("All")   
+            ui.StationsList.addItems(ListStations)
             ui.ParametersList.setEnabled(True) 
             ui.StationsList.setEnabled(True) 
             ui.StartingDate.setEnabled(True) 

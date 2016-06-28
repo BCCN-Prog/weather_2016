@@ -123,8 +123,9 @@ def interpolated_color_map(station_lon, station_lat, station_val, grid_dim=(80,1
         m.drawcountries()
         m.drawmapboundary()
         value_mesh = griddata(station_x, station_y, station_val[:,i], x_mesh, y_mesh, interp=interp)
-        m.contourf(x_mesh, y_mesh, value_mesh)
+        cont = m.contourf(x_mesh, y_mesh, value_mesh, vmin=np.amin(station_val), vmax=np.amax(station_val))
         m.scatter(station_lon, station_lat, color='k', s=5, latlon=True)
+        cb = m.colorbar(cont, location='bottom', label='Random Data')
         if return_figure:
             return plt.gcf()
         else:
@@ -146,37 +147,6 @@ def interpolated_color_map(station_lon, station_lat, station_val, grid_dim=(80,1
         #return plt.gcf()
     #else:
         #plt.show()
-
-def triangulation_map(station_lon, station_lat, station_val, cmap=None, *args, **kwargs):
-    """ Using matplotlib.pyplot.tricontourf() function to plot contourplot on an irreguar grid by using triangulation. """
-
-    # map boundries
-    lat_0 = 51
-    lat_min = 47
-    lat_max = 55
-
-    lon_0 = 10
-    lon_min =  5
-    lon_max = 16
-
-    m = Basemap(projection='tmerc', lat_0=lat_0, lon_0=lon_0, 
-                llcrnrlat=lat_min, llcrnrlon=lon_min, urcrnrlat=lat_max, 
-                urcrnrlon=lon_max, resolution='i')
-
-    m.drawcoastlines()
-    m.drawcountries()
-    m.drawmapboundary()
-
-    m.contourf(station_lon, station_lat, station_val, cmap=cmap, latlon=True, tri=True, *args, **kwargs)
-    m.scatter(station_lon, station_lat, color='k', s=5, latlon=True)
-
-    # Set Triangulation manual?:
-    #station_x, station_y = m(station_lon, station_lat)
-    #triang = tri.Triangulation(station_x, station_y)
-    #plt.tricontour(station_x, station_y, station_val, 15, linewidths=0.5, colors='k')
-    #plt.tricontourf(x, y, z, 15, cmap=plt.cm.rainbow, norm=plt.Normalize(vmax=abs(zi).max(), vmin=-abs(zi).max()))
-   
-    plt.show()
 
 
 def get_test_scraping_data():
