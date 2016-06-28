@@ -36,6 +36,9 @@ def get_data_from_fn (fn):
 
 def prepend_0_if_single_digit(x):
     return '0' + str(x) if len(x) == 1 else x
+    
+def is_relevant (my_dict):
+    pass
    
 def scrape(date, city, data_path):
 
@@ -53,6 +56,8 @@ def scrape(date, city, data_path):
         if os.path.exists(name1):
             [d, d1] = scrape_from_filename(name1)
             print (tester.run_tests(d))
+            print (len(d['hourly']))
+            print (len(d['daily']))
             print (tester.run_tests(d1))
         if os.path.exists(name2):
             [h, h1] = scrape_from_filename(name2)
