@@ -53,13 +53,15 @@ def scrape(date, city, data_path):
         if os.path.exists(name1):
             [d, d1] = scrape_from_filename(name1)
             print (tester.run_tests(d))
+            print (tester.run_tests(d1))
         if os.path.exists(name2):
             [h, h1] = scrape_from_filename(name2)
             print (tester.run_tests(h))
             print (tester.run_tests(h1))
-    return [d, h, h1]           
+    return [d,d1, h, h1]           
 
 def scrape_from_filename (filename):
+
     with open(filename, 'rb') as f:
         dat = pickle.load(f)
         f.close()
@@ -68,21 +70,27 @@ def scrape_from_filename (filename):
     if ('hourly_forecast' in dat.keys()):
         res, res1 = scrape_hourly (dat, t_st)
     elif ('forecast' in dat.keys()):
-        res = scrape_daily (dat, t_st)
+        res,res1 = scrape_daily (dat, t_st)
     else: raise Exception ('File data cannot be recognized')
     if not (res['date'] == fnd): raise Exception ('File name date and date of data not coherent')
     if not (res['city'][:3] == fl3): raise Exception ('File name locaction and location in data not coherent')
     return [res, res1]
     
-
-    
+def gen_basic_dict (city, pred_t, date):
+    '''produces an empty dictionary with only the basic information'''
+    res = {}
+    res['site'] = 5 # weather underground has ID 5
+    res['city'] = city
+    res['prediction_time'] = pred_t
+    res['date'] = date
+    res['hourly'] = {}
+    res['daily'] = {}
+    return res
     
 def scrape_daily (dat, t_st):
-    res = {}
-    res1= {}#this is because there was too much confusion between daily and hourly data
-    res['site'] = 5 # weather underground has ID 5
-    res['city'] = (dat['location']['city']).lower()
-    res['prediction_time'] = t_st
+
+    city = (dat['location']['city']).lower()
+
     datf = dat['forecast']['simpleforecast']['forecastday']
     month = str(datf[0]['date']['month'])
     if len (month)<2: month = '0' + month
@@ -90,9 +98,10 @@ def scrape_daily (dat, t_st):
     if len(day)<2: day = '0' + day
     year = datf[0]['date']['year']
     date = '{}{}{}'.format(year, month, day)
-    res['date'] = int(date) #check for sanity here!
-    res['hourly'] = {}
-    res['daily'] = {} #day 0 is the forecast for the day the prediction is made. Might be good to check though.
+    
+    res = gen_basic_dict(city, t_st, int(date))
+    res1 = gen_basic_dict(city, t_st, int(date)) #both functions should give back two dicts so this one is going to stay empty (a la whatever works)
+
     for i in range(len(datf)):
         dr = {}
         
@@ -110,39 +119,26 @@ def scrape_daily (dat, t_st):
         res['daily']["{}".format(str(i))] = dr
     pp = pprint.PrettyPrinter(indent = 2)
     #pp.pprint(res)
-    return res
+    return res, res1
     
     
 
 def scrape_hourly (dat, t_st):  
-    maxp = len(dat['hourly_forecast']) #gets amount of hourly data packages that are stored
-    res = {}
-    res1 = {}
 
-    res['site'] = 5 # weather underground has ID 5
-    res['city'] = (dat['location']['city']).lower()
-    res['prediction_time'] = t_st
-    month = (dat['hourly_forecast'][0]['FCTTIME']['mon_padded'])
-    day = (dat['hourly_forecast'][0]['FCTTIME']['mday_padded'])
-    year = (dat['hourly_forecast'][0]['FCTTIME']['year'])
-    date = '{}{}{}'.format(year, month, day)
-    res['date'] = int(date) #check for sanity here!
-    res['hourly'] = {}
-    res['daily'] = {}
-    if (dat['hourly_forecast'][0]['FCTTIME']['mday_padded'] == dat['hourly_forecast'][maxp-1]['FCTTIME']['mday_padded']):
-        two_dicts = False
-    else: two_dicts = True   
-    if two_dicts: 
-        res1['site'] = 5 # weather underground has ID 5
-        res1['city'] = (dat['location']['city']).lower()
-        res1['daily'] = {}
-        res1['prediction_time'] = t_st
-        month = (dat['hourly_forecast'][maxp-1]['FCTTIME']['mon_padded'])
-        day = (dat['hourly_forecast'][maxp-1]['FCTTIME']['mday_padded'])
-        year = (dat['hourly_forecast'][maxp-1]['FCTTIME']['year'])
-        date = '{}{}{}'.format(year, month, day)
-        res1['date'] = int(date) #check for sanity here!
-        res1['hourly'] = {}
+    city = (dat['location']['city']).lower()
+    
+    month0 = (dat['hourly_forecast'][0]['FCTTIME']['mon_padded'])
+    day0 = (dat['hourly_forecast'][0]['FCTTIME']['mday_padded'])
+    year0 = (dat['hourly_forecast'][0]['FCTTIME']['year'])
+    date0 = '{}{}{}'.format(year0, month0, day0)
+    res = gen_basic_dict(city, t_st, int(date0))
+       
+    maxp = len(dat['hourly_forecast']) #gets amount of hourly data packages that are stored
+    month1 = (dat['hourly_forecast'][maxp-1]['FCTTIME']['mon_padded'])
+    day1 = (dat['hourly_forecast'][maxp-1]['FCTTIME']['mday_padded'])
+    year1 = (dat['hourly_forecast'][maxp-1]['FCTTIME']['year'])
+    date1 = '{}{}{}'.format(year1, month1, day1)
+    res1 = gen_basic_dict(city, t_st, int(date1))
 
     first_day = dat['hourly_forecast'][0]['FCTTIME']['mday_padded']
     for i in range(maxp):
@@ -163,13 +159,10 @@ def scrape_hourly (dat, t_st):
         hr['rain_chance'] = float(dat['hourly_forecast'][i]['pop'])
         if hr['rain_chance'] > 101. or hr['rain_chance'] < -1. : raise Exception ('Rain chance (hourly) does not seem realistic')
         hr['cloud_cover'] = float(dat['hourly_forecast'][i]['sky'])
-        if two_dicts:
-            if dat['hourly_forecast'][i]['FCTTIME']['mday_padded'] == first_day:
-                res['hourly']["{}".format(str(this_hr))] = hr
-            else:
-                res1['hourly']["{}".format(str(this_hr))] = hr
+        if dat['hourly_forecast'][i]['FCTTIME']['mday_padded'] == first_day:
+            res['hourly']["{}".format(str(this_hr))] = hr
         else:
-            res['hourly']["{}".format(str(i))] = hr
+            res1['hourly']["{}".format(str(this_hr))] = hr
     #pp = pprint.PrettyPrinter(indent = 2)
     #pp.pprint(res)
     return res, res1
