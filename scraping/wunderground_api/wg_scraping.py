@@ -1,6 +1,14 @@
 import pickle
+import sys
+import os
+sys.path.append('../')
+sys.path.append('../../')
 import numpy as np
 import datetime
+import test_scraper_output as tester
+import pprint
+import wrapper.DataWrapH5py as wrapper
+from itertools import product
 
 
 def get_data_from_fn (fn):
@@ -22,11 +30,36 @@ def get_data_from_fn (fn):
         date = int('{}{}{}'.format(year, month, day))
         t_st = int('{}{}{}{}{}'.format(year, month, day, hour, minute)) #timestamp
     except ValueError: print ('Filename must have changed, should start with wunderground_dd_mm_yyyy') 
-    loc3 = fn[30:33] #first 3 location letters
+    loc3 = (fn[30:33]).lower() #first 3 location letters
     return date,t_st, loc3
-    
 
-def scrape (filename):
+
+def prepend_0_if_single_digit(x):
+    return '0' + str(x) if len(x) == 1 else x
+   
+def scrape(date, city, data_path):
+
+    '''Function calls filename scraping function from the given parameters and returns three dictionaries: One with the daily forecasts, Two with the hourly forecasts, one for this, the other for the next day. Downloading function does have a bug so hourly data is stored in file that is named daily and the other way around.'''
+    #daily_db = wrapper.Daily_DataBase()
+    #hourly_db = wrapper.Hourly_DataBase()
+
+    #date[2,5] = '_'
+    hours = [prepend_0_if_single_digit(str(i)) for i in range(24)]
+    minutes = [prepend_0_if_single_digit(str(i)) for i in range(60)] 
+    city = city[0].upper() + city[1:] #set first letter of city uppercase
+    for hour, minute in product(hours,minutes):
+        name1 = data_path + "/wunderground_{}_{}_{}_{}_hourly.pkl".format(date, hour, minute, city)
+        name2 = data_path + "/wunderground_{}_{}_{}_{}_10days.pkl".format(date, hour, minute, city)
+        if os.path.exists(name1):
+            [d, d1] = scrape_from_filename(name1)
+            print (tester.run_tests(d))
+        if os.path.exists(name2):
+            [h, h1] = scrape_from_filename(name2)
+            print (tester.run_tests(h))
+            print (tester.run_tests(h1))
+    return [d, h, h1]           
+
+def scrape_from_filename (filename):
     with open(filename, 'rb') as f:
         dat = pickle.load(f)
         f.close()
@@ -39,16 +72,16 @@ def scrape (filename):
     else: raise Exception ('File data cannot be recognized')
     if not (res['date'] == fnd): raise Exception ('File name date and date of data not coherent')
     if not (res['city'][:3] == fl3): raise Exception ('File name locaction and location in data not coherent')
-    if len(res1) == 0: return res
-    else: return [res, res1]
+    return [res, res1]
     
 
     
     
 def scrape_daily (dat, t_st):
     res = {}
+    res1= {}#this is because there was too much confusion between daily and hourly data
     res['site'] = 5 # weather underground has ID 5
-    res['city'] = dat['location']['city']
+    res['city'] = (dat['location']['city']).lower()
     res['prediction_time'] = t_st
     datf = dat['forecast']['simpleforecast']['forecastday']
     month = str(datf[0]['date']['month'])
@@ -58,6 +91,7 @@ def scrape_daily (dat, t_st):
     year = datf[0]['date']['year']
     date = '{}{}{}'.format(year, month, day)
     res['date'] = int(date) #check for sanity here!
+    res['hourly'] = {}
     res['daily'] = {} #day 0 is the forecast for the day the prediction is made. Might be good to check though.
     for i in range(len(datf)):
         dr = {}
@@ -74,6 +108,8 @@ def scrape_daily (dat, t_st):
         dr['pressure'] = np.NaN
         dr['cloud_cover']  = np.NaN
         res['daily']["{}".format(str(i))] = dr
+    pp = pprint.PrettyPrinter(indent = 2)
+    #pp.pprint(res)
     return res
     
     
@@ -84,7 +120,7 @@ def scrape_hourly (dat, t_st):
     res1 = {}
 
     res['site'] = 5 # weather underground has ID 5
-    res['city'] = dat['location']['city']
+    res['city'] = (dat['location']['city']).lower()
     res['prediction_time'] = t_st
     month = (dat['hourly_forecast'][0]['FCTTIME']['mon_padded'])
     day = (dat['hourly_forecast'][0]['FCTTIME']['mday_padded'])
@@ -92,13 +128,14 @@ def scrape_hourly (dat, t_st):
     date = '{}{}{}'.format(year, month, day)
     res['date'] = int(date) #check for sanity here!
     res['hourly'] = {}
+    res['daily'] = {}
     if (dat['hourly_forecast'][0]['FCTTIME']['mday_padded'] == dat['hourly_forecast'][maxp-1]['FCTTIME']['mday_padded']):
         two_dicts = False
     else: two_dicts = True   
-    if two_dicts:
-        print('yiiha') 
+    if two_dicts: 
         res1['site'] = 5 # weather underground has ID 5
-        res1['city'] = dat['location']['city']
+        res1['city'] = (dat['location']['city']).lower()
+        res1['daily'] = {}
         res1['prediction_time'] = t_st
         month = (dat['hourly_forecast'][maxp-1]['FCTTIME']['mon_padded'])
         day = (dat['hourly_forecast'][maxp-1]['FCTTIME']['mday_padded'])
@@ -133,14 +170,30 @@ def scrape_hourly (dat, t_st):
                 res1['hourly']["{}".format(str(this_hr))] = hr
         else:
             res['hourly']["{}".format(str(i))] = hr
+    #pp = pprint.PrettyPrinter(indent = 2)
+    #pp.pprint(res)
     return res, res1
 
 if __name__ == '__main__':
-    d = scrape('./ex_data/wunderground_08_06_2016_10_36_Berlin_10days.pkl')
-    print ('done daily')
-    h = scrape('./ex_data/wunderground_08_06_2016_10_36_Berlin_hourly.pkl')
-    print ('done hourly')
-    print (h)
+    # CAUTION: There was a mix-up of hourly and daily data, so what looks like
+    # the dictionary is the hourly one and vice versa
+    data_path = './ex_data'
+    date= '08_06_2016'
+    city = 'Berlin'
+    scrape(date, city, data_path)
+    #daily_db = wrapper.Daily_DataBase()
+    #hourly_db = wrapper.Hourly_DataBase()
+    #[d,  d1] = scrape('./ex_data/wunderground_08_06_2016_10_36_Berlin_10days.pkl'
+    #hourly_db.save_dict(d)
+    #hourly_db.save_dict(d1)
+    #print (tester.run_tests(d))
+    #print (tester.run_tests(d1))
+    #print ('done daily')
+    #h = scrape('./ex_data/wunderground_08_06_2016_10_36_Berlin_hourly.pkl')
+    #daily_db.save_dict(h)
+    #print ('done hourly')
+    #print (tester.run_tests(h))
+
         
     
     
