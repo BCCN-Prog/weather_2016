@@ -1,0 +1,20 @@
+PCP Protocol 28.06.16:
+
+Decision wrt presentation: Scenarios that present the abilities of the Project as well as possible. See file 'ideas for pres' or similar in protocol folder of today.
+
+Stuff done:
+
+Visualization:
+    Alicja, Greg: Working on plotting functions, looks promising though small stuff still has to be done
+
+    Max: Colorbar for heatmap and animation, but is not done yet.
+
+GUI (Wolfi, Rahul): Overall working well, should work for all kind of data, just some debugging needs to be done
+
+Query engine (Georg): Issues with fancy indexing in h5py, so slowness issue is not easy to be solved quickly. Idea: cash that saves queries and their output. Queries for the presentation can be run the day before so that they are available at the day of the presentation
+
+Eren: Issue: In both daily and hourly data, the temperature is always NAN --> bug
+    Ines and Denis scraping script are still pending
+    
+NLP (Jan): API 'wit' used, basic versison is realistic, idea: add this to the BCCN slack group so people can ask for the weather and Chuck Norris jokes.
+
