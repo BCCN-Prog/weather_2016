@@ -103,8 +103,6 @@ class QueryEngine:
 
         assert(sort == None or type(sort) == str or type(sort) == list)
 
-        print("asserts: ", s-time.time())
-
         if dset == "daily":
             sorted_params = self.daily_params
         else:
