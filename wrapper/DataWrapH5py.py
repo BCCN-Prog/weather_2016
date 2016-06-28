@@ -201,7 +201,7 @@ class Daily_DataBase(DataBase):
     # Please, someone from scraping change the sites_dict and KEEP IT UPDATED if something changes
     # as some functions must rely on this structure.
 
-    # ## ## ## ## ## if you change the structure of the data, ALWAYS update these!# ## ## ## ## ## ## ## ## ## ## #
+    # ########## if you change the structure of the data, ALWAYS update these!######################
 
 
 
@@ -312,6 +312,7 @@ class Hourly_DataBase(DataBase):
 
     categories_dict = {'date': 0, 'hour': 1, 'site': 2, 'station_id': 3, 'temperature': 4, 'humidity': 5,
                        'wind_speed': 6, 'rain_chance': 7, 'rain_amt': 8, 'cloud_cover': 9, 'city_ID': 10, 'prediction_time': 11}
+
     csv_dict = {'date': 0, 'station_id': 1, 'temperature': 2, 'humidity': 3, 'cloud_cover': 4,
                 'rain_ind': 5, 'rain_amt': 6, 'air_pressure_red': 7, 'air_pressure': 8, 'wind_speed': 9}
     csv_backdict = {0: 'date', 1: 'station_id', 2: 'temperature', 3: 'humidity', 4: 'cloud_cover',
@@ -322,7 +323,7 @@ class Hourly_DataBase(DataBase):
         DataBase.auto_csv(self, "hourly", path=path)
 
     def add_data_point(self, date, hour, site, station_id, temperature, humidity,
-                       wind_speed, rain_chance, rain_amt, cloud_cover, city_ID):
+                       wind_speed, rain_chance, rain_amt, cloud_cover, city_ID, prediction_time):
         if self.f["metadata"][0] == self.f["weather_data"].shape[0]:
             self.f["weather_data"].resize(self.f["weather_data"].shape[0]*2, 0)
 
@@ -337,6 +338,7 @@ class Hourly_DataBase(DataBase):
         self.f["weather_data"][self.f["metadata"][0], 8] = rain_amt
         self.f["weather_data"][self.f["metadata"][0], 9] = cloud_cover
         self.f["weather_data"][self.f["metadata"][0], 10] = city_ID
+        self.f["weather_data"][self.f["metadata"][0], 11] = prediction_time
 
         self.f["metadata"][1] = self.get_cur_datetime_int()
         self.f["metadata"][0] += 1
