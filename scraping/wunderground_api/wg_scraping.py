@@ -37,8 +37,16 @@ def get_data_from_fn (fn):
 def prepend_0_if_single_digit(x):
     return '0' + str(x) if len(x) == 1 else x
     
-def is_relevant (my_dict):
-    pass
+def dict_type (my_dict):
+    '''finds out if dict contains daily hourly, or no data, 
+    returns: 'd' for daily, 'h' for hourly, 'e' for empty '''
+    if len(my_dict['hourly']) == 0 and len(my_dict['daily']) == 0:
+        return 'e'
+    elif not len(my_dict['hourly']) == 0 and len(my_dict['daily']) == 0:
+        return 'h'
+    elif len(my_dict['hourly']) == 0 and not len(my_dict['daily']) == 0:
+        return 'd'
+    else: raise Exception ('Dict contains data for both hourly and daily')
    
 def scrape(date, city, data_path):
 
@@ -56,13 +64,13 @@ def scrape(date, city, data_path):
         if os.path.exists(name1):
             [d, d1] = scrape_from_filename(name1)
             print (tester.run_tests(d))
-            print (len(d['hourly']))
-            print (len(d['daily']))
             print (tester.run_tests(d1))
         if os.path.exists(name2):
             [h, h1] = scrape_from_filename(name2)
             print (tester.run_tests(h))
             print (tester.run_tests(h1))
+    for obj in [d,d1, h, h1]:
+        print (dict_type(obj))
     return [d,d1, h, h1]           
 
 def scrape_from_filename (filename):
