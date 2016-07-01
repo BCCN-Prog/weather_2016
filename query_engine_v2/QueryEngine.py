@@ -124,23 +124,26 @@ class QueryEngine:
             assert(type(return_params) == str)
             return_params = [return_params]
         # Accomodation for non-list arguments, checking if they are of the same length if the are lists
-
-        key = (dset, tuple(return_params), tuple(params), tuple(lower), tuple(upper), return_matrix, sort)
-        if key in self._cache.keys():
-            idx = self._cache[key]
-            return self.cached_data[idx][:]
-        else:
-            do_cache = True
-
-        assert(sort == None or type(sort) == str or type(sort) == list)
-
+        
         if dset == "daily":
             sorted_params = self.daily_params
         else:
             sorted_params = self.hourly_params
 
         dset = self.dset_dict[dset]
+        ret_cols = np.sort([dset.categories_dict[key] for key in return_params])
 
+        out_dict = {dset.params_dict[key]: i for i, key in enumerate(ret_cols)}
+
+        key = (dset, tuple(return_params), tuple(params), tuple(lower), tuple(upper), return_matrix, sort)
+        if key in self._cache.keys():
+            idx = self._cache[key]
+            return self.cached_data[idx][:], out_dict
+        else:
+            do_cache = True
+
+        assert(sort == None or type(sort) == str or type(sort) == list)
+ 
         p_unordered = [dset.categories_dict[params[i]] for i in range(len(params))]
         p_ordered = np.argsort(p_unordered)
         params = list(np.array(params)[p_ordered])
@@ -157,8 +160,6 @@ class QueryEngine:
         # modify this to support aliases of params by having dictionary of string to strings
 
         dset_names = ["{}_indices".format(params_intersect[i]) for i in range(len(params_intersect))]
-
-        ret_cols = np.sort([dset.categories_dict[key] for key in return_params])
 
         lo_ind = []
         hi_ind = []
@@ -189,7 +190,6 @@ class QueryEngine:
             return np.array([])
         # output = dset.f["weather_data"][: , ret_cols][ind]
         output = dset.f["weather_data"][:][ind][:, ret_cols]
-        out_dict = {dset.params_dict[key]: i for i, key in enumerate(ret_cols)}
         if do_cache:
             name = str(uuid.uuid4())
             self.cached_data.create_dataset(name, data = output, dtype='float64')
