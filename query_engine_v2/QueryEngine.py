@@ -5,6 +5,7 @@ import DataWrapH5py
 import numpy as np
 import bisect
 from functools import reduce
+import pickle
 
 import time
 
@@ -32,7 +33,7 @@ class QueryEngine:
 
     def __init__(self, day_db, hour_db, make_new=False, loading_path="../historic_csv"):
         self.daily = DataWrapH5py.Daily_DataBase(db_name=day_db, make_new=make_new)
-        self.hourly = DataWrapH5py.Hourly_DataBase(db_name=hour_db, make_new=make_new)
+        self.hourly = DataWrapH5py.Hourly_DataBase(db_name=hour_db, make_new=make_new) 
 
         if make_new:
             self.daily.auto_csv(path=loading_path)
@@ -41,7 +42,15 @@ class QueryEngine:
             self.daily.create_presorted(self.daily_params)
             self.hourly.create_presorted(self.hourly_params)
 
-            #use pickle here for dictionary and h5py for filenames
+            self._cache = {}
+
+        try:
+            cf = open("cachedict.p", "r+")
+            self._cache = pickle.load(cf)
+            cf.close()
+        except:
+            self._cache = {}
+
 
         self.dset_dict = {"daily": self.daily, "hourly": self.hourly}
 
@@ -93,7 +102,7 @@ class QueryEngine:
 
         Nan handling:  Nans always considered outside the bounds. This means that slicing wrt to a
         category whose corresponding column contains only nans will always return an empty array.
-        '''
+        ''' 
         if(type(params) != list and type(lower) != list and type(upper) != list):
             assert(type(params) == str and isinstance(lower, (int, float, np.int64)) and isinstance(upper, (int, float, np.int64)))
             params = [params]
@@ -101,7 +110,16 @@ class QueryEngine:
             upper = [upper]
         else:
             assert(len(params) == len(lower) and len(lower) == len(upper))
+        if(type(return_params) != list):
+            assert(type(return_params) == str)
+            return_params = [return_params]
         # Accomodation for non-list arguments, checking if they are of the same length if the are lists
+
+        key = (dset, tuple(return_params), tuple(params), tuple(lower), tuple(upper), return_matrix, sort)
+        print(key)
+        if key in self._cache.keys():
+            print('yes')
+
 
         assert(sort == None or type(sort) == str or type(sort) == list)
 
