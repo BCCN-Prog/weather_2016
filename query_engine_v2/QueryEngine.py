@@ -55,8 +55,9 @@ class QueryEngine:
 
 
         try:
-            cf = open("cachedict.p", "r+")
+            cf = open("cachedict.p", "rb+")
             self._cache = pickle.load(cf)
+            print(self._cache)
             cf.close()
         except:
             self._cache = {}
@@ -129,13 +130,14 @@ class QueryEngine:
             sorted_params = self.daily_params
         else:
             sorted_params = self.hourly_params
+        ds = dset
 
         dset = self.dset_dict[dset]
         ret_cols = np.sort([dset.categories_dict[key] for key in return_params])
 
         out_dict = {dset.params_dict[key]: i for i, key in enumerate(ret_cols)}
 
-        key = (dset, tuple(return_params), tuple(params), tuple(lower), tuple(upper), return_matrix, sort)
+        key = (ds, tuple(return_params), tuple(params), tuple(lower), tuple(upper), return_matrix, sort)
         if key in self._cache.keys():
             idx = self._cache[key]
             return self.cached_data[idx][:], out_dict
@@ -190,11 +192,7 @@ class QueryEngine:
             return np.array([])
         # output = dset.f["weather_data"][: , ret_cols][ind]
         output = dset.f["weather_data"][:][ind][:, ret_cols]
-        if do_cache:
-            name = str(uuid.uuid4())
-            self.cached_data.create_dataset(name, data = output, dtype='float64')
-            self._cache[key] = name
-            
+
         if sort:
             if type(sort) == str:
                 s_ind = np.argsort(output[:, dset.categories_dict[sort]])
@@ -210,6 +208,15 @@ class QueryEngine:
                 output = tuple(output)
                 s_ind = tuple(s_ind)
 
+        if do_cache:
+            name = str(uuid.uuid4())
+            self.cached_data.create_dataset(name, data = output, dtype='float64')
+            self._cache[key] = name
+            
+            cf = open("cachedict.p", "wb")
+            pickle.dump(self._cache, cf)
+            cf.close()
+            
         if return_matrix == True:
             return (output, out_dict)
         elif not sort:
