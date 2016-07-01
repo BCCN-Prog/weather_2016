@@ -6,6 +6,8 @@ import numpy as np
 import bisect
 from functools import reduce
 import pickle
+import uuid
+import h5py
 
 import time
 
@@ -43,6 +45,14 @@ class QueryEngine:
             self.hourly.create_presorted(self.hourly_params)
 
             self._cache = {}
+            self.cached_data = h5py.File("cached_data.h5py", "w")
+
+        if not make_new:
+            try:
+                self.cached_data = h5py.File("cached_data.h5py", "r+")
+            except:
+                self.cached_data = h5py.File("cached_data.h5py", "w")
+
 
         try:
             cf = open("cachedict.p", "r+")
@@ -116,10 +126,11 @@ class QueryEngine:
         # Accomodation for non-list arguments, checking if they are of the same length if the are lists
 
         key = (dset, tuple(return_params), tuple(params), tuple(lower), tuple(upper), return_matrix, sort)
-        print(key)
         if key in self._cache.keys():
-            print('yes')
-
+            idx = self._cache[key]
+            return self.cached_data[idx][:]
+        else:
+            do_cache = True
 
         assert(sort == None or type(sort) == str or type(sort) == list)
 
@@ -179,7 +190,11 @@ class QueryEngine:
         # output = dset.f["weather_data"][: , ret_cols][ind]
         output = dset.f["weather_data"][:][ind][:, ret_cols]
         out_dict = {dset.params_dict[key]: i for i, key in enumerate(ret_cols)}
-
+        if do_cache:
+            name = str(uuid.uuid4())
+            self.cached_data.create_dataset(name, data = output, dtype='float64')
+            self._cache[key] = name
+            
         if sort:
             if type(sort) == str:
                 s_ind = np.argsort(output[:, dset.categories_dict[sort]])
