@@ -1,6 +1,3 @@
-
-# coding: utf-8
-
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import dates
@@ -8,7 +5,7 @@ from matplotlib import dates
 import pandas as pd
 import datetime
 # get_ipython().magic('matplotlib inline')
-import pudb
+# import pudb
 
 
 '''This file contains simple functions to plot parameters over time. For the time being
@@ -32,13 +29,13 @@ def gen_daily_ticks(sorted_xvalues):
     elif time_span.days < 366:
         xticks = []  # string with month and year
     else:
-        xticks = [] # month and year
+        xticks = []  # month and year
     return xticks, title_part
 def gen_hourly_ticks(xvalues):
     pass
 
 def gen_x_ticks(xvalues, daily = True):
-    # a = time.strptime("19000101", "%Y%m%d")
+    #  a = time.strptime("19000101", "%Y%m%d")
     if daily:
         return gen_daily_ticks(xvalues)
     else:
@@ -105,11 +102,15 @@ def temp_evol_2(time, temperature, ylabel):
 
 
 if __name__ == '__main__':
-    pu.db  # @XXX
+    # pu.db  # @XXX
     # create some dummy data
-    test_dates = np.array([19990101, 19990102, 19990103, 19990104])
-    test_temp = np.array([10, 14, 12, 2])
+    test_dates = np.array([19990101, 19990102, 19990103, 19990104, 20000101, 20000102, 20000103, 20000104,
+                           19980101, 19980102, 19980103, 19980104, 20010101, 20010102, 20010103, 20010104])
+    test_temp = np.array([10, 14, 12, 2]*4)
     date_objs = [datetime.date(int(str(i)[:4]), int(str(i)[4:6]), int(str(i)[6:8])) for i in test_dates]
     temp_pt = dates.date2num(date_objs)
-    plt.plot_date(test_dates, )
+    fig, ax = plt.subplots()
+    ax.plot_date(temp_pt, test_temp)
+    ax.autoscale_view()
+    fig.autofmt_xdate()
     plt.show()
