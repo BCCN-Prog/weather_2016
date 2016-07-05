@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import os
 import h5py
+import pickle
 
 
 def convert_stations_specs():
@@ -55,6 +56,8 @@ def hexagon_animation(station_lon, station_lat, station_val, hex_grid_size=(50,5
     """
 
     m = Basemap(projection='tmerc', lat_0=51, lon_0=10, llcrnrlat=47, llcrnrlon=5, urcrnrlat=55, urcrnrlon=16, resolution='i')
+    #with open('germany_map.pkl', 'rb') as input:
+        #m = pickle.load(input) # open map from disk
     x, y  = m(station_lon, station_lat)
     plt.ion()
     for i in range(len(station_val)):
@@ -94,6 +97,9 @@ def interpolated_color_map(station_lon, station_lat, station_val, grid_dim=(80,1
     lon_0 = 10
     lon_min =  5
     lon_max = 16
+    
+    #with open('germany_map.pkl', 'rb') as input:
+        #m = pickle.load(input) # open map from disk
 
     m = Basemap(projection='tmerc', lat_0=lat_0, lon_0=lon_0, 
                 llcrnrlat=lat_min, llcrnrlon=lon_min, urcrnrlat=lat_max, 
