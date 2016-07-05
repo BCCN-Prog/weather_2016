@@ -57,7 +57,6 @@ class QueryEngine:
         try:
             cf = open("cachedict.p", "rb+")
             self._cache = pickle.load(cf)
-            print(self._cache)
             cf.close()
         except:
             self._cache = {}
