@@ -53,6 +53,7 @@ class DataBase:
                 # initialize row pointer and intial write time
                 self.f["metadata"][0] = 0
                 self.f["metadata"][1] = self.get_cur_datetime_int()
+        print(self.f["weather_data"])
 
 
     def get_cur_datetime_int(self):
