@@ -47,10 +47,10 @@ class Executor:
                 ids, vals = out[:,0], out[:,1]
                 print(type(ids[0]))
                 locs = mf.id_to_geo_location(ids, source='historic')
-
+                print(np.shape(out))
                 #mf.hexagon_map(locs[:,0], locs[:,1], vals , hex_grid_size=(50,50))
                 mf.interpolated_color_map(locs[:,0], locs[:,1], vals, interp='linear')
-            
+                
 
             #Scraped ("recent")
             elif (recent_hist == "recent"):
@@ -62,12 +62,12 @@ class Executor:
 
 
                 elif (hourly_daily == "daily"):    
-
-                    s = q.smart_slice(hourly_daily, ['station_id', self.RecentDaily_to_georg[parameter]], ['date', 'site'], [int(StartingDateTime),0], [int(EndingDateTime),0])
-                    
+                    StartingDateTime = 20160601
+                    EndingDateTime = 20160601
+                    print(q.daily.f["weather_data"][:])
+                    s = q.smart_slice(hourly_daily, ['station_id', self.RecentDaily_to_georg[parameter]], ['date', 'site'], [int(StartingDateTime),5], [int(EndingDateTime),5])
+                    print(s)
                     out = q.get_data(hourly_daily, s, ['station_id', self.RecentDaily_to_georg[parameter]])
-
-
 
                 ids, vals = out[:,0], out[:,1]
                 locs = mf.id_to_geo_location(ids, source='historic')
@@ -101,7 +101,7 @@ class Executor:
                     #plt.plot(out[:,1])
                     #plt.show()
                     #print(out)
-                    lp.plot_over_time(out,True,self.HistoricalDaily_to_georg[parameter])
+                    lp.plot_over_time(out,hourly_daily,self.HistoricalDaily_to_georg[parameter])
 
             #recent 
             elif (recent_hist == "recent"):
