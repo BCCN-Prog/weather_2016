@@ -19,13 +19,13 @@ class Test_DataBase(unittest.TestCase):
 
     test_num = 666
     hourly_test_dict = {'date': test_num, 'hour': test_num, 'site': test_num,
-                        'station_id': test_num, 'temperature': test_num,
+                        'station_id': test_num, 'temp': test_num,
                         'humidity': test_num, 'wind_speed': test_num,
                         'rain_chance': test_num, 'rain_amt': test_num,
                         'cloud_cover': test_num, 'city_ID': test_num, 'prediction_time': test_num}
 
     daily_test_dict = {'date': test_num, 'site': test_num, 'station_id': test_num,
-                       'high': test_num, 'low': test_num, 'temperature': test_num,
+                       'high': test_num, 'low': test_num, 'temp': test_num,
                        'rain_chance': test_num, 'rain_amt': test_num,
                        'cloud_cover': test_num, 'city_ID': test_num, 'day': test_num}
 
@@ -128,6 +128,7 @@ class Test_DataBase(unittest.TestCase):
         print('------------------------\n\n')
 
     def test_5_save_hourly_dict(self):
+        # pu.db  # @XXX
         print('\n------------------------')
         print('Test Scraping Interface')
         print('------------------------')

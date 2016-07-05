@@ -1,6 +1,7 @@
 from mpl_toolkits.basemap import Basemap, cm
 from matplotlib.mlab import griddata
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import numpy as np
 import pandas as pd
 import os
@@ -62,7 +63,7 @@ def hexagon_animation(station_lon, station_lat, station_val, hex_grid_size=(50,5
         m.drawcountries()
         m.drawmapboundary()
         m.hexbin(x, y, C = station_val[:,i], gridsize=hex_grid_size, linewidth=0.5, edgecolor='k', vmin=np.amin(station_val), vmax=np.amax(station_val))
-        cb = m.colorbar(location='bottom', label='Random data')
+        cb = m.colorbar(location='bottom', label='Random Data', ticks=[np.amin(station_val), 0,  np.amax(station_val)])
         plt.show()
         plt.pause(0.005)
     
@@ -116,6 +117,10 @@ def interpolated_color_map(station_lon, station_lat, station_val, grid_dim=(80,1
     x_axis = np.linspace(x_min, x_max, grid_dim[0])
     y_axis = np.linspace(y_min, y_max, grid_dim[1])
     x_mesh, y_mesh = np.meshgrid(x_axis, y_axis)
+    
+    levels = np.linspace(np.amin(station_val), np.amax(station_val))
+    #norm = mpl.colors.Normalize(clip=False, vmin=np.amin(station_val), vmax=np.amax(station_val))
+    
     plt.ion()
     for i in range(len(station_val)):
         plt.clf()
@@ -123,9 +128,12 @@ def interpolated_color_map(station_lon, station_lat, station_val, grid_dim=(80,1
         m.drawcountries()
         m.drawmapboundary()
         value_mesh = griddata(station_x, station_y, station_val[:,i], x_mesh, y_mesh, interp=interp)
-        cont = m.contourf(x_mesh, y_mesh, value_mesh, vmin=np.amin(station_val), vmax=np.amax(station_val))
+        cont = m.contourf(x_mesh, y_mesh, value_mesh, vmin=np.amin(station_val), vmax=np.amax(station_val), levels=levels)
+        #cont.set_clim([np.amin(station_val), np.amax(station_val)])
+        #cont = m.contourf(x_mesh, y_mesh, value_mesh, levels, origin='lower')
         m.scatter(station_lon, station_lat, color='k', s=5, latlon=True)
-        cb = m.colorbar(cont, location='bottom', label='Random Data')
+        cb = m.colorbar(cont, location='bottom', label='Random Data', ticks=[np.amin(station_val), 0,  np.amax(station_val)])
+        #plt.clim(np.amin(station_val), np.amax(station_val))
         if return_figure:
             return plt.gcf()
         else:
@@ -175,9 +183,9 @@ def animation_mvp():
     # HISTORIC
     coordinates = get_geo_locations(unique_coords=True)
     #values = 20 * np.random.randn(coordinates.shape[0])
-    values = 20 * np.random.randn(coordinates.shape[0],coordinates.shape[0])
+    values = np.random.randn(coordinates.shape[0],coordinates.shape[0])
 
-    #hexagon_animation(coordinates[:,0], coordinates[:,1], values, hex_grid_size=(5,5))
+    #hexagon_animation(coordinates[:,0], coordinates[:,1], values, hex_grid_size=(20,20))
     interpolated_color_map(coordinates[:,0], coordinates[:,1], values, return_figure=False)
     #triangulation_map(coordinates[:,0], coordinates[:,1], temperature)
 
