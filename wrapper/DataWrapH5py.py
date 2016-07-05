@@ -213,9 +213,9 @@ class Daily_DataBase(DataBase):
 
         If the pointer is at the last row, the weather_data matrix is resized.
         '''
-        print('date: ', date, 'site: ', site, 'day: ', day, 'station_id: ', station_id, 'high: ', high, 'low', low,
-                'temperature: ', temperature, 'rain_chance: ', rain_chance, 'cloud_cover: ', cloud_cover, 'city_ID: ',
-                city_ID)
+        # print('date: ', date, 'site: ', site, 'day: ', day, 'station_id: ', station_id, 'high: ', high, 'low', low,
+                # 'temperature: ', temp, 'rain_chance: ', rain_chance, 'cloud_cover: ', cloud_cover, 'city_ID: ', city_ID)
+
         if self.f["metadata"][0] == self.f["weather_data"].shape[0]:
             self.f["weather_data"].resize(self.f["weather_data"].shape[0]*2, 0)
 
@@ -328,9 +328,9 @@ class Hourly_DataBase(DataBase):
 
     def add_data_point(self, date, hour, site, station_id, temp, humidity,
                        wind_speed, rain_chance, rain_amt, cloud_cover, city_ID, prediction_time):
-        print('date: ', date, 'hour: ', hour, 'site: ', site, 'station_id: ', station_id,'temperature: ',\
-                temperature,'humidity: ', humidity, 'wind_peed: ', wind_speed,  'rain_chance: ', rain_chance,\
-                'rain_amt: ', rain_amt, 'cloud_cover: ', cloud_cover, 'city_ID: ', city_ID, 'prediciton_time :', preiction_time) 
+        # print('date: ', date, 'hour: ', hour, 'site: ', site, 'station_id: ', station_id,'temperature: ',\
+                # temperature,'humidity: ', humidity, 'wind_peed: ', wind_speed,  'rain_chance: ', rain_chance,\
+                # 'rain_amt: ', rain_amt, 'cloud_cover: ', cloud_cover, 'city_ID: ', city_ID, 'prediciton_time :', preiction_time)
         if self.f["metadata"][0] == self.f["weather_data"].shape[0]:
             self.f["weather_data"].resize(self.f["weather_data"].shape[0]*2, 0)
 
