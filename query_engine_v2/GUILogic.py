@@ -11,6 +11,8 @@ ListRecentDaily = ['Parameter1','Parameter2']
 ListRecentHourly = ['Parameter1','Parameter2']
 ListHistoricalDaily = ['Maximum Temperature', 'Minimum Temperature', 'Average Temperature', 'Rain Amount', 'Cloud Cover']
 ListHistoricalHourly = ['Temperature', 'Moisture', 'Cloud Cover', 'Rainfall', 'Rain Amount', 'Air Pressure reduced', 'Air Pressure Station', 'Windspeed' ]
+ListRecentDaily = ['Maximum Temperature', 'Minimum Temperature', 'Rain chance', 'Rain Amount','Air Pressure', 'Cloud Cover']
+ListRecentHourly = ['Temperature', 'Humidity', 'Air Pressure', 'Windspeed', 'Rain Chance', 'Rain Amount', 'Cloud Cover']
 
 StationTable = pd.read_table('stations.txt')
 ListStations = StationTable['name'].tolist()
@@ -43,12 +45,13 @@ class MainDialog(QDialog, gui.Ui_MainWindow):
         EndingDateTime = str(ui.EndingDate.date().toPyDate())
         StartingDateTime = StartingDateTime.replace('-','')
         EndingDateTime = EndingDateTime.replace('-','')
-        
+        StartingTime = 0
+        EndingTime = 0
         if ui.HourlyFlag.isChecked():
             StartingTime = str(ui.StartingTime.time().toPyTime())
             EndingTime = str(ui.EndingTime.time().toPyTime())
-            StartingDateTime += StartingTime[0:2]
-            EndingDateTime += EndingTime[0:2]
+            StartingTime = StartingTime[0:2]
+            EndingTime = EndingTime[0:2]
         
         #Get h/d, r/h
         hourly_daily = ('hourly' if ui.HourlyFlag.isChecked() else 'daily')
@@ -58,7 +61,7 @@ class MainDialog(QDialog, gui.Ui_MainWindow):
         station = ui.StationsList.currentText()
         #pass info!
 
-        exec_.get_data(hourly_daily, recent_hist, parameter, station, StartingDateTime, EndingDateTime)
+        exec_.get_data(hourly_daily, recent_hist, parameter, station, StartingDateTime, EndingDateTime, StartingTime, EndingTime)
 
 
     def RecentSelected(self):
