@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import dates
@@ -7,12 +8,18 @@ import datetime
 
 '''This file contains simple functions to plot parameters over time.'''
 
-def plot_over_time(data_mat, daily_data, ylabel):
+def plot_over_time(data_mat, db_type, ylabel):
+    if db_type == 'daily':
+        daily_data = True
+    elif db_type == 'hourly':
+        daily_data = False
+    else:
+        raise 'db_type not "daily" or "hourly"'
 
-    label_dict = {'temp': 'Temperature [°C]', 'humidity': 'Humidity [%]',
+    label_dict = {'temp': 'Temperature [$^{o}$C]', 'temperature': 'Temperature [$^{o}$C]', 'humidity': 'Humidity [%]',
                   'pressure': 'Pressure [hPa]', 'wind_speed': 'Wind Speed [m/s]',
-                  'rain_amt': 'Rain Amount [l/m²]', 'rain_chance': 'Rain Chance [%]',
-                  'cloud_cover': 'Cloud Cover [%]'}
+                  'rain_amt': 'Rain Amount [l/m$^{2}$]', 'rain_chance': 'Rain Chance [%]',
+                  'cloud_cover': 'Cloud Cover [%]', 'high': 'Maximum Temperature [$^{o}$C]', 'low': 'Minimum Temperature [$^{o}$C]'}
 
     sort_mat = data_mat[data_mat[:, 0].argsort()]
     time_vals = sort_mat[:, 0]
@@ -53,5 +60,5 @@ if __name__ == '__main__':
     test_input2 = np.vstack((test_times, test_temp2)).T
 
 
-    plot_over_time(test_input, True, 'temp')
-    plot_over_time(test_input2, False, 'temp')
+    plot_over_time(test_input, 'daily', 'temp')
+    plot_over_time(test_input2, 'hourly', 'temp')

@@ -54,6 +54,8 @@ def hexagon_map(station_lon, station_lat, station_val, hex_grid_size=(50,50)):
     """
 
     m = Basemap(projection='tmerc', lat_0=51, lon_0=10, llcrnrlat=47, llcrnrlon=5, urcrnrlat=55, urcrnrlon=16, resolution='i')
+    #with open('germany_map.pkl', 'rb') as input:
+        #m = pickle.load(input) # open map from disk
     m.drawcoastlines()
     m.drawcountries()
     m.drawmapboundary()
@@ -94,6 +96,8 @@ def interpolated_color_map(station_lon, station_lat, station_val, grid_dim=(80,1
     m = Basemap(projection='tmerc', lat_0=lat_0, lon_0=lon_0, 
                 llcrnrlat=lat_min, llcrnrlon=lon_min, urcrnrlat=lat_max, 
                 urcrnrlon=lon_max, resolution='i')
+    #with open('germany_map.pkl', 'rb') as input:
+        #m = pickle.load(input) # open map from disk
 
     m.drawcoastlines()
     m.drawcountries()
