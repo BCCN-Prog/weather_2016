@@ -173,7 +173,7 @@ class DataBase:
 
 class Daily_DataBase(DataBase):
     def __init__(self, db_name="daily_database.hdf5", make_new=False):
-        daily_categories = ['date', 'site', 'station_id', 'high', 'low', 'temp',
+        daily_categories = ['date', 'site', 'station_id', 'high', 'low', 'temperature',
                             'rain_chance', 'rain_amt', 'cloud_cover', 'city_ID', 'day']
 
         DataBase.__init__(self,
@@ -185,15 +185,15 @@ class Daily_DataBase(DataBase):
                           make_new=make_new
                           )
 
-    params_dict = {0: 'date', 1: 'site', 2: 'station_id', 3: 'high', 4: 'low', 5: 'temp',
+    params_dict = {0: 'date', 1: 'site', 2: 'station_id', 3: 'high', 4: 'low', 5: 'temperature',
                    6: 'rain_chance', 7: 'rain_amt', 8: 'cloud_cover', 9: 'city_ID', 10: 'day'}
-    categories_dict = {'date': 0, 'site': 1, 'station_id': 2, 'high': 3, 'low': 4, 'temp': 5,
+    categories_dict = {'date': 0, 'site': 1, 'station_id': 2, 'high': 3, 'low': 4, 'temperature': 5,
                        'rain_chance': 6, 'rain_amt': 7, 'cloud_cover': 8, 'city_ID': 9, 'day': 10}
-    csv_dict = {'n_row: ': 0, 'station_id': 1, 'date': 2, 'quality': 3, 'temp': 4,
+    csv_dict = {'n_row: ': 0, 'station_id': 1, 'date': 2, 'quality': 3, 'temperature': 4,
                 'steam_pressure': 5, 'cloud_cover': 6, 'air_pressure': 7, 'rel_moisture': 8,
                 'wind_speed': 9, 'high': 10, 'low': 11, 'soil_temp': 12, 'wind_spd_max': 13,
                 'rain_amt': 14, 'rain_ind': 15, 'sunny_hours': 16, 'snow_height': 17}
-    csv_backdict = {0: 'n_row: ', 1: 'station_id', 2: 'date', 3: 'quality', 4: 'temp',
+    csv_backdict = {0: 'n_row: ', 1: 'station_id', 2: 'date', 3: 'quality', 4: 'temperature',
                     5: 'steam_pressure', 6: 'cloud_cover', 7: 'air_pressure', 8: 'rel_moisture',
                     9: 'wind_speed', 10: 'high', 11: 'low', 12: 'soil_temp', 13: 'wind_spd_max',
                     14: 'rain_amt', 15: 'rain_ind', 16: 'sunny_hours', 17: 'snow_height'}
@@ -214,7 +214,7 @@ class Daily_DataBase(DataBase):
         If the pointer is at the last row, the weather_data matrix is resized.
         '''
         # print('date: ', date, 'site: ', site, 'day: ', day, 'station_id: ', station_id, 'high: ', high, 'low', low,
-                # 'temp: ', temp, 'rain_chance: ', rain_chance, 'cloud_cover: ', cloud_cover, 'city_ID: ', city_ID)
+                # 'temperature: ', temperature, 'rain_chance: ', rain_chance, 'cloud_cover: ', cloud_cover, 'city_ID: ', city_ID)
 
         if self.f["metadata"][0] == self.f["weather_data"].shape[0]:
             self.f["weather_data"].resize(self.f["weather_data"].shape[0]*2, 0)
@@ -299,7 +299,7 @@ class Daily_DataBase(DataBase):
 
 class Hourly_DataBase(DataBase):
     def __init__(self, db_name="hourly_database.hdf5", make_new=False):
-        hourly_categories = ['date', 'hour', 'site', 'station_id', 'temp', 'humidity',
+        hourly_categories = ['date', 'hour', 'site', 'station_id', 'temperature', 'humidity',
                              'wind_speed', 'rain_chance', 'rain_amt', 'cloud_cover', 'city_ID', 'prediction_time']
 
         DataBase.__init__(self,
@@ -311,15 +311,15 @@ class Hourly_DataBase(DataBase):
                           make_new=make_new
                           )
 
-    params_dict = {0: 'date', 1: 'hour', 2: 'site', 3: 'station_id', 4: 'temp', 5: 'humidity',
+    params_dict = {0: 'date', 1: 'hour', 2: 'site', 3: 'station_id', 4: 'temperature', 5: 'humidity',
                    6: 'wind_speed', 7: 'rain_chance', 8: 'rain_amt', 9: 'cloud_cover', 10: 'city_ID', 11: 'prediction_time'}
 
-    categories_dict = {'date': 0, 'hour': 1, 'site': 2, 'station_id': 3, 'temp': 4, 'humidity': 5,
+    categories_dict = {'date': 0, 'hour': 1, 'site': 2, 'station_id': 3, 'temperature': 4, 'humidity': 5,
                        'wind_speed': 6, 'rain_chance': 7, 'rain_amt': 8, 'cloud_cover': 9, 'city_ID': 10, 'prediction_time': 11}
 
-    csv_dict = {'date': 0, 'station_id': 1, 'temp': 2, 'humidity': 3, 'cloud_cover': 4,
+    csv_dict = {'date': 0, 'station_id': 1, 'temperature': 2, 'humidity': 3, 'cloud_cover': 4,
                 'rain_ind': 5, 'rain_amt': 6, 'air_pressure_red': 7, 'air_pressure': 8, 'wind_speed': 9}
-    csv_backdict = {0: 'date', 1: 'station_id', 2: 'temp', 3: 'humidity', 4: 'cloud_cover',
+    csv_backdict = {0: 'date', 1: 'station_id', 2: 'temperature', 3: 'humidity', 4: 'cloud_cover',
                     5: 'rain_ind', 6: 'rain_amt', 7: 'air_pressure_red', 8: 'air_pressure', 9: 'wind_speed'}
     sites_dict = {0: 'The night', 1: 'is dark', 2: 'and full', 3: 'of', 4: 'terrors.'}
 
@@ -328,8 +328,8 @@ class Hourly_DataBase(DataBase):
 
     def add_data_point(self, date, hour, site, station_id, temp, humidity,
                        wind_speed, rain_chance, rain_amt, cloud_cover, city_ID, prediction_time):
-        # print('date: ', date, 'hour: ', hour, 'site: ', site, 'station_id: ', station_id,'temp: ',\
-                # temp,'humidity: ', humidity, 'wind_peed: ', wind_speed,  'rain_chance: ', rain_chance,\
+        # print('date: ', date, 'hour: ', hour, 'site: ', site, 'station_id: ', station_id,'temperature: ',\
+                # temperature,'humidity: ', humidity, 'wind_peed: ', wind_speed,  'rain_chance: ', rain_chance,\
                 # 'rain_amt: ', rain_amt, 'cloud_cover: ', cloud_cover, 'city_ID: ', city_ID, 'prediciton_time :', preiction_time)
         if self.f["metadata"][0] == self.f["weather_data"].shape[0]:
             self.f["weather_data"].resize(self.f["weather_data"].shape[0]*2, 0)
