@@ -8,7 +8,7 @@ import datetime
 
 '''This file contains simple functions to plot parameters over time.'''
 
-def plot_over_time(data_mat, db_type, ylabel):
+def plot_over_time(data_mat, db_type, ylabel, smooth = True):
     if db_type == 'daily':
         daily_data = True
     elif db_type == 'hourly':
@@ -32,9 +32,16 @@ def plot_over_time(data_mat, db_type, ylabel):
 
     temp_pt = dates.date2num(date_objs)
     fig, ax = plt.subplots()
+
     ax.plot_date(temp_pt, y_vals, '-')
+    if smooth:
+        smoothed_y = [np.mean(y_vals[i:i+int(len(y_vals)/10)]) for i in range(0,len(y_vals) )]
+        ax.plot_date(temp_pt, smoothed_y, 'g-', linewidth = 3, alpha = 0.3)
+        plt.legend(['data', 'data smoothed by averaging over {} samples'.format(int(len(y_vals) / 20 +1))])
+
     ax.autoscale_view()
     fig.autofmt_xdate()
+
     dtype_str = 'Daily' if daily_data else 'Hourly'
     plt.title('{} {} Over Time'.format(dtype_str, label_dict[ylabel]))
     plt.ylabel(label_dict[ylabel])
@@ -60,5 +67,5 @@ if __name__ == '__main__':
     test_input2 = np.vstack((test_times, test_temp2)).T
 
 
-    plot_over_time(test_input, 'daily', 'temp')
-    plot_over_time(test_input2, 'hourly', 'temp')
+    plot_over_time(test_input, 'daily', 'temp', False)
+    plot_over_time(test_input2, 'hourly', 'temp', False)
