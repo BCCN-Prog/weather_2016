@@ -205,7 +205,7 @@ class Daily_DataBase(DataBase):
 
 
 
-    def add_data_point(self, date, site, day, station_id, high, low, temperature,
+    def add_data_point(self, date, site, day, station_id, high, low, temp,
                        rain_chance, rain_amt, cloud_cover, city_ID):
         '''
         Adds a data point to the first empty row of the matrix pointed to by
@@ -213,6 +213,9 @@ class Daily_DataBase(DataBase):
 
         If the pointer is at the last row, the weather_data matrix is resized.
         '''
+        print('date: ', date, 'site: ', site, 'day: ', day, 'station_id: ', station_id, 'high: ', high, 'low', low,
+                'temperature: ', temperature, 'rain_chance: ', rain_chance, 'cloud_cover: ', cloud_cover, 'city_ID: ',
+                city_ID)
         if self.f["metadata"][0] == self.f["weather_data"].shape[0]:
             self.f["weather_data"].resize(self.f["weather_data"].shape[0]*2, 0)
 
@@ -221,7 +224,7 @@ class Daily_DataBase(DataBase):
         self.f["weather_data"][self.f["metadata"][0], 2] = station_id
         self.f["weather_data"][self.f["metadata"][0], 3] = high
         self.f["weather_data"][self.f["metadata"][0], 4] = low
-        self.f["weather_data"][self.f["metadata"][0], 5] = temperature
+        self.f["weather_data"][self.f["metadata"][0], 5] = temp
         self.f["weather_data"][self.f["metadata"][0], 6] = rain_chance
         self.f["weather_data"][self.f["metadata"][0], 7] = rain_amt
         self.f["weather_data"][self.f["metadata"][0], 8] = cloud_cover
@@ -237,7 +240,8 @@ class Daily_DataBase(DataBase):
 
     def save_dict(self, daily_dict):
 
-        params = ['station_id', 'high', 'low', 'temperature', 'rain_chance', 'rain_amt', 'cloud_cover']
+        params = ['station_id', 'high', 'low', 'temperature', 'rain_chance',
+                  'rain_amt', 'cloud_cover']
 
         try:
             date = daily_dict['date']
@@ -322,8 +326,11 @@ class Hourly_DataBase(DataBase):
     def auto_csv(self, path="../historic_csv"):
         DataBase.auto_csv(self, "hourly", path=path)
 
-    def add_data_point(self, date, hour, site, station_id, temperature, humidity,
+    def add_data_point(self, date, hour, site, station_id, temp, humidity,
                        wind_speed, rain_chance, rain_amt, cloud_cover, city_ID, prediction_time):
+        print('date: ', date, 'hour: ', hour, 'site: ', site, 'station_id: ', station_id,'temperature: ',\
+                temperature,'humidity: ', humidity, 'wind_peed: ', wind_speed,  'rain_chance: ', rain_chance,\
+                'rain_amt: ', rain_amt, 'cloud_cover: ', cloud_cover, 'city_ID: ', city_ID, 'prediciton_time :', preiction_time) 
         if self.f["metadata"][0] == self.f["weather_data"].shape[0]:
             self.f["weather_data"].resize(self.f["weather_data"].shape[0]*2, 0)
 
@@ -331,7 +338,7 @@ class Hourly_DataBase(DataBase):
         self.f["weather_data"][self.f["metadata"][0], 1] = hour
         self.f["weather_data"][self.f["metadata"][0], 2] = site
         self.f["weather_data"][self.f["metadata"][0], 3] = station_id
-        self.f["weather_data"][self.f["metadata"][0], 4] = temperature
+        self.f["weather_data"][self.f["metadata"][0], 4] = temp
         self.f["weather_data"][self.f["metadata"][0], 5] = humidity
         self.f["weather_data"][self.f["metadata"][0], 6] = wind_speed
         self.f["weather_data"][self.f["metadata"][0], 7] = rain_chance
@@ -344,7 +351,7 @@ class Hourly_DataBase(DataBase):
         self.f["metadata"][0] += 1
 
     def save_dict(self, hourly_dict):
-        params = ['station_id', 'temperature', 'humidity', 'wind_speed',
+        params = ['station_id', 'temp', 'humidity', 'wind_speed',
                   'rain_chance', 'rain_amt', 'cloud_cover']
 
         try:
@@ -360,7 +367,7 @@ class Hourly_DataBase(DataBase):
         try:
             pred_time = hourly_dict['prediction_time']
         except:
-            raise Exception('save_hourly_dict: hourly dictionary has no site')
+            raise Exception('save_hourly_dict: hourly dictionary has prediction_time')
 
         data = hourly_dict['hourly']
         city_ID = self.cities[hourly_dict['city']]
