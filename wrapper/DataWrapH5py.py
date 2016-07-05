@@ -54,7 +54,6 @@ class DataBase:
                 self.f["metadata"][0] = 0
                 self.f["metadata"][1] = self.get_cur_datetime_int()
 
-
     def get_cur_datetime_int(self):
         '''
         returns an int of the form YearMonthDayHourMinuteSecond.
