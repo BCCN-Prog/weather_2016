@@ -35,7 +35,7 @@ class QueryEngine:
 
     def __init__(self, day_db, hour_db, make_new=False, loading_path="../historic_csv"):
         self.daily = DataWrapH5py.Daily_DataBase(db_name=day_db, make_new=make_new)
-        self.hourly = DataWrapH5py.Hourly_DataBase(db_name=hour_db, make_new=make_new) 
+        self.hourly = DataWrapH5py.Hourly_DataBase(db_name=hour_db, make_new=make_new)
 
         if make_new:
             self.daily.auto_csv(path=loading_path)
@@ -72,7 +72,7 @@ class QueryEngine:
         Function takes a dataset and a parameter and extracts all data where the parameter lies between lower and upper
 
         dset:  'daily'/'hourly' --> so far only works for hourly (14.6.)
-        param:  <str>, category e.g. 'temp'
+        param:  <str>, category e.g. 'temperature'
         lower:  Lower bound of parameter to be relevant for slicing (int or float) --> e.g. 10°C
         upper:
 
@@ -113,7 +113,7 @@ class QueryEngine:
 
         Nan handling:  Nans always considered outside the bounds. This means that slicing wrt to a
         category whose corresponding column contains only nans will always return an empty array.
-        ''' 
+        '''
         if(type(params) != list and type(lower) != list and type(upper) != list):
             assert(type(params) == str and isinstance(lower, (int, float, np.int64)) and isinstance(upper, (int, float, np.int64)))
             params = [params]
@@ -125,7 +125,7 @@ class QueryEngine:
             assert(type(return_params) == str)
             return_params = [return_params]
         # Accomodation for non-list arguments, checking if they are of the same length if the are lists
-        
+
         if dset == "daily":
             sorted_params = self.daily_params
         else:
@@ -145,7 +145,7 @@ class QueryEngine:
             do_cache = True
 
         assert(sort == None or type(sort) == str or type(sort) == list)
- 
+
         p_unordered = [dset.categories_dict[params[i]] for i in range(len(params))]
         p_ordered = np.argsort(p_unordered)
         params = list(np.array(params)[p_ordered])
@@ -212,11 +212,11 @@ class QueryEngine:
             name = str(uuid.uuid4())
             self.cached_data.create_dataset(name, data = output, dtype='float64')
             self._cache[key] = name
-            
+
             cf = open("cachedict.p", "wb")
             pickle.dump(self._cache, cf)
             cf.close()
-            
+
         if return_matrix == True:
             return (output, out_dict)
         elif not sort:
