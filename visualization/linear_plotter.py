@@ -15,10 +15,11 @@ def plot_over_time(data_mat, db_type, ylabel):
         daily_data = False
     else:
         raise 'db_type not "daily" or "hourly"'
-    label_dict = {'temp': 'Temperature [$^{o}$C]', 'humidity': 'Humidity [%]',
+
+    label_dict = {'temp': 'Temperature [$^{o}$C]', 'temperature': 'Temperature [$^{o}$C]', 'humidity': 'Humidity [%]',
                   'pressure': 'Pressure [hPa]', 'wind_speed': 'Wind Speed [m/s]',
                   'rain_amt': 'Rain Amount [l/m$^{2}$]', 'rain_chance': 'Rain Chance [%]',
-                  'cloud_cover': 'Cloud Cover [%]'}
+                  'cloud_cover': 'Cloud Cover [%]', 'high': 'Maximum Temperature [$^{o}$C]', 'low': 'Minimum Temperature [$^{o}$C]'}
 
     sort_mat = data_mat[data_mat[:, 0].argsort()]
     time_vals = sort_mat[:, 0]
