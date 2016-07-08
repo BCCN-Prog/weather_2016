@@ -153,8 +153,15 @@ class DataBase:
 
     def load_scraping(self,filename, filedir="../scraping_db/"):
         name = filedir+filename
-
-        self.f = h5py.File(name, "r+")
+        fil = h5py.File(name, "r+")
+        meta_0 = fil["metadata"][0]
+        meta_1 = fil["metadata"][1]
+        mat = fil["weather_data"][:]
+        #for i in range(int(fil["weather_data"].shape[0]/1000)):
+        #    self.add_data_matrix(fil["weather_data"][10*i:10+10*i])
+        self.add_data_matrix(mat)
+        self.f["metadata"][0] = meta_0
+        self.f["metadata"][1] = meta_1
 
     def create_presorted(self, params):
         '''
