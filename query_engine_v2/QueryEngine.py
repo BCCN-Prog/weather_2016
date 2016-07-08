@@ -38,8 +38,13 @@ class QueryEngine:
         self.hourly = DataWrapH5py.Hourly_DataBase(db_name=hour_db, make_new=make_new)
 
         if make_new:
-            self.daily.auto_csv(path=loading_path)
-            self.hourly.auto_csv(path=loading_path)
+            self.daily.load_scraping()
+            self.hourly.load_scraping()
+            #It is crucial that this happens BEFORE the loading of the
+            #historical data, otherwise, the db will be overwritten
+
+            #self.daily.auto_csv(path=loading_path)
+            #self.hourly.auto_csv(path=loading_path)
 
             self.daily.create_presorted(self.daily_params)
             self.hourly.create_presorted(self.hourly_params)
