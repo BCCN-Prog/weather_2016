@@ -43,8 +43,8 @@ class QueryEngine:
             #It is crucial that this happens BEFORE the loading of the
             #historical data, otherwise, the db will be overwritten
 
-            #self.daily.auto_csv(path=loading_path)
-            #self.hourly.auto_csv(path=loading_path)
+            self.daily.auto_csv(path=loading_path)
+            self.hourly.auto_csv(path=loading_path)
 
             self.daily.create_presorted(self.daily_params)
             self.hourly.create_presorted(self.hourly_params)
