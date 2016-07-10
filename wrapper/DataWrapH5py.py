@@ -151,6 +151,17 @@ class DataBase:
             self.import_from_csv(f, usecols=usecols, n_miss=n_miss, inds=inds)
         print('done!')
 
+    def load_scraping(self,filename, filedir="../scraping_db/"):
+        name = filedir+filename
+        fil = h5py.File(name, "r+")
+        meta_0 = fil["metadata"][0]
+        meta_1 = fil["metadata"][1]
+        mat = fil["weather_data"][:]
+        #for i in range(int(fil["weather_data"].shape[0]/1000)):
+        #    self.add_data_matrix(fil["weather_data"][10*i:10+10*i])
+        self.add_data_matrix(mat)
+        self.f["metadata"][0] = meta_0
+        self.f["metadata"][1] = meta_1
 
     def create_presorted(self, params):
         '''
@@ -201,7 +212,9 @@ class Daily_DataBase(DataBase):
     # as some functions must rely on this structure.
 
     # ########## if you change the structure of the data, ALWAYS update these!######################
-
+    
+    def load_scraping(self,filedir="../scraping_db/"):
+        DataBase.load_scraping(self, "daily_database_sc.hdf5", filedir=filedir)
 
 
     def add_data_point(self, date, site, day, station_id, high, low, temp,
@@ -324,6 +337,9 @@ class Hourly_DataBase(DataBase):
 
     def auto_csv(self, path="../historic_csv"):
         DataBase.auto_csv(self, "hourly", path=path)
+    
+    def load_scraping(self,filedir="../scraping_db/"):
+        DataBase.load_scraping(self, "hourly_database_sc.hdf5", filedir=filedir)
 
     def add_data_point(self, date, hour, site, station_id, temp, humidity,
                        wind_speed, rain_chance, rain_amt, cloud_cover, city_ID, prediction_time):
