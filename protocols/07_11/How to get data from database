@@ -1,0 +1,13 @@
+How to get data from the query engine:
+
+First of all copy the data into the weater_2016 folder directly, folders should be named 'historic_csv' and 'scraping_db'
+
+
+Then go into the query_engine_v2 folder. There you create a new database by running a file containing:
+
+#import sys #I think this is not necessary but it was in my file when I ran it
+import QueryEngine
+qe = QueryEngine.QueryEngine('daily_database.hdf5', 
+                             'hourly_database.hdf5', make_new = True)
+                             
+You should have two
