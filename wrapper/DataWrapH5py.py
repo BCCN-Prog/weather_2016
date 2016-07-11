@@ -207,7 +207,7 @@ class Daily_DataBase(DataBase):
                     5: 'steam_pressure', 6: 'cloud_cover', 7: 'air_pressure', 8: 'rel_moisture',
                     9: 'wind_speed', 10: 'high', 11: 'low', 12: 'soil_temp', 13: 'wind_spd_max',
                     14: 'rain_amt', 15: 'rain_ind', 16: 'sunny_hours', 17: 'snow_height'}
-    sites_dict = {0: 'The night', 1: 'is dark', 2: 'and full', 3: 'of', 4: 'terrors.'}
+    sites_dict = {0: 'The night', 1: 'is dark', 2: 'and full', 3: 'of', 4: 'terrors.', 5:'Duuh'}
     # Please, someone from scraping change the sites_dict and KEEP IT UPDATED if something changes
     # as some functions must rely on this structure.
 
