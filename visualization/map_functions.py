@@ -60,13 +60,13 @@ def hexagon_map(station_lon, station_lat, station_val, hex_grid_size=(50,50)):
     m.drawcountries()
     m.drawmapboundary()
     x, y  = m(station_lon, station_lat)
-    m.hexbin(x, y, C = station_val, gridsize=hex_grid_size, linewidth=0.5, edgecolor='k', vmin=np.amin(station_val), vmax=np.amax(station_val))
+    m.hexbin(x, y, C = station_val, gridsize=hex_grid_size, linewidth=0.5, edgecolor='k', vmin=np.nanmin(station_val), vmax=np.nanmax(station_val))
     #m.colorbar(location='bottom')
-    cb = m.colorbar(location='bottom', label='Random Data', ticks=[np.amin(station_val), 0,  np.amax(station_val)])
+    cb = m.colorbar(location='bottom', label='Random Data', ticks=[np.nanmin(station_val), 0,  np.nanmax(station_val)])
     plt.show()
 
 
-def interpolated_color_map(station_lon, station_lat, station_val, grid_dim=(80,110), interp='nn', return_figure=False):
+def interpolated_color_map(station_lon, station_lat, station_val, param_input = "Parameter", grid_dim=(80,110), interp='nn', return_figure=False):
     """
     Creates a map of values for different stations. The station location can be on an irregular grid,
     for intermediate locations interpolation is used.
@@ -111,7 +111,7 @@ def interpolated_color_map(station_lon, station_lat, station_val, grid_dim=(80,1
     lon_mesh, lat_mesh = np.meshgrid(lon_axis, lat_axis)
     
     # contour levels
-    levels = np.linspace(np.amin(station_val), np.amax(station_val))
+    levels = np.linspace(np.nanmin(station_val), np.nanmax(station_val))
    
     # data points and mesh in x/y coordinates
     station_x, station_y = m(station_lon, station_lat)
@@ -121,7 +121,7 @@ def interpolated_color_map(station_lon, station_lat, station_val, grid_dim=(80,1
     y_axis = np.linspace(y_min, y_max, grid_dim[1])
     x_mesh, y_mesh = np.meshgrid(x_axis, y_axis)
     value_mesh = griddata(station_x, station_y, station_val, x_mesh, y_mesh, interp=interp)
-    cont = m.contourf(x_mesh, y_mesh, value_mesh, vmin=np.amin(station_val), vmax=np.amax(station_val), levels=levels)
+    cont = m.contourf(x_mesh, y_mesh, value_mesh, vmin=np.nanmin(station_val), vmax=np.nanmax(station_val), levels=levels)
 
     # interpolate datapoints for (station_lon, station_lat) to meshgrid (lat_mesh, lot_mesh)
     #value_mesh = griddata(station_x, station_y, station_val, lon_mesh, lat_mesh, interp=interp)
@@ -133,7 +133,8 @@ def interpolated_color_map(station_lon, station_lat, station_val, grid_dim=(80,1
     #m.contourf(lon_grid, lat_grid, value_mesh, cmap=cmap, latlon=True)
 
     m.scatter(station_lon, station_lat, color='k', s=5, latlon=True)
-    cb = m.colorbar(cont, location='bottom', label='Random Data', ticks=[np.amin(station_val), 0,  np.amax(station_val)])
+    print(station_val)
+    cb = m.colorbar(cont, location='bottom', label=param_input, ticks=[np.nanmin(station_val), 0,  np.nanmax(station_val)])
    
     if return_figure:
         return plt.gcf()
