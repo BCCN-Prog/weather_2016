@@ -22,6 +22,8 @@ class Executor:
         self.RecentDaily_to_georg={'Maximum Temperature':'high', 'Minimum Temperature':'low', 'Rain chance':'rain_chance', 'Rain Amount':'rain_amt','Air Pressure':'pressure', 'Cloud Cover':'cloud_cover'}
         self.RecentHourly_to_georg={'Temperature':'temp', 'Humidity':'humidity', 'Air Pressure':'pressure', 'Windspeed':'wind_speed', 'Rain Chance':'rain_chance', 'Rain Amount':'rain_amt', 'Cloud Cover':'cloud_cover'}
         self.nstations = 20000
+        self.parameterrange = [-999,-999]
+        
 
 
 
@@ -49,7 +51,9 @@ class Executor:
                 locs = mf.id_to_geo_location(ids, source='historic')
                 print(locs[:,0], locs[:,1], vals)
                 #mf.hexagon_map(locs[:,90], locs[:,1], vals , hex_grid_size=(50,50))
-                mf.interpolated_color_map(locs[:,0], locs[:,1], vals, parameter, interp='linear', return_figure=True)
+
+                figure, self.parameterrange = mf.interpolated_color_map(self.parameterrange, locs[:,0], locs[:,1], vals, parameter, interp='linear', return_figure=True)
+                
                 plt.show()
 
             #Scraped ("recent")
