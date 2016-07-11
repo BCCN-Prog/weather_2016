@@ -2,6 +2,8 @@ from slackclient import SlackClient
 import time
 import os as os
 
+import dave_wit_test as my_wit
+
 #read exported token value from terminal
 token = os.environ.get('SLACK_BOT_TOKEN')
 
