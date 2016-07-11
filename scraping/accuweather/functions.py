@@ -461,115 +461,124 @@ def scrape_hourly_html(html_file, next_day=False):
 def scrape(date, city, data_folder):
 
 
-    daily_dict = {}
-    hourly_dict = {}
-    next_day_hourly_dict = {}
-    prediction_times = []
-
+    record_times = set()
     for html_file in glob.glob(data_folder + '/accuweather_' + date + '*' + city + '_*.html'):
-
-
-        print('Scraping html file:\n', html_file, '\n\n')
         site, date_, time, city_, request_type, request_index, timestemp = os.path.splitext(os.path.basename(html_file))[0].split('_') 
-        request_index = request_index[1:]
+        record_times.add(time)
+
+    for time in record_times:
+
+        daily_dict = {}
+        hourly_dict = {}
+        next_day_hourly_dict = {}
 
         # once set the prediction time of the dict
-        prediction_times.append(int(''.join(date.split('-')[::-1] + time.split(':'))))
-
-        assert city == city_, "City name from function argument ({}) and from html filename ({}) are different!".format(city, city_)
-        assert date == date_, "Date from function argument ({}) and from html filename ({}) are different!".format(date, date_)
-
-        if request_type == 'daily':
-
-            test_html_title(html_file, city=city, country='Germany', request_type='Daily')
-
-            day_dict = scrape_daily_html(html_file)
-
-            # request_index is days since day of recording (today = 1)
-            daily_dict[request_index] = day_dict
-
-        elif request_type == 'hourly':  
-
-            test_html_title(html_file, city=city, country='Germany', request_type='Hourly')
-
-            # request_index is hours since 12 midnight of day of recording
-            # the first hour for which the html file has data saved is forecast_time
-            forecast_time = int(request_index) - int(time[:2])
-            if forecast_time < 16: # date == prediction_date
-                hour_dict = scrape_hourly_html(html_file)
-                hourly_dict.update(hour_dict)
-            elif forecast_time < 24: # need to split hours into two dates
-                hour_dict = scrape_hourly_html(html_file)
-                hourly_dict.update(hour_dict)
-                hour_dict = scrape_hourly_html(html_file, next_day=True)
-                next_day_hourly_dict.update(hour_dict)
-            elif forecast_time < 48: # date = prediction_date + 1 day
-                hour_dict = scrape_hourly_html(html_file, next_day=True)
-                next_day_hourly_dict.update(hour_dict)
-            else:
-                assert False, 'hour index is >= 48, something wrong here, hour={}'.format(request_index)
-
-
-    if 'html_file' not in locals():
-        # no file with given date/city combination found
-        print('For date: {}, city: {} no html file found in {}'.format(date, city, data_folder))
-        return
-
-    try:
-        date_obj = datetime.date(int(date.split('-')[2]), int(date.split('-')[1]), int(date.split('-')[0]))
-    except ValueError as err:
-        print('WUUUAAASFDHAEWFEEFS: Excepted some ValueError in Claus hacky date thingy.\n{}'.format(err))
-        return
-
-    next_date = date_obj + datetime.timedelta(days=1)
-    date_int = date_obj.year * 10000 + date_obj.month * 100 + date_obj.day
-    next_date_int = next_date.year * 10000 + next_date.month * 100 + next_date.day
-
-    date_check = int(''.join(date.split('-')[::-1]))
-    assert date_int == date_check, 'Dates are messed up! date_obj={} and date from filename={}'.format(date_int, date_check)
-
-    assert date_int+1 == next_date_int, 'today={}, tmr={}'.format(date_int, next_date_int)
-
-    data_dict = {'site'                 :   4, # accuweather id
-                 'city'                 :   city,
-                 'date'                 :   date_int
-                }
-
-    next_data_dict = {'site'                 :   4, # accuweather id
-                      'city'                 :   city,
-                      'date'                 :   next_date_int
-                     }
-
-    # prediction time will be the time the first file for given date and city was downloaded
-    data_dict['prediction_time'] = int(np.array(prediction_times).min())
-    next_data_dict['prediction_time'] = int(np.array(prediction_times).min())
-
-    # init wrapper objects
-    daily_db = wrapper.Daily_DataBase()
-    hourly_db = wrapper.Hourly_DataBase()
-
-    # finish and test first scraped dict
-    data_dict['hourly'] = hourly_dict
-    data_dict['daily'] = daily_dict
-    assert tester.run_tests(data_dict), 'test_scraper_output.py failed!!!'
-
-    # save first scraped dict to db
-    hourly_db.save_dict(data_dict)
-    daily_db.save_dict(data_dict)
-    print('Added the CURRENT dictionary to the DB:')
-    pp = pprint.PrettyPrinter(indent=2)
-    pp.pprint(data_dict)
-
-    # for the prediction hours in the next day, create new dict and test
-    next_data_dict['hourly'] = next_day_hourly_dict
-    next_data_dict['daily'] = {}
-    assert tester.run_tests(next_data_dict), 'test_scraper_output.py failed!!!'
-
-    # if there are predictions in the next day, save the extra dict in db
-    if next_data_dict['hourly']:
-        hourly_db.save_dict(next_data_dict)
-        print('Added the NEXT dictionary to the DB:')
-        pp.pprint(next_data_dict)
+        prediction_time = int(''.join(date.split('-')[::-1] + time.split(':')))
+        print('EXTRACTING DATA FOR PREDICTION TIME: {}'.format(prediction_time))
+    
+        for html_file in glob.glob(data_folder + '/accuweather_' + date + '_' + time + '_'  + city + '_*.html'):
+    
+    
+            print('Scraping html file:\n', html_file, '\n\n')
+            site, date_, time_, city_, request_type, request_index, timestemp = os.path.splitext(os.path.basename(html_file))[0].split('_') 
+            request_index = request_index[1:]
+    
+            assert city == city_, "City name from function argument ({}) and from html filename ({}) are different!".format(city, city_)
+            assert date == date_, "Date from function argument ({}) and from html filename ({}) are different!".format(date, date_)
+            assert time == time_, "Time from unique set ({}) and time from html filename ({}) are different!".format(time, time_)
+    
+            if request_type == 'daily':
+    
+                test_html_title(html_file, city=city, country='Germany', request_type='Daily')
+    
+                day_dict = scrape_daily_html(html_file)
+    
+                # request_index is days since day of recording (today = 1)
+                daily_dict[request_index] = day_dict
+    
+            elif request_type == 'hourly':  
+    
+                test_html_title(html_file, city=city, country='Germany', request_type='Hourly')
+    
+                # request_index is hours since 12 midnight of day of recording
+                # the first hour for which the html file has data saved is forecast_time
+                forecast_time = int(request_index) - int(time[:2])
+                #if forecast_time < 16: # date == prediction_date
+                if int(request_index) <= 16: # date == prediction_date
+                    hour_dict = scrape_hourly_html(html_file)
+                    hourly_dict.update(hour_dict)
+                elif int(request_index) < 24: # need to split hours into two dates
+                    hour_dict = scrape_hourly_html(html_file)
+                    hourly_dict.update(hour_dict)
+                    hour_dict2 = scrape_hourly_html(html_file, next_day=True)
+                    next_day_hourly_dict.update(hour_dict2)
+                elif int(request_index) < 48: # date = prediction_date + 1 day
+                    hour_dict = scrape_hourly_html(html_file, next_day=True)
+                    next_day_hourly_dict.update(hour_dict)
+                else:
+                    assert False, 'hour index is >= 48, something wrong here, hour={}'.format(request_index)
+    
+    
+        if 'html_file' not in locals():
+            # no file with given date/city combination found
+            print('No html file found in {} for date: {}, city: {}'.format(data_folder, date, city))
+            return
+    
+        try:
+            date_obj = datetime.date(int(date.split('-')[2]), int(date.split('-')[1]), int(date.split('-')[0]))
+        except ValueError as err:
+            print('WUUUAAASFDHAEWFEEFS: Excepted some ValueError in Claus hacky date thingy.\n{}'.format(err))
+            return
+    
+        next_date = date_obj + datetime.timedelta(days=1)
+        date_int = date_obj.year * 10000 + date_obj.month * 100 + date_obj.day
+        next_date_int = next_date.year * 10000 + next_date.month * 100 + next_date.day
+    
+        date_check = int(''.join(date.split('-')[::-1]))
+        assert date_int == date_check, 'Dates are messed up! date_obj={} and date from filename={}'.format(date_int, date_check)
+    
+        assert date_int+1 == next_date_int, 'today={}, tmr={}'.format(date_int, next_date_int)
+    
+        data_dict = {'site'                 :   4, # accuweather id
+                     'city'                 :   city,
+                     'date'                 :   date_int
+                    }
+    
+        next_data_dict = {'site'                 :   4, # accuweather id
+                          'city'                 :   city,
+                          'date'                 :   next_date_int
+                         }
+    
+        # prediction time will be the time the first file for given date and city was downloaded
+        data_dict['prediction_time'] = prediction_time
+        next_data_dict['prediction_time'] = prediction_time
+    
+        # init wrapper objects
+        daily_db = wrapper.Daily_DataBase()
+        hourly_db = wrapper.Hourly_DataBase()
+    
+        # finish and test first scraped dict
+        data_dict['hourly'] = hourly_dict
+        data_dict['daily'] = daily_dict
+        assert tester.run_tests(data_dict), 'test_scraper_output.py failed!!!'
+    
+        # save first scraped dict to db
+        hourly_db.save_dict(data_dict)
+        daily_db.save_dict(data_dict)
+        print('Added the CURRENT dictionary to the DB:')
+        pp = pprint.PrettyPrinter(indent=2)
+        pp.pprint(data_dict)
+    
+        # for the prediction hours in the next day, create new dict and test
+        next_data_dict['hourly'] = next_day_hourly_dict
+        next_data_dict['daily'] = {}
+        assert tester.run_tests(next_data_dict), 'test_scraper_output.py failed!!!'
+    
+        # if there are predictions in the next day, save the extra dict in db
+        if next_data_dict['hourly']:
+            hourly_db.save_dict(next_data_dict)
+            print('Added the NEXT dictionary to the DB:')
+            pp.pprint(next_data_dict)
 
 
 def scrape_all(data_folder):

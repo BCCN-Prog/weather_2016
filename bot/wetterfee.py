@@ -18,58 +18,37 @@ def handle_command(command, channel, context={}):
         response = "Sure...write some more code then I can do that!"
     if 'coffee' in command:
         response = "There is a coffee shop just outside the class room. It's open 'til 4pm."
-    if get_weather_context(command) and 'weather' in context:
-        if has_loc(command):
-            loc = get_loc(command)
-        else:
-            loc = 'Berlin'
-        if has_date(command):
-            date = get_date(command)
-        else:
-            date = time.strftime("%D")
-        response = get_forecast(loc, date)
-        del context['weather']
-    if not(context):
-        context = client.run_actions(session_id, command, context)
+    context = client.run_actions(session_id, command, context)
+    print(context)
+    if 'intent' in context:
+        response = context['intent']
+        del context['intent']
+    if response=='joke':
+        context = select_joke(session_id, context)
+        response = 'Here is your joke: ' + context['joke']
+        del context['joke']
+    if response=='weather':
+        if context['missingLocation'] and context['missingDate']:
+            response = "Sure, for which date and location?"
+            context['intent'] = 'weather'
+        if context['missingLocation']:
+            response = "For which location?"
+            context['intent'] = 'weather'
+        if context['missingDate']:
+            response = "For which date?"
+            context['intent'] = 'weather'
+    if 'location' in context and 'datetime' in context:
+        forecast = get_forecast(context['datetime'], context['location'])
+        response = forecast
+        del context['location']
+        del context['datetime']
+        del context['missingDate']
+        del context['missingLocation']
+        del context['intent']
+
     slack_client.api_call("chat.postMessage", channel=channel,
                           text=response, as_user=True)
     return context
-
-def get_weather_context(command):
-    response = False
-    buzz_words = ['weather', 'cold', 'warm', 'rain', 'sunny', 'cloudy']
-    for word in buzz_words:
-        if word in command:
-            response = True
-    return response
-
-def has_word(buzz_words, command):
-    response = False
-    for word in buzz_words:
-        if word in command:
-            response = True
-    return response
-
-def has_date(command):
-    buzz_words = ['today', 'tomorrow', 'yesterday', 'on', 'May', 'June', 'July', 'April']
-    return has_word(buzz_words, command)
-
-def has_loc(command):
-    buzz_words = ['in']
-    return has_word(buzz_words, command)
-
-def get_date(command):
-    if 'on' in command:
-        idx = command.split(' ').index('on')
-        return command.split(' ')[idx+1] + ' ' + command.split(' ')[idx+2]
-    return 'May 31'
-
-def get_loc(command):
-    idx = command.split(' ').index('in')
-    return command.split(' ')[idx+1]
-
-def get_forecast(loc, date):
-    return "On " + date + " the weather in " + loc + " will be " + "sunny"
 
 def parse_slack_output(slack_rtm_output):
     """
@@ -102,22 +81,31 @@ def say(session_id, context, msg):
 
 def send(request, response):
     print(response['text'])
-    slack_client.api_call("chat.postMessage", channel=channel,
-                          text=response['text'], as_user=True)
+    #slack_client.api_call("chat.postMessage", channel=channel,
+    #                      text=response['text'], as_user=True)
 
 def merge(session_id, context, entities, msg):
-    if 'joke' in context:
-        del context['joke']
-    category = first_entity_value(entities, 'category')
-    if category:
-        context['cat'] = category
+    intent = first_entity_value(entities, 'intent')
+    datetime = first_entity_value(entities, 'datetime')
+    location = first_entity_value(entities, 'location')
+    print(entities.keys())
+    if intent:
+        context['intent'] = intent
+    if location:
+        context['location'] = location
+        context['missingLocation'] = False
+    else:
+        context['missingLocation'] = True
+
+    if datetime:
+        context['datetime'] = datetime
+        context['missingDate'] = False
+    else:
+        context['missingDate'] = True
     return context
 
 def select_joke(session_id, context):
-    try:
-        jokes = all_jokes[context['cat']]
-    except KeyError:
-        jokes = all_jokes['all']
+    jokes = all_jokes['all']
     shuffle(jokes)
     context['joke'] = jokes[0]
     return context
@@ -125,7 +113,8 @@ def select_joke(session_id, context):
 def error(session_id, context, e):
     print(str(e))
 
-
+def get_forecast(datetime, location):
+    return "Good news, the weather in " + location + " on " + datetime + " was 21 degrees, sunny"
 
 # wetterfee's ID as an environment variable
 BOT_ID = os.environ.get("BOT_ID")

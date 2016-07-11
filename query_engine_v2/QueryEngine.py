@@ -159,7 +159,6 @@ class QueryEngine:
         # in order to allow for these to be passed to the function in any order.
 
         params_intersect = [p for p in params if p in sorted_params]
-        print(params_intersect)
         params_intersect_int = [dset.categories_dict[params_intersect[i]] for i in range(len(params_intersect))]
         hi_lo_indices = [params.index(params_intersect[i]) for i in range(len(params_intersect))]
         hi_intersect = np.array(upper)[hi_lo_indices]
