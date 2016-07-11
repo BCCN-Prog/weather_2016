@@ -28,6 +28,9 @@ def handle_command(command, channel, context={}):
         response = 'Here is your joke: ' + context['joke']
         del context['joke']
     if response=='weather':
+        if context['missingLocation'] and context['missingDate']:
+            response = "Sure, for which date and location?"
+            context['intent'] = 'weather'
         if context['missingLocation']:
             response = "For which location?"
             context['intent'] = 'weather'
