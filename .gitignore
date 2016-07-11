@@ -92,3 +92,7 @@ scraping/data/
 *~
 .DS_Store
 *.idea
+
+# caching data
+*cached_data.h5py
+*cachedict.p
