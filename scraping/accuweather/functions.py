@@ -503,15 +503,16 @@ def scrape(date, city, data_folder):
                 # request_index is hours since 12 midnight of day of recording
                 # the first hour for which the html file has data saved is forecast_time
                 forecast_time = int(request_index) - int(time[:2])
-                if forecast_time < 16: # date == prediction_date
+                #if forecast_time < 16: # date == prediction_date
+                if int(request_index) <= 16: # date == prediction_date
                     hour_dict = scrape_hourly_html(html_file)
                     hourly_dict.update(hour_dict)
-                elif forecast_time < 24: # need to split hours into two dates
+                elif int(request_index) < 24: # need to split hours into two dates
                     hour_dict = scrape_hourly_html(html_file)
                     hourly_dict.update(hour_dict)
-                    hour_dict = scrape_hourly_html(html_file, next_day=True)
-                    next_day_hourly_dict.update(hour_dict)
-                elif forecast_time < 48: # date = prediction_date + 1 day
+                    hour_dict2 = scrape_hourly_html(html_file, next_day=True)
+                    next_day_hourly_dict.update(hour_dict2)
+                elif int(request_index) < 48: # date = prediction_date + 1 day
                     hour_dict = scrape_hourly_html(html_file, next_day=True)
                     next_day_hourly_dict.update(hour_dict)
                 else:
