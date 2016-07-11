@@ -21,6 +21,7 @@ class Executor:
 
         self.RecentDaily_to_georg={'Maximum Temperature':'high', 'Minimum Temperature':'low', 'Rain chance':'rain_chance', 'Rain Amount':'rain_amt','Air Pressure':'pressure', 'Cloud Cover':'cloud_cover'}
         self.RecentHourly_to_georg={'Temperature':'temp', 'Humidity':'humidity', 'Air Pressure':'pressure', 'Windspeed':'wind_speed', 'Rain Chance':'rain_chance', 'Rain Amount':'rain_amt', 'Cloud Cover':'cloud_cover'}
+        self.nstations = 20000
 
 
 
@@ -41,15 +42,15 @@ class Executor:
 
                 elif (hourly_daily == "daily"):   
                     print(hourly_daily, recent_hist, parameter, station, StartingDateTime, EndingDateTime, StartingTime, EndingTime) 
-                    s = q.smart_slice(hourly_daily, ['station_id', self.HistoricalDaily_to_georg[parameter]], 'date', int(StartingDateTime), int(EndingDateTime))
+                    s = q.smart_slice(hourly_daily, ['station_id', self.HistoricalDaily_to_georg[parameter]], ['date','station_id'], [int(StartingDateTime),0], [int(EndingDateTime),self.nstations])
 
                     out = q.get_data(hourly_daily, s, ['station_id', self.HistoricalDaily_to_georg[parameter]])
                 ids, vals = out[:,0], out[:,1]
                 locs = mf.id_to_geo_location(ids, source='historic')
                 print(locs[:,0], locs[:,1], vals)
                 #mf.hexagon_map(locs[:,90], locs[:,1], vals , hex_grid_size=(50,50))
-                mf.interpolated_color_map(locs[:,0], locs[:,1], vals, parameter, interp='linear')
-                
+                mf.interpolated_color_map(locs[:,0], locs[:,1], vals, parameter, interp='linear', return_figure=True)
+                plt.show()
 
             #Scraped ("recent")
             elif (recent_hist == "recent"):
@@ -116,3 +117,4 @@ class Executor:
                     plt.plot(out[:,1])
                     plt.show()
                     #print(out)
+
