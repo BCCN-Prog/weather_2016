@@ -96,16 +96,10 @@ class Executor:
                 ###It gives us a figure that we then can show. The self.parameterrange was supposed
                 ### to help us do some other stuff, you can ignore it. 
 #                figure, self.parameterrange = mf.interpolated_color_map(locs[:,0], locs[:,1], vals, parameter, interp='linear', return_figure=True)
-                
-                print(locs.shape)    
-                print(vals.shape)    
-                
-                print(locs[:,0].shape)
-                
+                                
                 idx = np.invert(np.isnan(locs[:,0]))
                 vals = vals[idx]
-                locs = locs[idx]
-                            
+                locs = locs[idx]                       
                 
                 figure = mf.interpolated_color_map(locs[:,0], locs[:,1], vals, parameter, interp='linear', return_figure=True)
                 plt.show()
