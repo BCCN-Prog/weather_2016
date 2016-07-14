@@ -27,7 +27,11 @@ def id_to_geo_location(id_, source='historic'):
     specs = pd.read_csv(f, encoding = "ISO-8859-1")
     coordinates = np.empty((id_.size, 2))
     for i, j in enumerate(id_):
-        coordinates[i,:] = specs[specs['id'] == j][['lon', 'lat']].values
+        #print(coordinates[i,:].shape, specs[specs['id'] == j][['lon', 'lat']].values.shape, specs[specs['id'] == j][['lon', 'lat']].values)
+        try:        
+            coordinates[i,:] = specs[specs['id'] == j][['lon', 'lat']].values
+        except:
+            coordinates[i,:] = [np.nan, np.nan]
     return coordinates
 
 

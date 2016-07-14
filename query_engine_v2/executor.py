@@ -87,14 +87,27 @@ class Executor:
 
                 #Get geolocations, stuff, call plotting function
                 ids, vals = out[:,0], out[:,1]
-                locs = mf.id_to_geo_location(ids, hourly_daily, source='historic')
+                
+#                locs = mf.id_to_geo_location(ids, hourly_daily, source='historic')
+                locs = mf.id_to_geo_location(ids, source='historic')
                 #prefer hexagon map?
                 #figure = mf.hexagon_map(locs[:,90], locs[:,1], vals , hex_grid_size=(50,50))
                 ###We call the "interpolated_color_map" from denis' map_function.py (imported in this file). 
                 ###It gives us a figure that we then can show. The self.parameterrange was supposed
                 ### to help us do some other stuff, you can ignore it. 
-                figure, self.parameterrange = mf.interpolated_color_map(locs[:,0], locs[:,1], vals, parameter, interp='linear', return_figure=True)
-               
+#                figure, self.parameterrange = mf.interpolated_color_map(locs[:,0], locs[:,1], vals, parameter, interp='linear', return_figure=True)
+                
+                print(locs.shape)    
+                print(vals.shape)    
+                
+                print(locs[:,0].shape)
+                
+                idx = np.invert(np.isnan(locs[:,0]))
+                vals = vals[idx]
+                locs = locs[idx]
+                            
+                
+                figure = mf.interpolated_color_map(locs[:,0], locs[:,1], vals, parameter, interp='linear', return_figure=True)
                 plt.show()
 
 
