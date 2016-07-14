@@ -67,12 +67,12 @@ class Executor:
                 if (hourly_daily == "hourly"):  
                     '''
                     Case 1: All, Historical, Hourly
-                    This is not working
+                    This is working
 
                     As we said, we call smart_slice first, then get_data, and then 4 lines of plotting.
                     '''
                     
-                    s = q.smart_slice(hourly_daily, ['station_id', self.HistoricalHourly_to_georg[parameter]], ['date','hour', 'station_id','site'], [int(StartingDateTime),int(StartingTime),0,6], [int(EndingDateTime), int(EndingTime), self.nstations, 6])
+                    s = q.smart_slice(hourly_daily, ['station_id', self.HistoricalHourly_to_georg[parameter]], ['date','hour', 'station_id'], [int(StartingDateTime),int(StartingTime),0], [int(EndingDateTime), int(EndingTime), self.nstations])
                     out = q.get_data(hourly_daily, s, ['station_id', self.HistoricalHourly_to_georg[parameter]])
 
                 elif (hourly_daily == "daily"):  
