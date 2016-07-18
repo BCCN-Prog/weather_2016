@@ -2,8 +2,14 @@ import os
 import time
 from slackclient import SlackClient
 from wit import Wit
-#import wit_bot
 from random import shuffle
+import sys
+sys.path.append('../query_engine_v2')
+import QueryEngine
+import datetime as dt
+import urllib, json
+import codecs
+import numpy as np
 
 def handle_command(command, channel, context={}):
     """
@@ -18,6 +24,8 @@ def handle_command(command, channel, context={}):
         response = "Sure...write some more code then I can do that!"
     if 'coffee' in command:
         response = "There is a coffee shop just outside the class room. It's open 'til 4pm."
+    if 'döner' in command:
+        response = "You mentioned Döner? There is a Späti and a Kebad place just outside on Luisenstr"
     context = client.run_actions(session_id, command, context)
     print(context)
     if 'intent' in context:
@@ -31,20 +39,18 @@ def handle_command(command, channel, context={}):
         if context['missingLocation'] and context['missingDate']:
             response = "Sure, for which date and location?"
             context['intent'] = 'weather'
-        if context['missingLocation']:
+        elif context['missingLocation']:
             response = "For which location?"
             context['intent'] = 'weather'
-        if context['missingDate']:
+        elif context['missingDate']:
             response = "For which date?"
             context['intent'] = 'weather'
     if 'location' in context and 'datetime' in context:
-        forecast = get_forecast(context['datetime'], context['location'])
-        response = forecast
+        response = get_forecast(context['datetime'], context['location'])
         del context['location']
         del context['datetime']
         del context['missingDate']
         del context['missingLocation']
-        del context['intent']
 
     slack_client.api_call("chat.postMessage", channel=channel,
                           text=response, as_user=True)
@@ -113,8 +119,86 @@ def select_joke(session_id, context):
 def error(session_id, context, e):
     print(str(e))
 
+def parse_date(datetime):
+    # build an integer from the date time string
+    s = dateString = ''
+    year = (datetime.split('T')[0].split('-')[0])
+    if int(year)>2016:
+        year = '2016'
+    month = (datetime.split('T')[0].split('-')[1])
+    day = (datetime.split('T')[0].split('-')[2])
+    dateString = dt.date(int(year),int(month),int(day)).strftime("%a, %d %b %Y")
+    return dateString, int((year) + (month) + (day))
+
 def get_forecast(datetime, location):
-    return "Good news, the weather in " + location + " on " + datetime + " was 21 degrees, sunny"
+    try:
+        city_ID = cities_table[location.lower()]
+        useAPI = False
+    except KeyError:
+        print("Could find the city, using API")
+        useAPI = True
+
+    # parse the date
+    dateString, dateInt = parse_date(datetime)
+    locString = location[0].upper() + location[1:]
+    dateToday = int(dt.date.today().strftime("%Y%m%d"))
+    future = (dateInt >= dateToday)
+    verb = 'will be' if future else 'was'
+
+    # if the city was found in the scraping list:
+    if not(useAPI):
+        try:
+            s = Q.smart_slice('daily', return_params=['low', 'high', 'date', 'site', 'city_ID'],
+                              params=['date', 'city_ID'],
+                              lower=[dateInt, city_ID],
+                              upper=[dateInt, city_ID])
+            p = Q.get_data('daily', s, return_params=['low', 'high', 'date', 'site', 'city_ID'])
+            temp_low = p[:,3].mean()
+            temp_high = p[:,2].mean()
+
+            # make sure there is no nan
+            assert(np.isfinite(temp_low+temp_high))
+            # parse the response
+            response = ("Here you go: the temperature in " + locString + " on "
+                        + dateString + " "+ verb + " between " + str(int(temp_low)) + " and " + str(int(temp_high))
+                        + "°.")
+            print(response)
+        except:
+            print(sys.exc_info())
+            useAPI = True
+            print("Scraping database failed, using API")
+
+    if useAPI:
+        try:
+            temp_low, temp_high, conds = get_temp(dateInt, dateToday, location)
+            response = ("Here you go: the temperature in " + locString + " on "
+                        + dateString + " "+ verb + " between " + temp_low + " and " + temp_high
+                        + "°. "+conds + ".")
+        except:
+            print(sys.exc_info())
+            response = "Sorry, I have no data for that one. But remember, '" + bauernregeln[np.random.randint(len(bauernregeln))] + "'"
+            print("API failed, using Bauernregeln")
+    return response
+
+def get_temp(dateInt, dateToday, location):
+    future = (dateInt >= dateToday)
+    if future:
+        f = urllib.request.urlopen('http://api.wunderground.com/api/944b3f3c879d2394/geolookup/forecast10day/q/Germany/'+location+'.json')
+    else:
+        f = urllib.request.urlopen('http://api.wunderground.com/api/944b3f3c879d2394/geolookup/history_'+str(dateInt)+'/q/Germany/'+location+'.json')
+    reader = codecs.getreader('utf-8') #how is data encoded?
+    parsed = json.load(reader(f))
+    if future:
+        day_diff = dateInt - dateToday
+        max_t = parsed['forecast']['simpleforecast']['forecastday'][day_diff]['high']['celsius']
+        min_t = parsed['forecast']['simpleforecast']['forecastday'][day_diff]['low']['celsius']
+        conds = parsed['forecast']['simpleforecast']['forecastday'][day_diff]['conditions']
+    else:
+        min_t = parsed['history']['dailysummary'][0]['mintempm']
+        max_t = parsed['history']['dailysummary'][0]['maxtempm']
+        conds = parsed['history']['observations'][0]['conds']
+    return min_t, max_t, conds
+
 
 # wetterfee's ID as an environment variable
 BOT_ID = os.environ.get("BOT_ID")
@@ -157,10 +241,27 @@ actions = {
 
 client = Wit(os.environ.get('WIT_TOKEN'), actions)
 session_id = 'my-user-id-42'
+# mapping for site IDs
+cities_table = {"berlin": 1, "hamburg": 2, "muenchen": 3, "koeln": 4,
+                "frankfurt": 5, "stuttgart": 6, "bremen" :7, "leipzig": 8,
+                "hannover": 9, "nuernberg": 10, "dortmund": 11,
+                "dresden": 12, "kassel": 13, "kiel": 14, "bielefeld": 15,
+                "saarbruecken": 16, "rostock": 17, "freiburg": 18,
+                "magdeburg": 19, "erfurt": 20}
 
+bauernregeln = ["Abendrot Gutwetterbot', Morgenrot mit Regen droht.",
+                "Der Nordwind ist ein rauher Vetter, aber er bringt beständig Wetter.",
+                "Die Julisonne arbeitet für zwei.",
+                "Painted flowers have no scent",
+                "Lightning strikes more trees than blades of grass.",
+                "Der Nebel, wenn er steigend sich erhält, bringt Regen, doch klar Wetter wenn er fällt.",
+                "If twice rotates the weather vane, it's indicating wind and rain",
+                "Grauer Morgen - schöner Tag!",
+                "Iss, was gar ist. Trink, was klar ist."]
 
 if __name__ == "__main__":
     READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
+    Q = QueryEngine.QueryEngine('daily_database.hdf5', 'hourly_database.hdf5')
     context = {}
     if slack_client.rtm_connect():
         print("wetterfee connected and running!")
