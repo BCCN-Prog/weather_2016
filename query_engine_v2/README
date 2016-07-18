@@ -1,0 +1,27 @@
+Okay liebe Leute, ich hoffe ihr wisst worauf ihr euch hier einlasst :)
+
+
+In general, the GUI part is separated into 4 files:
+1) gui.ui 
+aka gui.py, created by our design program, contains layout and features of the gui.
+It should never be touched.
+
+2) GUILogic.py 
+Is what you call when you want to run the GUI. It inherits the gui.ui features, and includes the main logic, so it defines which button is supposed to do what. Most important is the "Collect_Data(self)" function which is executed if the user hits "submit" on the gui. 
+
+It initializes the executor class and runs the "get_data" functions with all the arguments that the user has put in. 
+
+
+3) executor.py
+It contains one class with the get_data function, which does a lot of if clauses to execute the right slicing/plotting function based on what the arguments are that it receives from the GUILogic.
+#Since this is where we call Georg's functions and get the error, this is probably the one that you want to look at most closely
+
+
+4) linear_plotter.plot_over_time (diagram) and map_functions.interpolated_color_map (map)
+The maps of germany are done by the map_functions.py in the visualization folder. 
+If a diagram is called, linear_plotter.py is the guy that produces it. 
+
+
+##Additional remarks:
+- If you want to test the diagram output, that is, one station over time, Aachen is a good station for daily. At least until 2009 or sth.
+- To run the GUI, use "python GUILogic.py"
