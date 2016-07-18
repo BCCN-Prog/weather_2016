@@ -39,6 +39,8 @@ class MainDialog(QDialog, gui.Ui_MainWindow):
 
         QtCore.QObject.connect(ui.HourlyFlag, QtCore.SIGNAL("clicked()"), ui.HourlySelected)
         QtCore.QObject.connect(ui.DailyFlag, QtCore.SIGNAL("clicked()"), ui.DailySelected)
+        QtCore.QObject.connect(ui.ExitButton, QtCore.SIGNAL("clicked(bool)"), ui.exit)
+        #ui.ExitButton.released.connect(quit())
         ui.SubmitButton.released.connect(ui.Collect_Data)
 
     
@@ -104,6 +106,7 @@ class MainDialog(QDialog, gui.Ui_MainWindow):
             ui.ParametersList.addItems(ListRecentDaily)
             ui.ParametersList.setEnabled(True)
         ui.enable_stuff()
+
     def HourlySelected(self):
         if ui.HistoricalFlag.isChecked():
             ui.ParametersList.clear()
@@ -112,6 +115,9 @@ class MainDialog(QDialog, gui.Ui_MainWindow):
             ui.ParametersList.clear()
             ui.ParametersList.addItems(ListRecentHourly)
         ui.enable_stuff() 
+
+    def exit(self):
+        exit("Goodbye and have a nice weather! :)")
 
     def enable_stuff(self):
             ui.StationsList.addItem("All")   

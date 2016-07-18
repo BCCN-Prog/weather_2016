@@ -35,8 +35,8 @@ def plot_over_time(data_mat, db_type, ylabel, smooth = False):
     fig, ax = plt.subplots()
 
     ax.plot_date(temp_pt, y_vals, '-')
-    win_len = 20#int(len(y_vals) / 20)
-    if smooth or win_len>10:
+    win_len = 20 #int(len(y_vals) / 20)
+    if smooth or int(len(y_vals))>40:
         #average over interval of length win_len centered at the time point (bias only on edges of the plot)
         smoothed_y = np.hstack([np.zeros(win_len)+np.mean(y_vals[:win_len]),
                                 np.array([np.mean(y_vals[i-win_len:i+win_len]) for i in range(win_len,len(y_vals) - win_len)]),
