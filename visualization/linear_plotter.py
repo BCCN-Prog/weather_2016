@@ -35,14 +35,14 @@ def plot_over_time(data_mat, db_type, ylabel, smooth = False):
     fig, ax = plt.subplots()
 
     ax.plot_date(temp_pt, y_vals, '-')
-    win_len = int(len(y_vals) / 20)
+    win_len = 20#int(len(y_vals) / 20)
     if smooth or win_len>10:
         #average over interval of length win_len centered at the time point (bias only on edges of the plot)
         smoothed_y = np.hstack([np.zeros(win_len)+np.mean(y_vals[:win_len]),
                                 np.array([np.mean(y_vals[i-win_len:i+win_len]) for i in range(win_len,len(y_vals) - win_len)]),
                                np.zeros(win_len)+np.mean(y_vals[-win_len:])])
         print(np.shape(smoothed_y))
-        ax.plot_date(temp_pt, smoothed_y, 'g-', linewidth = 3, alpha = 0.5)
+        ax.plot_date(temp_pt, smoothed_y, 'g-', linewidth = 3, alpha = 0.9)
         plt.legend(['data', 'data smoothed by averaging over {} samples'.format(int(len(y_vals) / 20 +1))], fontsize = 10)
 
     ax.autoscale_view()
