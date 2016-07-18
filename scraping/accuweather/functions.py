@@ -196,20 +196,38 @@ def scrape_daily_html(html_file):
     
         wind_stats = find_unique(cl, name='ul', class_='wind-stats')
     
+
+        strong_list_lengths = set()
+        gusts_overwritten = []
         for strong in wind_stats.find_all('strong'):
             strong_list = strong.get_text().split()
             if len(strong_list) == 2:
+                strong_list_lengths.add(len(strong_list))
                 gusts, unit = strong_list
                 assert unit == 'km/h', 'Unit of gusts is not km/h.'
+                # to check weather gust entrie gets overwritten wrongly (in case wind direction has only len = 3 after split())
+                if ('gusts_' + keys[j] + ' [m/s]') in day_dict:
+                    gusts_overwritten.append(day_dict['gusts_' + keys[j] + ' [m/s]'])
                 day_dict['gusts_' + keys[j] + ' [m/s]'] = float(gusts) * 1e3 / 3600 # m/s
             elif len(strong_list) == 3:
+                strong_list_lengths.add(len(strong_list))
                 wind_direction, wind_speed, unit = strong_list
                 assert unit == 'km/h', 'Unit of wind speed is not km/h.'
                 day_dict['wind_direction_' + keys[j]] = wind_direction
                 day_dict['wind_speed_' + keys[j]] = float(wind_speed) * 1e3 / 3600 # m/s
             else:
                 assert False, 'There is "strong" section in "wind_stats" that cant be identified.'
-    
+
+        # in case of 0 wind_speed, the strong_list has only len=2 (no wind direction given)
+        # for that case (no wind_speed entry above), we need to fix wind_speed_day/night entry)
+        if 3 not in strong_list_lengths:
+            overwritte_test = np.all(np.array(gusts_overwritten) == 0)
+            if overwritte_test and day_dict['gusts_' + keys[j] + ' [m/s]'] == 0:
+                day_dict['wind_speed_' + keys[j]] = 0
+                day_dict['wind_direction_' + keys[j]] = None
+            else:
+                assert False, 'Wind-stats for wind_speed / _direction have a problem!'
+     
         stats = find_unique(cl, name='ul', class_='stats')
     
         stats_dic = {}
@@ -358,7 +376,13 @@ def scrape_hourly_html(html_file, next_day=False):
     wind_dir = []
     for j, wind_entry in enumerate(wind_entries[start_pos:end_pos]):
         wind_str = wind_entry.get_text()
-        speed, direction = wind_str.split()
+        try:
+            speed, direction = wind_str.split()
+        except ValueError as err:
+            speed = wind_str.split()[0]
+            direction = None
+            assert int(speed[0]) == 0
+            print('Excepted ValueError:', err, "\n'wind_speed' is euqal to 0. All fine.")
         wind_speed[j] = float(speed) * 1e3 / 3600 # m/s 
         wind_dir.append(direction)
         hour_dicts[str(hour[j+start_pos])]['wind_speed'] = float(speed)
@@ -537,7 +561,10 @@ def scrape(date, city, data_folder):
         date_check = int(''.join(date.split('-')[::-1]))
         assert date_int == date_check, 'Dates are messed up! date_obj={} and date from filename={}'.format(date_int, date_check)
     
-        assert date_int+1 == next_date_int, 'today={}, tmr={}'.format(date_int, next_date_int)
+        # only check if date of day is not possibly last of month.
+        last_two_digits = int(str(date_int)[-2:])
+        if last_two_digits != 30 and last_two_digits != 31 and last_two_digits != 28:
+                assert date_int+1 == next_date_int, 'today={}, tmr={}'.format(date_int, next_date_int)
     
         data_dict = {'site'                 :   4, # accuweather id
                      'city'                 :   city,
