@@ -14,10 +14,13 @@ def convert_stations_specs():
     chosen.to_csv('./dwd_station_specs.csv', index=False)
 
 
-def id_to_geo_location(id_, source='historic'):
+def id_to_geo_location(id_, hourly_daily, source='historic'):
 
     if source == 'historic':
-        csv_file = './dwd_station_specs.csv'
+        if hourly_daily == "daily":
+            csv_file = './dwd_station_specs_daily.csv'
+        elif hourly_hourly == "daily":
+            csv_file = './dwd_station_specs_hourly.csv'
     elif source == 'scraping':
         csv_file = './scraper_geo_locations.csv'
     else:

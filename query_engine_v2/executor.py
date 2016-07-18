@@ -87,9 +87,16 @@ class Executor:
 
                 #Get geolocations, stuff, call plotting function
                 ids, vals = out[:,0], out[:,1]
+                ids, vals = ids[np.logical_not(np.isnan(vals))],vals[np.logical_not(np.isnan(vals))] 
+                print("my version")
+                print(np.shape(ids),np.shape(vals))
+                print(ids, vals)
                 
-#                locs = mf.id_to_geo_location(ids, hourly_daily, source='historic')
-                locs = mf.id_to_geo_location(ids, source='historic')
+                locs = mf.id_to_geo_location(ids, hourly_daily, source='historic')
+                #locs = mf.id_to_geo_location(ids, source='historic')
+                print("locs")
+                print(locs)
+                print(np.shape(locs))
                 #prefer hexagon map?
                 #figure = mf.hexagon_map(locs[:,90], locs[:,1], vals , hex_grid_size=(50,50))
                 ###We call the "interpolated_color_map" from denis' map_function.py (imported in this file). 
@@ -98,10 +105,14 @@ class Executor:
 #                figure, self.parameterrange = mf.interpolated_color_map(locs[:,0], locs[:,1], vals, parameter, interp='linear', return_figure=True)
                                 
                 idx = np.invert(np.isnan(locs[:,0]))
+                print("indices")
+                print(idx)
                 vals = vals[idx]
                 locs = locs[idx]                       
-                
-                figure = mf.interpolated_color_map(locs[:,0], locs[:,1], vals, parameter, interp='linear', return_figure=True)
+                print("end version")
+                print(np.shape(ids),np.shape(vals))
+                print(ids, vals)
+                fig = mf.interpolated_color_map(locs[:,0], locs[:,1], vals, parameter, interp='linear', return_figure=True)
                 plt.show()
 
 
