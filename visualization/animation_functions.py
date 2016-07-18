@@ -29,7 +29,7 @@ def id_to_geo_location(id_, source='historic'):
     specs = pd.read_csv(f, encoding = "ISO-8859-1")
     coordinates = np.empty((id_.size, 2))
     for i, j in enumerate(id_):
-        coordinates[i,:] = specs[specs['id'] == j][['lon', 'lat']].values
+        coordinates[i,:] = specs[specs['id'] == j][['lon', 'lat']].values[0]
     return coordinates
 
 
@@ -60,13 +60,14 @@ def hexagon_animation(station_lon, station_lat, station_val, hex_grid_size=(50,5
         #m = pickle.load(input) # open map from disk
     x, y  = m(station_lon, station_lat)
     plt.ion()
-    for i in range(len(station_val)):
+    for i in range(np.shape(station_val)[1]):
         plt.clf()
         m.drawcoastlines()
         m.drawcountries()
         m.drawmapboundary()
         m.hexbin(x, y, C = station_val[:,i], gridsize=hex_grid_size, linewidth=0.5, edgecolor='k', vmin=np.amin(station_val), vmax=np.amax(station_val))
         cb = m.colorbar(location='bottom', label='Random Data', ticks=[np.amin(station_val), 0,  np.amax(station_val)])
+        plt.title('{}. day'.format(i + 1))
         plt.show()
         plt.pause(0.005)
     
@@ -128,23 +129,24 @@ def interpolated_color_map(station_lon, station_lat, station_val, grid_dim=(80,1
     #norm = mpl.colors.Normalize(clip=False, vmin=np.amin(station_val), vmax=np.amax(station_val))
     
     plt.ion()
-    for i in range(len(station_val)):
+    for i in range(np.shape(station_val)[1]):
         plt.clf()
         m.drawcoastlines()
         m.drawcountries()
         m.drawmapboundary()
-        value_mesh = griddata(station_x, station_y, station_val[:,i], x_mesh, y_mesh, interp=interp)
+        value_mesh = griddata(station_x, station_y, station_val[:,i], x_mesh, y_mesh, interp=interp) #for python 2.7 interp = 'linear
         cont = m.contourf(x_mesh, y_mesh, value_mesh, vmin=np.amin(station_val), vmax=np.amax(station_val), levels=levels)
         #cont.set_clim([np.amin(station_val), np.amax(station_val)])
         #cont = m.contourf(x_mesh, y_mesh, value_mesh, levels, origin='lower')
         m.scatter(station_lon, station_lat, color='k', s=5, latlon=True)
         cb = m.colorbar(cont, location='bottom', label='Random Data', ticks=[np.amin(station_val), 0,  np.amax(station_val)])
         #plt.clim(np.amin(station_val), np.amax(station_val))
+        plt.title('{}. day'.format(i + 1))
         if return_figure:
             return plt.gcf()
         else:
             plt.show()
-            plt.pause(0.005)
+            plt.pause(0.001)
 
     # interpolate datapoints for (station_lon, station_lat) to meshgrid (lat_mesh, lot_mesh)
     #value_mesh = griddata(station_x, station_y, station_val, lon_mesh, lat_mesh, interp=interp)
@@ -187,9 +189,10 @@ def animation_mvp():
     #coordinates, values = get_test_scraping_data()
 
     # HISTORIC
+    days_n = 20
     coordinates = get_geo_locations(unique_coords=True)
     #values = 20 * np.random.randn(coordinates.shape[0])
-    values = np.random.randn(coordinates.shape[0],coordinates.shape[0])
+    values = np.random.randn(coordinates.shape[0],days_n)
 
     #hexagon_animation(coordinates[:,0], coordinates[:,1], values, hex_grid_size=(20,20))
     interpolated_color_map(coordinates[:,0], coordinates[:,1], values, return_figure=False)

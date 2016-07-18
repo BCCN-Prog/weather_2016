@@ -8,7 +8,7 @@ import datetime
 
 '''This file contains simple functions to plot parameters over time.'''
 
-def plot_over_time(data_mat, db_type, ylabel, smooth = True):
+def plot_over_time(data_mat, db_type, ylabel, smooth = False):
     if db_type == 'daily':
         daily_data = True
     elif db_type == 'hourly':
@@ -23,7 +23,8 @@ def plot_over_time(data_mat, db_type, ylabel, smooth = True):
 
     sort_mat = data_mat[data_mat[:, 0].argsort()]
     time_vals = sort_mat[:, 0]
-    y_vals = sort_mat[:, 1]
+    y_vals = sort_mat[:, 1] #for more scrapers it would be [:,1:]
+
 
     if daily_data:
         date_objs = [datetime.date(int(str(i)[:4]), int(str(i)[4:6]), int(str(i)[6:8])) for i in time_vals]
@@ -34,13 +35,15 @@ def plot_over_time(data_mat, db_type, ylabel, smooth = True):
     fig, ax = plt.subplots()
 
     ax.plot_date(temp_pt, y_vals, '-')
-    if smooth:
-        win_len = int(len(y_vals)/20)
-        smoothed_y = np.hstack([np.zeros(win_len),np.array([np.mean(y_vals[i-win_len:i+win_len]) for i in range(win_len,len(y_vals) - win_len )]),
-                               np.zeros(win_len)])
-
-        ax.plot_date(temp_pt, smoothed_y, 'g-', linewidth = 3, alpha = 0.3)
-        plt.legend(['data', 'data smoothed by averaging over {} samples'.format(int(len(y_vals) / 20 +1))], fontsize = 12)
+    win_len = 20 #int(len(y_vals) / 20)
+    if smooth or int(len(y_vals))>40:
+        #average over interval of length win_len centered at the time point (bias only on edges of the plot)
+        smoothed_y = np.hstack([np.zeros(win_len)+np.mean(y_vals[:win_len]),
+                                np.array([np.mean(y_vals[i-win_len:i+win_len]) for i in range(win_len,len(y_vals) - win_len)]),
+                               np.zeros(win_len)+np.mean(y_vals[-win_len:])])
+        print(np.shape(smoothed_y))
+        ax.plot_date(temp_pt, smoothed_y, 'g-', linewidth = 3, alpha = 0.9)
+        plt.legend(['data', 'data smoothed by averaging over {} samples'.format(int(len(y_vals) / 20 +1))], fontsize = 10)
 
     ax.autoscale_view()
     fig.autofmt_xdate()
@@ -71,4 +74,4 @@ if __name__ == '__main__':
 
 
     plot_over_time(test_input, 'daily', 'temp')
-    plot_over_time(test_input2, 'hourly', 'temp')
+    plot_over_time(test_input2, 'hourly', 'temp', smooth = True)

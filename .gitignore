@@ -96,3 +96,5 @@ scraping/data/
 # caching data
 *cached_data.h5py
 *cachedict.p
+*.hdf5
+

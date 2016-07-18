@@ -25,7 +25,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(360, 639)
+        MainWindow.resize(401, 645)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.verticalLayoutWidget = QtGui.QWidget(self.centralwidget)
@@ -48,7 +48,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.DailyFlag)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.verticalLayoutWidget_2 = QtGui.QWidget(self.centralwidget)
-        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(60, 131, 250, 61))
+        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(60, 131, 251, 61))
         self.verticalLayoutWidget_2.setObjectName(_fromUtf8("verticalLayoutWidget_2"))
         self.verticalLayout_2 = QtGui.QVBoxLayout(self.verticalLayoutWidget_2)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
@@ -65,7 +65,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.addWidget(self.RecentFlag)
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
         self.verticalLayoutWidget_3 = QtGui.QWidget(self.centralwidget)
-        self.verticalLayoutWidget_3.setGeometry(QtCore.QRect(70, 343, 219, 61))
+        self.verticalLayoutWidget_3.setGeometry(QtCore.QRect(60, 343, 219, 61))
         self.verticalLayoutWidget_3.setObjectName(_fromUtf8("verticalLayoutWidget_3"))
         self.verticalLayout_3 = QtGui.QVBoxLayout(self.verticalLayoutWidget_3)
         self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
@@ -81,7 +81,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.addLayout(self.horizontalLayout_3)
         self.verticalLayoutWidget_4 = QtGui.QWidget(self.centralwidget)
         self.verticalLayoutWidget_4.setEnabled(True)
-        self.verticalLayoutWidget_4.setGeometry(QtCore.QRect(30, 425, 291, 71))
+        self.verticalLayoutWidget_4.setGeometry(QtCore.QRect(60, 410, 291, 71))
         self.verticalLayoutWidget_4.setObjectName(_fromUtf8("verticalLayoutWidget_4"))
         self.verticalLayout_5 = QtGui.QVBoxLayout(self.verticalLayoutWidget_4)
         self.verticalLayout_5.setObjectName(_fromUtf8("verticalLayout_5"))
@@ -124,7 +124,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_5.addLayout(self.horizontalLayout_8)
         self.verticalLayout_5.addLayout(self.horizontalLayout_5)
         self.verticalLayoutWidget_5 = QtGui.QWidget(self.centralwidget)
-        self.verticalLayoutWidget_5.setGeometry(QtCore.QRect(70, 272, 219, 61))
+        self.verticalLayoutWidget_5.setGeometry(QtCore.QRect(60, 272, 219, 61))
         self.verticalLayoutWidget_5.setObjectName(_fromUtf8("verticalLayoutWidget_5"))
         self.verticalLayout_6 = QtGui.QVBoxLayout(self.verticalLayoutWidget_5)
         self.verticalLayout_6.setObjectName(_fromUtf8("verticalLayout_6"))
@@ -144,13 +144,13 @@ class Ui_MainWindow(object):
         self.verticalLayout_6.addLayout(self.horizontalLayout_6)
         self.SubmitButton = QtGui.QPushButton(self.centralwidget)
         self.SubmitButton.setEnabled(False)
-        self.SubmitButton.setGeometry(QtCore.QRect(60, 530, 98, 27))
+        self.SubmitButton.setGeometry(QtCore.QRect(70, 530, 98, 27))
         self.SubmitButton.setObjectName(_fromUtf8("SubmitButton"))
         self.ExitButton = QtGui.QPushButton(self.centralwidget)
-        self.ExitButton.setGeometry(QtCore.QRect(180, 530, 98, 27))
+        self.ExitButton.setGeometry(QtCore.QRect(190, 530, 98, 27))
         self.ExitButton.setObjectName(_fromUtf8("ExitButton"))
         self.textBrowser = QtGui.QTextBrowser(self.centralwidget)
-        self.textBrowser.setGeometry(QtCore.QRect(20, 20, 321, 101))
+        self.textBrowser.setGeometry(QtCore.QRect(100, 10, 291, 101))
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -288,16 +288,34 @@ class Ui_MainWindow(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipText, brush)
         self.textBrowser.setPalette(palette)
+        font = QtGui.QFont()
+        font.setKerning(True)
+        self.textBrowser.setFont(font)
+        self.textBrowser.setAcceptDrops(True)
+        self.textBrowser.setAutoFillBackground(True)
+        self.textBrowser.setFrameShape(QtGui.QFrame.NoFrame)
+        self.textBrowser.setLineWidth(0)
+        self.textBrowser.setAcceptRichText(True)
+        self.textBrowser.setOpenLinks(True)
         self.textBrowser.setObjectName(_fromUtf8("textBrowser"))
-        self.label = QtGui.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(30, 30, 61, 41))
-        self.label.setText(_fromUtf8(""))
-        self.label.setPixmap(QtGui.QPixmap(_fromUtf8("../../../../Schreibtisch/weather.png")))
-        self.label.setScaledContents(True)
-        self.label.setObjectName(_fromUtf8("label"))
+        self.label_2 = QtGui.QLabel(self.centralwidget)
+        self.label_2.setGeometry(QtCore.QRect(10, 10, 91, 101))
+        self.label_2.setText(_fromUtf8(""))
+        self.label_2.setPixmap(QtGui.QPixmap(_fromUtf8("../GUI/Logo.png")))
+        self.label_2.setScaledContents(True)
+        self.label_2.setObjectName(_fromUtf8("label_2"))
+        self.verticalLayoutWidget.raise_()
+        self.verticalLayoutWidget_2.raise_()
+        self.verticalLayoutWidget_3.raise_()
+        self.verticalLayoutWidget_4.raise_()
+        self.verticalLayoutWidget_5.raise_()
+        self.SubmitButton.raise_()
+        self.ExitButton.raise_()
+        self.label_2.raise_()
+        self.textBrowser.raise_()
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 360, 25))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 401, 25))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuQuery_Engine = QtGui.QMenu(self.menubar)
         self.menuQuery_Engine.setObjectName(_fromUtf8("menuQuery_Engine"))
@@ -351,11 +369,12 @@ class Ui_MainWindow(object):
         self.textBrowser.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Ubuntu\'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Welcome to BCCN\'s </p>\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Awesome Weather App!</span></p>\n"
-"<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">State your desires and we\'ll se what you can do for you</p></body></html>", None))
+"</style></head><body style=\" font-family:\'Ubuntu\'; font-size:11pt; font-weight:400; font-style:normal;\" bgcolor=\"#000000\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#ffffff;\">Welcome to BCCN\'s </span></p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; color:#ffffff;\">Awesome Weather App!</span></p>\n"
+"<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#ffffff;\"><br /></p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#ffffff;\">State your desires and we\'ll </span></p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#ffffff;\">see what we can do for you</span></p></body></html>", None))
         self.menuQuery_Engine.setTitle(_translate("MainWindow", "Query Engine", None))
 
 

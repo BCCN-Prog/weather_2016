@@ -149,7 +149,7 @@ class Executor:
             if (recent_hist =="historical"):
                 if (hourly_daily == "hourly"):   
                     '''
-                    Case 5: One Station, Historical, Daily
+                    Case 5: One Station, Historical, Hourly
                     Working!
                     ''' 
 #                    t = q.smart_slice(hourly_daily, ['station_id', self.HistoricalHourly_to_georg[parameter]], ['date', 'station_id'], [int(StartingDateTime), ni.name_to_id(station)], [int(EndingDateTime),ni.name_to_id(station)], sort='date')
@@ -165,7 +165,6 @@ class Executor:
                     date_hours = np.core.defchararray.add(dates, hours).astype(float)
 
                     out_new = np.vstack([date_hours, out[:,2]]).T
-                    
                     lp.plot_over_time(out_new,hourly_daily,self.HistoricalHourly_to_georg[parameter])
 
 
@@ -178,7 +177,7 @@ class Executor:
                     t = q.smart_slice(hourly_daily, ['date', self.HistoricalDaily_to_georg[parameter]], ['date', 'station_id'], [int(StartingDateTime), ni.name_to_id(station)], [int(EndingDateTime),ni.name_to_id(station)], sort='date')
 
                     out = q.get_data(hourly_daily, t, ['date', self.HistoricalDaily_to_georg[parameter]])
-
+                    print(out)
                     lp.plot_over_time(out,hourly_daily,self.HistoricalDaily_to_georg[parameter])
 
             #recent 
