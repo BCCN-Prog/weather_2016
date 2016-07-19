@@ -56,7 +56,7 @@ class Executor:
         The two cases that are currently working are "All - Historical - Daily (map)" and "Not_All - Historical - Daily (diagram)".
         '''
 
-        q = qe.QueryEngine("daily_database.hdf5", "hourly_database.hdf5")
+        q = qe.QueryEngine("daily_database_gui.hdf5", "hourly_database_gui.hdf5")
 
         if (station == "All"):
         ###Plot a Map!
@@ -112,6 +112,7 @@ class Executor:
                 print("end version")
                 print(np.shape(ids),np.shape(vals))
                 print(ids, vals)
+                plt.figure()
                 fig = mf.interpolated_color_map(locs[:,0], locs[:,1], vals, parameter, interp='linear', return_figure=True)
                 plt.show()
 
