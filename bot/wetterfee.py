@@ -153,11 +153,11 @@ def get_forecast(datetime, location):
                               lower=[dateInt, city_ID],
                               upper=[dateInt, city_ID])
             p = Q.get_data('daily', s, return_params=['low', 'high', 'date', 'site', 'city_ID'])
-            temp_low = p[:,3].mean()
-            temp_high = p[:,2].mean()
+            temp_low = p[np.isfinite(p[:,3]),3].mean()
+            temp_high = p[np.isfinite(p[:,2]),2].mean()
 
             # make sure there is no nan
-            assert(np.isfinite(temp_low+temp_high))
+            assert(-50<(temp_low + temp_high) and (temp_low + temp_high)<50)
             # parse the response
             response = ("Here you go: the temperature in " + locString + " on "
                         + dateString + " "+ verb + " between " + str(int(temp_low)) + " and " + str(int(temp_high))
